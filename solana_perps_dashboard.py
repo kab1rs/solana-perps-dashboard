@@ -176,8 +176,52 @@ def fetch_defillama_volume() -> dict:
         return {}
 
 
+def fetch_drift_accurate_traders(minutes: int = 10) -> int:
+    """
+    Fetch accurate Drift trader count by parsing instruction accounts.
+
+    Uses instruction_calls table to extract actual user accounts from
+    fill_perp_order instructions (account_arguments[4] = user account).
+    This is more accurate than COUNT(DISTINCT signer) which counts keepers.
+    """
+    print("Fetching accurate Drift traders...", end=" ", flush=True)
+
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(minutes=minutes)
+
+    # fill_perp_order discriminator: 0xdaedaaf5278fa621
+    # account_arguments[4] contains the actual user account
+    sql = f"""
+    SELECT
+        COUNT(*) as total_fills,
+        COUNT(DISTINCT account_arguments[4]) as unique_traders
+    FROM solana.instruction_calls
+    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+      AND SUBSTR(data, 1, 8) = 0xdaedaaf5278fa621
+      AND CARDINALITY(account_arguments) >= 4
+    """
+
+    result = run_dune_query(sql, timeout=300)
+
+    if "error" in result:
+        print(f"failed", file=sys.stderr)
+        return 0
+
+    rows = result.get("result", {}).get("rows", [])
+    if rows:
+        traders = rows[0].get("unique_traders", 0)
+        fills = rows[0].get("total_fills", 0)
+        print(f"{traders} traders ({fills:,} fills in {minutes}min)")
+        return traders
+
+    print("no data")
+    return 0
+
+
 def fetch_drift_market_breakdown(hours: int = 1) -> dict:
-    """Fetch Drift market breakdown with trader counts from Dune."""
+    """Fetch Drift market breakdown with trade counts from Dune."""
     print("Fetching Drift markets from Dune...", end=" ", flush=True)
 
     # Build CASE statement for market identification
@@ -196,8 +240,7 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
             {case_stmt}
             ELSE 'OTHER'
         END as market,
-        COUNT(*) as tx_count,
-        COUNT(DISTINCT signer) as trader_count
+        COUNT(*) as tx_count
     FROM solana.transactions
     WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
       AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
@@ -213,22 +256,56 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
         return {}
 
     rows = result.get("result", {}).get("rows", [])
-    markets = {
-        row["market"]: {
-            "tx_count": row["tx_count"],
-            "trader_count": row.get("trader_count", 0)
-        }
-        for row in rows
-    }
+    markets = {row["market"]: row["tx_count"] for row in rows}
 
-    total = sum(m["tx_count"] for m in markets.values())
+    total = sum(markets.values())
     print(f"found {len(markets)} markets, {total:,} txns")
 
     return markets
 
 
+def fetch_jupiter_accurate_traders(minutes: int = 15) -> int:
+    """
+    Fetch accurate Jupiter Perps trader count using transaction signers.
+
+    Jupiter Perps uses a different model - users sign their own transactions
+    more often, so signer count is more accurate than Drift.
+    We still sample a short window for speed.
+    """
+    print("Fetching accurate Jupiter traders...", end=" ", flush=True)
+
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(minutes=minutes)
+
+    sql = f"""
+    SELECT
+        COUNT(*) as total_txns,
+        COUNT(DISTINCT signer) as unique_traders
+    FROM solana.transactions
+    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
+    """
+
+    result = run_dune_query(sql, timeout=180)
+
+    if "error" in result:
+        print(f"failed", file=sys.stderr)
+        return 0
+
+    rows = result.get("result", {}).get("rows", [])
+    if rows:
+        traders = rows[0].get("unique_traders", 0)
+        txns = rows[0].get("total_txns", 0)
+        print(f"{traders} traders ({txns:,} txns in {minutes}min)")
+        return traders
+
+    print("no data")
+    return 0
+
+
 def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
-    """Fetch Jupiter Perps market breakdown with trader counts from Dune."""
+    """Fetch Jupiter Perps market breakdown with trade counts from Dune."""
     print("Fetching Jupiter markets from Dune...", end=" ", flush=True)
 
     # Build CASE statement for market identification
@@ -247,8 +324,7 @@ def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
             {case_stmt}
             ELSE 'OTHER'
         END as market,
-        COUNT(*) as tx_count,
-        COUNT(DISTINCT signer) as trader_count
+        COUNT(*) as tx_count
     FROM solana.transactions
     WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
       AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
@@ -264,15 +340,9 @@ def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
         return {}
 
     rows = result.get("result", {}).get("rows", [])
-    markets = {
-        row["market"]: {
-            "tx_count": row["tx_count"],
-            "trader_count": row.get("trader_count", 0)
-        }
-        for row in rows
-    }
+    markets = {row["market"]: row["tx_count"] for row in rows}
 
-    total = sum(m["tx_count"] for m in markets.values())
+    total = sum(markets.values())
     print(f"found {len(markets)} markets, {total:,} txns")
 
     return markets
@@ -369,46 +439,62 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
     if fetch_markets:
         print()
 
-        # Drift market breakdown
-        drift_data = fetch_drift_market_breakdown(hours=1)
-        if drift_data:
+        # Drift market breakdown with accurate trader count
+        drift_trade_counts = fetch_drift_market_breakdown(hours=1)
+        drift_accurate_traders = fetch_drift_accurate_traders(minutes=15)
+
+        if drift_trade_counts:
             drift_volume = next(
                 (m["volume_usd"] for m in all_metrics if m["protocol"] == "Drift"), 0
             )
             drift_fee_rate = PROTOCOLS["Drift"]["fee_rate"]
 
-            # Extract trade counts for volume distribution
-            drift_trade_counts = {m: d["tx_count"] for m, d in drift_data.items()}
-            drift_trader_counts = {m: d["trader_count"] for m, d in drift_data.items()}
+            # Distribute volume and calculate fees
             drift_volumes = distribute_volume_by_trades(drift_volume, drift_trade_counts)
             drift_fees = calculate_market_fees(drift_volumes, drift_fee_rate)
+
+            # Distribute traders proportionally by trade count
+            total_trades = sum(drift_trade_counts.values())
+            drift_trader_counts = {
+                m: int(drift_accurate_traders * (t / total_trades)) if total_trades > 0 else 0
+                for m, t in drift_trade_counts.items()
+            }
 
             market_breakdowns["Drift"] = {
                 "trades": drift_trade_counts,
                 "traders": drift_trader_counts,
                 "volumes": drift_volumes,
                 "fees": drift_fees,
+                "accurate_total_traders": drift_accurate_traders,
             }
 
-        # Jupiter Perps market breakdown
-        jupiter_data = fetch_jupiter_market_breakdown(hours=1)
-        if jupiter_data:
+        # Jupiter Perps market breakdown with accurate trader count
+        jupiter_trade_counts = fetch_jupiter_market_breakdown(hours=1)
+        jupiter_accurate_traders = fetch_jupiter_accurate_traders(minutes=15)
+
+        if jupiter_trade_counts:
             jupiter_volume = next(
                 (m["volume_usd"] for m in all_metrics if m["protocol"] == "Jupiter Perps"), 0
             )
             jupiter_fee_rate = PROTOCOLS["Jupiter Perps"]["fee_rate"]
 
-            # Extract trade counts for volume distribution
-            jupiter_trade_counts = {m: d["tx_count"] for m, d in jupiter_data.items()}
-            jupiter_trader_counts = {m: d["trader_count"] for m, d in jupiter_data.items()}
+            # Distribute volume and calculate fees
             jupiter_volumes = distribute_volume_by_trades(jupiter_volume, jupiter_trade_counts)
             jupiter_fees = calculate_market_fees(jupiter_volumes, jupiter_fee_rate)
+
+            # Distribute traders proportionally by trade count
+            total_trades = sum(jupiter_trade_counts.values())
+            jupiter_trader_counts = {
+                m: int(jupiter_accurate_traders * (t / total_trades)) if total_trades > 0 else 0
+                for m, t in jupiter_trade_counts.items()
+            }
 
             market_breakdowns["Jupiter Perps"] = {
                 "trades": jupiter_trade_counts,
                 "traders": jupiter_trader_counts,
                 "volumes": jupiter_volumes,
                 "fees": jupiter_fees,
+                "accurate_total_traders": jupiter_accurate_traders,
             }
 
     return all_metrics, market_breakdowns
@@ -447,11 +533,14 @@ def print_dashboard(all_metrics: list, market_breakdowns: dict, hours: int):
         traders = data.get("traders", {})
         volumes = data.get("volumes", {})
         fees = data.get("fees", {})
+        accurate_traders = data.get("accurate_total_traders", 0)
 
         if not trades:
             continue
 
-        print(f"\nMARKET BREAKDOWN - {protocol.upper()}")
+        # Show accurate trader count in header
+        trader_note = f" [{accurate_traders} unique traders in 15min sample]" if accurate_traders else ""
+        print(f"\nMARKET BREAKDOWN - {protocol.upper()}{trader_note}")
         print("-" * 100)
         print(f"{'Market':<15} {'Trades':>12} {'Traders':>10} {'Volume':>18} {'Fees':>14} {'Share':>8}")
         print("-" * 100)
@@ -478,7 +567,8 @@ def print_dashboard(all_metrics: list, market_breakdowns: dict, hours: int):
     # Data sources
     print("\nData Sources:")
     print("  Volume: DeFiLlama API | Tx Count: Solana RPC | Markets: Dune Analytics")
-    print("  Traders: COUNT(DISTINCT signer) from Dune | Fees: Estimated (volume * fee_rate)")
+    print("  Traders: Parsed from instruction accounts (Drift) / Signers (Jupiter)")
+    print("  Fees: Estimated (volume * fee_rate)")
 
 
 def main():
