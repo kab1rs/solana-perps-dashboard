@@ -16,6 +16,7 @@ from solana_perps_dashboard import (
     fetch_drift_markets_from_api,
     fetch_drift_accurate_traders,
     fetch_drift_liquidations,
+    fetch_cross_platform_wallets,
     fetch_jupiter_accurate_traders,
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
@@ -39,6 +40,7 @@ def update_cache():
         "total_open_interest": 0,
         "global_derivatives": [],
         "liquidations_1h": {"count": 0, "txns": 0},
+        "wallet_overlap": {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0},
     }
 
     # Fetch volumes from DeFiLlama (fast)
@@ -71,7 +73,14 @@ def update_cache():
         cache["liquidations_1h"] = fetch_drift_liquidations(hours=1)
     except Exception as e:
         print(f"Liquidations failed: {e}")
-        cache["liquidations_1h"] = {"count": 0, "txns": 0}
+        cache["liquidations_1h"] = {"count": 0, "txns": 0, "error": str(e)}
+
+    # Fetch cross-platform wallet data (1h window)
+    try:
+        cache["wallet_overlap"] = fetch_cross_platform_wallets(hours=1)
+    except Exception as e:
+        print(f"Wallet overlap failed: {e}")
+        cache["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
 
     # Build protocol metrics
     for protocol_name, config in PROTOCOLS.items():

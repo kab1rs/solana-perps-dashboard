@@ -224,7 +224,23 @@ st.caption("Compare where to trade each asset across Solana perp DEXes")
 drift_markets = cache.get("drift_markets", {})
 jupiter_markets = cache.get("jupiter_markets", {})
 
-common_assets = ["SOL", "BTC", "ETH"]
+# Dynamically derive common assets from available markets
+drift_asset_names = {m.replace("-PERP", "") for m in drift_markets.keys() if m.endswith("-PERP")}
+jupiter_asset_names = set(jupiter_markets.get("volumes", {}).keys())
+common_assets = sorted(drift_asset_names & jupiter_asset_names)
+
+# Fallback: if no common assets found, use top assets by combined volume
+if not common_assets:
+    combined = {}
+    for asset in drift_asset_names | jupiter_asset_names:
+        drift_vol = drift_markets.get(f"{asset}-PERP", {}).get("volume", 0)
+        jup_vol = jupiter_markets.get("volumes", {}).get(asset, 0)
+        combined[asset] = drift_vol + jup_vol
+    common_assets = sorted(combined.keys(), key=lambda x: combined[x], reverse=True)[:8]
+
+# Limit to top 8 assets for display
+common_assets = common_assets[:8] if len(common_assets) > 8 else common_assets
+
 venue_data = []
 
 for asset in common_assets:
@@ -377,6 +393,89 @@ with col2:
 
 st.divider()
 
+# Cross-Platform Wallet Analysis
+st.header("Cross-Platform Traders")
+st.caption("Wallet overlap between Drift and Jupiter Perps (1h window)")
+
+wallet_data = cache.get("wallet_overlap", {})
+
+if wallet_data.get("error"):
+    st.warning(f"Wallet data unavailable: {wallet_data.get('error', 'Query timeout')}")
+else:
+    multi = wallet_data.get("multi_platform", 0)
+    drift_only = wallet_data.get("drift_only", 0)
+    jupiter_only = wallet_data.get("jupiter_only", 0)
+    total = multi + drift_only + jupiter_only
+
+    if total > 0:
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric(
+                "Multi-Platform",
+                f"{multi:,}",
+                help="Wallets active on BOTH Drift and Jupiter"
+            )
+
+        with col2:
+            st.metric(
+                "Drift Exclusive",
+                f"{drift_only:,}",
+                help="Wallets active ONLY on Drift"
+            )
+
+        with col3:
+            st.metric(
+                "Jupiter Exclusive",
+                f"{jupiter_only:,}",
+                help="Wallets active ONLY on Jupiter"
+            )
+
+        with col4:
+            overlap_pct = (multi / total * 100) if total > 0 else 0
+            st.metric(
+                "Overlap Rate",
+                f"{overlap_pct:.1f}%",
+                help="Percentage of traders using both platforms"
+            )
+
+        # Visualization: Platform distribution pie chart
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            fig = px.pie(
+                values=[multi, drift_only, jupiter_only],
+                names=["Both Platforms", "Drift Only", "Jupiter Only"],
+                title="Trader Distribution by Platform",
+                color_discrete_sequence=["#8B5CF6", "#3B82F6", "#10B981"],
+                hole=0.4,
+            )
+            fig.update_layout(height=300, margin=dict(t=50, b=20, l=20, r=20))
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col2:
+            # Bar chart showing totals per platform
+            fig = go.Figure(data=[
+                go.Bar(
+                    x=["Drift Total", "Jupiter Total"],
+                    y=[multi + drift_only, multi + jupiter_only],
+                    marker_color=["#3B82F6", "#10B981"],
+                    text=[f"{multi + drift_only:,}", f"{multi + jupiter_only:,}"],
+                    textposition="outside",
+                )
+            ])
+            fig.update_layout(
+                title="Total Traders per Platform (1h)",
+                yaxis_title="Unique Wallets",
+                height=300,
+                margin=dict(t=50, b=20),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("No wallet data available for the current period")
+
+st.divider()
+
 # Unique Insights Section
 st.header("Quick Insights")
 
@@ -406,24 +505,27 @@ with col2:
             st.write(f"**#{i}** {market}: ${oi:,.0f}")
 
 with col3:
-    st.subheader("Trading Activity")
-    if total_traders > 0:
-        avg_volume_per_trader = total_volume / total_traders
-        st.metric("Avg Volume/Trader", f"${avg_volume_per_trader:,.0f}")
-        st.write(f"Drift: {cache.get('drift_traders_1h', 0) * 6:,} traders/6h")
-        st.write(f"Jupiter: {cache.get('jupiter_traders_1h', 0):,} traders/1h")
+    st.subheader("Active Traders (1h)")
+    drift_1h = cache.get("drift_traders_1h", 0)
+    jupiter_1h = cache.get("jupiter_traders_1h", 0)
+    if drift_1h > 0 or jupiter_1h > 0:
+        st.metric("Drift", f"{drift_1h:,}")
+        st.metric("Jupiter", f"{jupiter_1h:,}")
+    else:
+        st.write("No trader data available")
 
 with col4:
     st.subheader("Liquidations (1h)")
     liquidations = cache.get("liquidations_1h", {})
-    liq_count = liquidations.get("count", 0)
-    liq_txns = liquidations.get("txns", 0)
-    if liq_count > 0:
-        st.metric("Events", f"{liq_count:,}")
-        st.write(f"Transactions: {liq_txns:,}")
-        st.write("Source: Drift perps")
+    if liquidations.get("error"):
+        st.warning("Data unavailable")
+        st.caption("Query timeout")
+    elif liquidations.get("count", 0) > 0:
+        st.metric("Events", f"{liquidations['count']:,}")
+        st.write(f"Txns: {liquidations.get('txns', 0):,}")
     else:
-        st.write("No recent liquidations")
+        st.info("No liquidations")
+    st.caption("Source: Drift")
 
 # Footer
 st.divider()

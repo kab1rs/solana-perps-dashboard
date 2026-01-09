@@ -244,7 +244,7 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
 
     if "error" in result:
         print(f"failed: {result['error']}", file=sys.stderr)
-        return {"count": 0, "txns": 0}
+        return {"count": 0, "txns": 0, "error": result["error"]}
 
     rows = result.get("result", {}).get("rows", [])
     if rows:
@@ -255,6 +255,76 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
 
     print("no data")
     return {"count": 0, "txns": 0}
+
+
+def fetch_cross_platform_wallets(hours: int = 1) -> dict:
+    """
+    Fetch wallets trading on Drift and/or Jupiter in the last N hours.
+
+    Returns counts of:
+    - multi_platform: wallets on BOTH Drift AND Jupiter
+    - drift_only: wallets ONLY on Drift
+    - jupiter_only: wallets ONLY on Jupiter
+    """
+    print(f"Fetching cross-platform wallets ({hours}h)...", end=" ", flush=True)
+
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(hours=hours)
+
+    # Build keeper exclusion list
+    keeper_list = "', '".join(DRIFT_KEEPERS)
+
+    sql = f"""
+    WITH drift_wallets AS (
+        SELECT DISTINCT account_arguments[3] as wallet
+        FROM solana.instruction_calls
+        WHERE executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND CARDINALITY(account_arguments) >= 3
+          AND account_arguments[3] NOT IN ('{keeper_list}')
+          AND account_arguments[3] NOT LIKE 'Sysvar%'
+          AND account_arguments[3] != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+    ),
+    jupiter_wallets AS (
+        SELECT DISTINCT signer as wallet
+        FROM solana.transactions
+        WHERE CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
+          AND block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+    )
+    SELECT
+        COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NOT NULL THEN 1 END) as multi_platform,
+        COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NULL THEN 1 END) as drift_only,
+        COUNT(CASE WHEN d.wallet IS NULL AND j.wallet IS NOT NULL THEN 1 END) as jupiter_only
+    FROM drift_wallets d
+    FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
+    """
+
+    result = run_dune_query(sql, timeout=300)
+
+    if "error" in result:
+        print(f"failed: {result['error']}", file=sys.stderr)
+        return {
+            "multi_platform": 0,
+            "drift_only": 0,
+            "jupiter_only": 0,
+            "error": result["error"]
+        }
+
+    rows = result.get("result", {}).get("rows", [])
+    if rows:
+        data = {
+            "multi_platform": rows[0].get("multi_platform", 0),
+            "drift_only": rows[0].get("drift_only", 0),
+            "jupiter_only": rows[0].get("jupiter_only", 0),
+        }
+        total = data["multi_platform"] + data["drift_only"] + data["jupiter_only"]
+        print(f"{total} total ({data['multi_platform']} multi-platform)")
+        return data
+
+    print("no data")
+    return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0}
 
 
 def fetch_drift_markets_from_api() -> dict:
