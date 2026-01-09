@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-01-09T05:10:16.527679Z",
+  "updated_at": "2026-01-09T05:32:12.884900Z",
   "protocols": [
     {
       "protocol": "Jupiter Perps",
@@ -7,8 +7,8 @@
       "volume_7d": 2630215810,
       "change_1d": 45.67,
       "change_7d": 295.09,
-      "transactions": 13152,
-      "traders": 3146,
+      "transactions": 13091,
+      "traders": 3164,
       "fees": 278103.7752
     },
     {
@@ -17,8 +17,8 @@
       "volume_7d": 930612380,
       "change_1d": 1.47,
       "change_7d": 281.92,
-      "transactions": 19774,
-      "traders": 5928,
+      "transactions": 19841,
+      "traders": 5322,
       "fees": 71855.6005
     },
     {
@@ -896,19 +896,172 @@
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 1531,
-      "BTC": 100,
-      "ETH": 60,
-      "OTHER": 9
+      "SOL": 1313,
+      "BTC": 130,
+      "ETH": 35,
+      "OTHER": 3
     },
     "volumes": {
-      "SOL": 417428313.56,
-      "BTC": 27265076.0,
-      "ETH": 16359045.6,
-      "OTHER": 2453856.84
+      "SOL": 410927590.409183,
+      "BTC": 40685900.040513165,
+      "ETH": 10953896.164753545,
+      "OTHER": 938905.3855503039
     }
   },
-  "drift_traders_1h": 988,
-  "jupiter_traders_6h": 1573,
-  "total_open_interest": 283974309.91809493
+  "drift_traders_1h": 887,
+  "jupiter_traders_6h": 1582,
+  "total_open_interest": 283974309.91809493,
+  "global_derivatives": [
+    {
+      "name": "Hyperliquid Perps",
+      "chains": [
+        "Hyperliquid L1"
+      ],
+      "volume_24h": 7544394781,
+      "volume_7d": 43061148192,
+      "change_1d": 18.81,
+      "change_7d": 236.9
+    },
+    {
+      "name": "Aster Perps",
+      "chains": [
+        "Off Chain"
+      ],
+      "volume_24h": 5649351648,
+      "volume_7d": 36563914916,
+      "change_1d": -12.34,
+      "change_7d": 208.65
+    },
+    {
+      "name": "Lighter Perps",
+      "chains": [
+        "zkLighter"
+      ],
+      "volume_24h": 4663590258,
+      "volume_7d": 31466169496,
+      "change_1d": 1.85,
+      "change_7d": 117.66
+    },
+    {
+      "name": "edgeX Perps",
+      "chains": [
+        "Edgex"
+      ],
+      "volume_24h": 3874362739,
+      "volume_7d": 23540829366,
+      "change_1d": 2.74,
+      "change_7d": 125.54
+    },
+    {
+      "name": "Extended",
+      "chains": [
+        "Ethereum",
+        "Starknet"
+      ],
+      "volume_24h": 1748981669,
+      "volume_7d": 11320655926,
+      "change_1d": 3.38,
+      "change_7d": 135.8
+    },
+    {
+      "name": "Variational",
+      "chains": [
+        "Arbitrum"
+      ],
+      "volume_24h": 1632476774,
+      "volume_7d": 11811159855,
+      "change_1d": -15.43,
+      "change_7d": 9
+    },
+    {
+      "name": "Paradex Perps",
+      "chains": [
+        "Paradex"
+      ],
+      "volume_24h": 1574106330,
+      "volume_7d": 10628306336,
+      "change_1d": 6.98,
+      "change_7d": 18.45
+    },
+    {
+      "name": "Grvt Perps",
+      "chains": [
+        "Grvt"
+      ],
+      "volume_24h": 1508343640,
+      "volume_7d": 9907551171,
+      "change_1d": -0.05,
+      "change_7d": -2.69
+    },
+    {
+      "name": "Apex Omni",
+      "chains": [
+        "Ethereum"
+      ],
+      "volume_24h": 1259097036,
+      "volume_7d": 8516944532,
+      "change_1d": 5.29,
+      "change_7d": 34.34
+    },
+    {
+      "name": "Pacifica",
+      "chains": [
+        "Solana"
+      ],
+      "volume_24h": 960780022,
+      "volume_7d": 5631550077,
+      "change_1d": -2.07,
+      "change_7d": 147.53
+    },
+    {
+      "name": "tradeXYZ",
+      "chains": [
+        "Hyperliquid L1"
+      ],
+      "volume_24h": 734203070,
+      "volume_7d": 3258083037,
+      "change_1d": 28.24,
+      "change_7d": 648.84
+    },
+    {
+      "name": "Nado Perps",
+      "chains": [
+        "Ink"
+      ],
+      "volume_24h": 580591714,
+      "volume_7d": 3618703593,
+      "change_1d": -10.35,
+      "change_7d": 158.62
+    },
+    {
+      "name": "Reya Perps",
+      "chains": [
+        "ReyaChain"
+      ],
+      "volume_24h": 511427690,
+      "volume_7d": 3116669983,
+      "change_1d": 13.91,
+      "change_7d": 149.46
+    },
+    {
+      "name": "Jupiter Perpetual Exchange",
+      "chains": [
+        "Solana"
+      ],
+      "volume_24h": 463506292,
+      "volume_7d": 2630215810,
+      "change_1d": 45.67,
+      "change_7d": 295.09
+    },
+    {
+      "name": "SunX",
+      "chains": [
+        "Tron"
+      ],
+      "volume_24h": 395568488,
+      "volume_7d": 1547419090,
+      "change_1d": -3.21,
+      "change_7d": 472.54
+    }
+  ]
 }

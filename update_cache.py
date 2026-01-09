@@ -12,6 +12,7 @@ from datetime import datetime
 
 from solana_perps_dashboard import (
     fetch_defillama_volume,
+    fetch_global_derivatives,
     fetch_drift_markets_from_api,
     fetch_drift_accurate_traders,
     fetch_jupiter_accurate_traders,
@@ -35,10 +36,18 @@ def update_cache():
         "drift_traders_1h": 0,
         "jupiter_traders_6h": 0,
         "total_open_interest": 0,
+        "global_derivatives": [],
     }
 
     # Fetch volumes from DeFiLlama (fast)
     defillama_volumes = fetch_defillama_volume()
+
+    # Fetch global derivatives for cross-chain comparison
+    try:
+        cache["global_derivatives"] = fetch_global_derivatives()
+    except Exception as e:
+        print(f"Global derivatives failed: {e}")
+        cache["global_derivatives"] = []
 
     # Fetch accurate trader counts
     # Drift: use 1h window (complex query, times out with 6h)
@@ -128,6 +137,7 @@ def update_cache():
     print(f"Protocols: {len(cache['protocols'])}")
     print(f"Drift markets: {len(cache['drift_markets'])}")
     print(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
+    print(f"Global derivatives: {len(cache['global_derivatives'])}")
     print(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
     print(f"Drift traders (1h): {cache['drift_traders_1h']}")
     print(f"Jupiter traders (6h): {cache['jupiter_traders_6h']}")

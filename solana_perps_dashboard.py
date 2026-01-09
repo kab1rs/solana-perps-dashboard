@@ -183,6 +183,38 @@ def fetch_defillama_volume() -> dict:
         return {}
 
 
+def fetch_global_derivatives() -> list:
+    """Fetch top derivatives protocols globally for cross-chain comparison."""
+    print("Fetching global derivatives...", end=" ", flush=True)
+
+    try:
+        req = Request(DEFILLAMA_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(req, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        protocols = []
+        for protocol in data.get("protocols", []):
+            vol_24h = protocol.get("total24h", 0) or 0
+            if vol_24h > 1000000:  # Only include protocols with >$1M volume
+                protocols.append({
+                    "name": protocol.get("name", ""),
+                    "chains": protocol.get("chains", []),
+                    "volume_24h": vol_24h,
+                    "volume_7d": protocol.get("total7d", 0) or 0,
+                    "change_1d": protocol.get("change_1d", 0) or 0,
+                    "change_7d": protocol.get("change_7d", 0) or 0,
+                })
+
+        # Sort by 24h volume descending
+        protocols.sort(key=lambda x: x["volume_24h"], reverse=True)
+
+        print(f"found {len(protocols)} protocols")
+        return protocols[:15]  # Top 15
+    except Exception as e:
+        print(f"failed: {e}", file=sys.stderr)
+        return []
+
+
 def fetch_drift_markets_from_api() -> dict:
     """
     Fetch Drift market breakdown directly from Drift API.

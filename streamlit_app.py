@@ -9,6 +9,8 @@ Data refreshed every 15 minutes via GitHub Actions.
 import json
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 from pathlib import Path
 
 # Page config - dark theme friendly
@@ -28,8 +30,6 @@ st.markdown("""
     }
     .positive { color: #00ff88; }
     .negative { color: #ff4444; }
-    .funding-positive { background-color: rgba(0, 255, 136, 0.1); }
-    .funding-negative { background-color: rgba(255, 68, 68, 0.1); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -60,6 +60,15 @@ def format_funding(rate):
     return f"{pct:.4f}%"
 
 
+def format_volume(value):
+    """Format large numbers with B/M suffix."""
+    if value >= 1e9:
+        return f"${value/1e9:.1f}B"
+    elif value >= 1e6:
+        return f"${value/1e6:.0f}M"
+    return f"${value:,.0f}"
+
+
 # Load cached data
 cache = load_cache()
 
@@ -83,14 +92,14 @@ total_txns = protocol_df["transactions"].sum()
 total_oi = cache.get("total_open_interest", 0)
 
 # Top metrics row
-st.header("Overview")
+st.header("Solana Perps Overview")
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    st.metric("24h Volume", f"${total_volume:,.0f}")
+    st.metric("24h Volume", format_volume(total_volume))
 with col2:
-    st.metric("Open Interest", f"${total_oi:,.0f}")
+    st.metric("Open Interest", format_volume(total_oi))
 with col3:
-    st.metric("Traders (24h est)", f"{total_traders:,}")
+    st.metric("Traders (24h)", f"{total_traders:,}")
 with col4:
     st.metric("Fees Generated", f"${total_fees:,.0f}")
 with col5:
@@ -98,28 +107,113 @@ with col5:
 
 st.divider()
 
-# Protocol comparison with changes
-st.header("Protocol Comparison")
+# Cross-Chain Comparison
+st.header("Cross-Chain Comparison")
+st.caption("How Solana perps compare to other chains")
 
-display_df = protocol_df.copy()
-display_df["Market Share"] = (display_df["volume_24h"] / total_volume * 100).round(1).astype(str) + "%"
+global_derivatives = cache.get("global_derivatives", [])
 
-# Add change indicators
-display_df["24h Change"] = display_df["change_1d"].apply(format_change)
-display_df["7d Change"] = display_df["change_7d"].apply(format_change)
+if global_derivatives:
+    # Calculate global total
+    global_total = sum(p["volume_24h"] for p in global_derivatives)
+    solana_total = total_volume
 
-# Format numbers
-display_df["Volume 24h"] = display_df["volume_24h"].apply(lambda x: f"${x:,.0f}")
-display_df["Volume 7d"] = display_df["volume_7d"].apply(lambda x: f"${x:,.0f}")
-display_df["Fees"] = display_df["fees"].apply(lambda x: f"${x:,.0f}")
-display_df["Traders"] = display_df["traders"].apply(lambda x: f"{x:,}")
-display_df = display_df.rename(columns={"protocol": "Protocol"})
+    col1, col2 = st.columns([2, 1])
 
-st.dataframe(
-    display_df[["Protocol", "Volume 24h", "24h Change", "7d Change", "Market Share", "Traders", "Fees"]],
-    width="stretch",
-    hide_index=True,
-)
+    with col1:
+        # Create comparison table
+        comparison_data = []
+        for p in global_derivatives[:10]:
+            chains = ", ".join(p.get("chains", [])[:2])
+            is_solana = "Solana" in p.get("chains", [])
+            comparison_data.append({
+                "Protocol": p["name"],
+                "Chain": chains,
+                "Volume 24h": format_volume(p["volume_24h"]),
+                "Market Share": f"{p['volume_24h']/global_total*100:.1f}%",
+                "24h Change": format_change(p.get("change_1d", 0)),
+                "Solana": "✓" if is_solana else "",
+            })
+
+        comp_df = pd.DataFrame(comparison_data)
+        st.dataframe(comp_df, width="stretch", hide_index=True)
+
+    with col2:
+        # Pie chart of top protocols
+        top_5 = global_derivatives[:5]
+        others_vol = sum(p["volume_24h"] for p in global_derivatives[5:])
+
+        pie_data = {
+            "Protocol": [p["name"] for p in top_5] + ["Others"],
+            "Volume": [p["volume_24h"] for p in top_5] + [others_vol],
+        }
+        pie_df = pd.DataFrame(pie_data)
+
+        fig = px.pie(
+            pie_df,
+            values="Volume",
+            names="Protocol",
+            title="Global Perps Market Share",
+            hole=0.4,
+        )
+        fig.update_layout(
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3),
+            margin=dict(t=50, b=50, l=20, r=20),
+            height=350,
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Solana's position
+    solana_rank = next(
+        (i + 1 for i, p in enumerate(global_derivatives)
+         if "Solana" in p.get("chains", [])),
+        None
+    )
+    solana_share = (solana_total / global_total * 100) if global_total > 0 else 0
+
+    st.info(f"**Solana perps rank #{solana_rank or '?'}** globally with **{solana_share:.1f}%** market share (${format_volume(solana_total)} / {format_volume(global_total)})")
+
+st.divider()
+
+# Solana Protocol Comparison with Chart
+st.header("Solana Protocol Breakdown")
+
+col1, col2 = st.columns([1, 1])
+
+with col1:
+    display_df = protocol_df.copy()
+    display_df["Market Share"] = (display_df["volume_24h"] / total_volume * 100).round(1).astype(str) + "%"
+    display_df["24h Change"] = display_df["change_1d"].apply(format_change)
+    display_df["7d Change"] = display_df["change_7d"].apply(format_change)
+    display_df["Volume 24h"] = display_df["volume_24h"].apply(lambda x: f"${x:,.0f}")
+    display_df["Fees"] = display_df["fees"].apply(lambda x: f"${x:,.0f}")
+    display_df["Traders"] = display_df["traders"].apply(lambda x: f"{x:,}")
+    display_df = display_df.rename(columns={"protocol": "Protocol"})
+
+    st.dataframe(
+        display_df[["Protocol", "Volume 24h", "24h Change", "7d Change", "Market Share", "Traders", "Fees"]],
+        width="stretch",
+        hide_index=True,
+    )
+
+with col2:
+    # Solana protocols pie chart
+    fig = px.pie(
+        protocol_df,
+        values="volume_24h",
+        names="protocol",
+        title="Solana Perps Market Share",
+        hole=0.4,
+        color_discrete_sequence=px.colors.qualitative.Set2,
+    )
+    fig.update_layout(
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+        margin=dict(t=50, b=50, l=20, r=20),
+        height=350,
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
@@ -130,7 +224,6 @@ st.caption("Compare where to trade each asset across Solana perp DEXes")
 drift_markets = cache.get("drift_markets", {})
 jupiter_markets = cache.get("jupiter_markets", {})
 
-# Build comparison for common assets
 common_assets = ["SOL", "BTC", "ETH"]
 venue_data = []
 
@@ -143,7 +236,6 @@ for asset in common_assets:
     drift_funding = drift_info.get("funding_rate", 0)
     drift_oi = drift_info.get("open_interest", 0)
 
-    # Determine best venue
     best_volume = "Jupiter" if jupiter_vol > drift_vol else "Drift"
 
     venue_data.append({
@@ -160,23 +252,86 @@ st.dataframe(venue_df, width="stretch", hide_index=True)
 
 st.divider()
 
-# Market Breakdowns
+# Funding Rate Heatmap
+st.header("Funding Rate Overview")
+
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    if drift_markets:
+        # Get top markets by volume for funding display
+        sorted_markets = sorted(
+            [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
+            key=lambda x: x[1]["volume"],
+            reverse=True
+        )[:12]
+
+        funding_data = []
+        for market, info in sorted_markets:
+            funding = info.get("funding_rate", 0) * 100  # Convert to percentage
+            funding_data.append({
+                "Market": market.replace("-PERP", ""),
+                "Funding %": funding,
+                "Direction": "Longs Pay" if funding > 0 else "Shorts Pay" if funding < 0 else "Neutral",
+            })
+
+        funding_df = pd.DataFrame(funding_data)
+
+        # Create bar chart
+        colors = ["#ff4444" if f > 0 else "#00ff88" for f in funding_df["Funding %"]]
+        fig = go.Figure(data=[
+            go.Bar(
+                x=funding_df["Market"],
+                y=funding_df["Funding %"],
+                marker_color=colors,
+                text=[f"{f:.4f}%" for f in funding_df["Funding %"]],
+                textposition="outside",
+            )
+        ])
+        fig.update_layout(
+            title="Funding Rates (Top Markets)",
+            xaxis_title="Market",
+            yaxis_title="Funding Rate %",
+            height=350,
+            margin=dict(t=50, b=50),
+        )
+        fig.add_hline(y=0, line_dash="dash", line_color="gray")
+        st.plotly_chart(fig, use_container_width=True)
+
+with col2:
+    st.subheader("Funding Extremes")
+
+    if drift_markets:
+        sorted_by_funding = sorted(
+            [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
+            key=lambda x: x[1].get("funding_rate", 0)
+        )
+
+        if sorted_by_funding:
+            lowest = sorted_by_funding[0]
+            st.markdown(f"**Shorts Pay Most:**")
+            st.markdown(f"🟢 {lowest[0]}: {format_funding(lowest[1].get('funding_rate', 0))}")
+
+            highest = sorted_by_funding[-1]
+            st.markdown(f"**Longs Pay Most:**")
+            st.markdown(f"🔴 {highest[0]}: {format_funding(highest[1].get('funding_rate', 0))}")
+
+st.divider()
+
+# Market Deep Dive
 st.header("Market Deep Dive")
 
 col1, col2 = st.columns(2)
 
-# Drift Markets with funding rates
 with col1:
     drift_traders = cache.get("drift_traders_1h", 0)
     st.subheader(f"Drift Markets ({drift_traders:,} traders/1h)")
-    st.caption("All 85 PERP markets with funding rates")
 
     if drift_markets:
         drift_data = []
         total_vol = sum(m["volume"] for m in drift_markets.values())
 
-        # Sort by volume and take top 20
-        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:20]
+        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:15]
 
         for market, info in sorted_markets:
             share = (info["volume"] / total_vol * 100) if total_vol > 0 else 0
@@ -186,20 +341,16 @@ with col1:
             drift_data.append({
                 "Market": market,
                 "Volume 24h": f"${info['volume']:,.0f}",
-                "Funding Rate": format_funding(funding),
+                "Funding": format_funding(funding),
                 "Open Interest": f"${oi_usd:,.0f}",
                 "Share": f"{share:.1f}%",
             })
 
         st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
-    else:
-        st.write("No market data available")
 
-# Jupiter Markets
 with col2:
     jupiter_traders = cache.get("jupiter_traders_6h", 0)
     st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/6h)")
-    st.caption("Market breakdown by trade count")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -223,41 +374,16 @@ with col2:
             })
 
         st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
-    else:
-        st.write("No market data available")
 
 st.divider()
 
 # Unique Insights Section
-st.header("Unique Insights")
+st.header("Quick Insights")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("Funding Extremes")
-    st.caption("Markets with highest/lowest funding")
-
-    if drift_markets:
-        sorted_by_funding = sorted(
-            [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
-            key=lambda x: x[1].get("funding_rate", 0)
-        )
-
-        if sorted_by_funding:
-            # Most negative (shorts pay)
-            lowest = sorted_by_funding[0]
-            st.write(f"**Shorts Pay Most:** {lowest[0]}")
-            st.write(f"Rate: {format_funding(lowest[1].get('funding_rate', 0))}")
-
-            # Most positive (longs pay)
-            highest = sorted_by_funding[-1]
-            st.write(f"**Longs Pay Most:** {highest[0]}")
-            st.write(f"Rate: {format_funding(highest[1].get('funding_rate', 0))}")
-
-with col2:
     st.subheader("Market Concentration")
-    st.caption("How volume is distributed")
-
     if drift_markets:
         total_vol = sum(m["volume"] for m in drift_markets.values())
         sorted_by_vol = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)
@@ -265,35 +391,32 @@ with col2:
         top3_vol = sum(m["volume"] for _, m in sorted_by_vol[:3])
         top3_pct = (top3_vol / total_vol * 100) if total_vol > 0 else 0
 
-        st.write(f"**Top 3 markets:** {top3_pct:.1f}% of volume")
-        st.write(f"SOL-PERP alone: {(sorted_by_vol[0][1]['volume'] / total_vol * 100):.1f}%")
+        st.metric("Top 3 Markets", f"{top3_pct:.1f}%", "of total volume")
+        st.write(f"SOL-PERP: {(sorted_by_vol[0][1]['volume'] / total_vol * 100):.1f}%")
         st.write(f"Active markets: {len([m for m in drift_markets.values() if m['volume'] > 1000])}")
 
-with col3:
-    st.subheader("OI Concentration")
-    st.caption("Where leverage is building")
-
+with col2:
+    st.subheader("OI Leaders")
     if drift_markets:
-        # Calculate OI in USD terms
         oi_data = [(k, v.get("open_interest", 0) * v.get("last_price", 0))
                    for k, v in drift_markets.items()]
-        sorted_by_oi = sorted(oi_data, key=lambda x: x[1], reverse=True)
+        sorted_by_oi = sorted(oi_data, key=lambda x: x[1], reverse=True)[:3]
 
-        if sorted_by_oi:
-            st.write(f"**#1:** {sorted_by_oi[0][0]} (${sorted_by_oi[0][1]:,.0f})")
-            if len(sorted_by_oi) > 1:
-                st.write(f"**#2:** {sorted_by_oi[1][0]} (${sorted_by_oi[1][1]:,.0f})")
-            if len(sorted_by_oi) > 2:
-                st.write(f"**#3:** {sorted_by_oi[2][0]} (${sorted_by_oi[2][1]:,.0f})")
+        for i, (market, oi) in enumerate(sorted_by_oi, 1):
+            st.write(f"**#{i}** {market}: ${oi:,.0f}")
+
+with col3:
+    st.subheader("Trading Activity")
+    if total_traders > 0:
+        avg_volume_per_trader = total_volume / total_traders
+        st.metric("Avg Volume/Trader", f"${avg_volume_per_trader:,.0f}")
+        st.write(f"Drift: {cache.get('drift_traders_1h', 0) * 6:,} traders/6h")
+        st.write(f"Jupiter: {cache.get('jupiter_traders_6h', 0):,} traders/6h")
 
 # Footer
 st.divider()
 st.caption("""
-**Data Sources:**
-- Volume & Changes: DeFiLlama API
-- Market Data & Funding: Drift REST API
-- Jupiter Markets: Dune Analytics
-- Traders: Dune Analytics (sampled, scaled to 24h)
+**Data Sources:** DeFiLlama (volume), Drift REST API (markets, funding, OI), Dune Analytics (traders, Jupiter markets)
 
-**Unique Insights:** Cross-protocol comparison, funding rates, OI concentration - data not easily found elsewhere.
+**Unique Insights:** Cross-chain comparison, funding rates, OI concentration - data aggregated from multiple sources.
 """)
