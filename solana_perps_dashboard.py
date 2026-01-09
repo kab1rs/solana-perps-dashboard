@@ -35,6 +35,9 @@ DEFILLAMA_URL = "https://api.llama.fi/overview/derivatives"
 DUNE_API_KEY = "l1JAVmXJYrPw9DFGIBtcSXkszCLgTVUz"
 DUNE_API_URL = "https://api.dune.com/api/v1"
 
+# Drift Data API (provides per-market volume data directly)
+DRIFT_DATA_API = "https://data.api.drift.trade/contracts"
+
 # Protocols: map display name to (program_id, defillama_name)
 PROTOCOLS = {
     "Jupiter Perps": {
@@ -171,6 +174,43 @@ def fetch_defillama_volume() -> dict:
 
         print(f"found {len(volumes)} protocols")
         return volumes
+    except Exception as e:
+        print(f"failed: {e}", file=sys.stderr)
+        return {}
+
+
+def fetch_drift_markets_from_api() -> dict:
+    """
+    Fetch Drift market breakdown directly from Drift API.
+
+    Returns actual 24h volume per market from official Drift data.
+    Much faster and more accurate than Dune queries.
+    """
+    print("Fetching Drift markets from API...", end=" ", flush=True)
+
+    try:
+        req = Request(DRIFT_DATA_API, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(req, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        contracts = data.get("contracts", data) if isinstance(data, dict) else data
+
+        # Filter to PERP markets and build breakdown
+        markets = {}
+        for c in contracts:
+            if c.get("product_type") != "PERP":
+                continue
+            name = c.get("ticker_id", "UNKNOWN")
+            volume = float(c.get("quote_volume", 0))
+            oi = float(c.get("open_interest", 0))
+            markets[name] = {
+                "volume": volume,
+                "open_interest": oi,
+            }
+
+        total_vol = sum(m["volume"] for m in markets.values())
+        print(f"found {len(markets)} markets, ${total_vol:,.0f} vol")
+        return markets
     except Exception as e:
         print(f"failed: {e}", file=sys.stderr)
         return {}
@@ -439,33 +479,32 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
     if fetch_markets:
         print()
 
-        # Drift market breakdown with accurate trader count
-        drift_trade_counts = fetch_drift_market_breakdown(hours=1)
+        # Drift market breakdown from API (actual per-market volumes)
+        drift_markets = fetch_drift_markets_from_api()
         drift_accurate_traders = fetch_drift_accurate_traders(minutes=15)
 
-        if drift_trade_counts:
-            drift_volume = next(
-                (m["volume_usd"] for m in all_metrics if m["protocol"] == "Drift"), 0
-            )
+        if drift_markets:
             drift_fee_rate = PROTOCOLS["Drift"]["fee_rate"]
 
-            # Distribute volume and calculate fees
-            drift_volumes = distribute_volume_by_trades(drift_volume, drift_trade_counts)
+            # Use actual volumes from API and calculate fees
+            drift_volumes = {m: data["volume"] for m, data in drift_markets.items()}
             drift_fees = calculate_market_fees(drift_volumes, drift_fee_rate)
+            drift_oi = {m: data["open_interest"] for m, data in drift_markets.items()}
 
-            # Distribute traders proportionally by trade count
-            total_trades = sum(drift_trade_counts.values())
+            # Distribute traders proportionally by volume
+            total_vol = sum(drift_volumes.values())
             drift_trader_counts = {
-                m: int(drift_accurate_traders * (t / total_trades)) if total_trades > 0 else 0
-                for m, t in drift_trade_counts.items()
+                m: int(drift_accurate_traders * (v / total_vol)) if total_vol > 0 else 0
+                for m, v in drift_volumes.items()
             }
 
             market_breakdowns["Drift"] = {
-                "trades": drift_trade_counts,
-                "traders": drift_trader_counts,
                 "volumes": drift_volumes,
+                "open_interest": drift_oi,
+                "traders": drift_trader_counts,
                 "fees": drift_fees,
                 "accurate_total_traders": drift_accurate_traders,
+                "source": "api",  # Mark as API source
             }
 
         # Jupiter Perps market breakdown with accurate trader count
@@ -529,44 +568,71 @@ def print_dashboard(all_metrics: list, market_breakdowns: dict, hours: int):
 
     # Market breakdowns
     for protocol, data in market_breakdowns.items():
-        trades = data.get("trades", {})
         traders = data.get("traders", {})
         volumes = data.get("volumes", {})
         fees = data.get("fees", {})
+        open_interest = data.get("open_interest", {})
         accurate_traders = data.get("accurate_total_traders", 0)
+        source = data.get("source", "dune")
 
-        if not trades:
+        if not volumes:
             continue
 
         # Show accurate trader count in header
         trader_note = f" [{accurate_traders} unique traders in 15min sample]" if accurate_traders else ""
-        print(f"\nMARKET BREAKDOWN - {protocol.upper()}{trader_note}")
-        print("-" * 100)
-        print(f"{'Market':<15} {'Trades':>12} {'Traders':>10} {'Volume':>18} {'Fees':>14} {'Share':>8}")
+        source_note = " (from API)" if source == "api" else ""
+        print(f"\nMARKET BREAKDOWN - {protocol.upper()}{trader_note}{source_note}")
         print("-" * 100)
 
-        total_trades = sum(trades.values())
-        total_market_traders = sum(traders.values())
-        total_market_volume = sum(volumes.values())
-        total_market_fees = sum(fees.values())
-        sorted_markets = sorted(trades.items(), key=lambda x: x[1], reverse=True)
+        # Different display format for API vs Dune data
+        if source == "api":
+            # API provides actual volumes and open interest
+            print(f"{'Market':<20} {'Volume 24h':>18} {'Open Interest':>18} {'Fees':>14} {'Share':>8}")
+            print("-" * 100)
 
-        for market, trade_count in sorted_markets[:12]:
-            trader_count = traders.get(market, 0)
-            vol = volumes.get(market, 0)
-            fee = fees.get(market, 0)
-            share = (trade_count / total_trades * 100) if total_trades > 0 else 0
-            print(f"{market:<15} {trade_count:>12,} {trader_count:>10,} "
-                  f"${vol:>16,.0f} ${fee:>12,.0f} {share:>7.1f}%")
+            total_market_volume = sum(volumes.values())
+            total_market_oi = sum(open_interest.values())
+            total_market_fees = sum(fees.values())
+            sorted_markets = sorted(volumes.items(), key=lambda x: x[1], reverse=True)
 
-        print("-" * 100)
-        print(f"{'TOTAL':<15} {total_trades:>12,} {total_market_traders:>10,} "
-              f"${total_market_volume:>16,.0f} ${total_market_fees:>12,.0f} {'100.0%':>8}")
+            for market, vol in sorted_markets[:15]:
+                oi = open_interest.get(market, 0)
+                fee = fees.get(market, 0)
+                share = (vol / total_market_volume * 100) if total_market_volume > 0 else 0
+                print(f"{market:<20} ${vol:>17,.0f} {oi:>18,.2f} ${fee:>12,.0f} {share:>7.1f}%")
+
+            print("-" * 100)
+            print(f"{'TOTAL':<20} ${total_market_volume:>17,.0f} {total_market_oi:>18,.2f} "
+                  f"${total_market_fees:>12,.0f} {'100.0%':>8}")
+        else:
+            # Dune provides trades, we estimate volumes
+            trades = data.get("trades", {})
+            print(f"{'Market':<15} {'Trades':>12} {'Traders':>10} {'Volume':>18} {'Fees':>14} {'Share':>8}")
+            print("-" * 100)
+
+            total_trades = sum(trades.values())
+            total_market_traders = sum(traders.values())
+            total_market_volume = sum(volumes.values())
+            total_market_fees = sum(fees.values())
+            sorted_markets = sorted(trades.items(), key=lambda x: x[1], reverse=True)
+
+            for market, trade_count in sorted_markets[:12]:
+                trader_count = traders.get(market, 0)
+                vol = volumes.get(market, 0)
+                fee = fees.get(market, 0)
+                share = (trade_count / total_trades * 100) if total_trades > 0 else 0
+                print(f"{market:<15} {trade_count:>12,} {trader_count:>10,} "
+                      f"${vol:>16,.0f} ${fee:>12,.0f} {share:>7.1f}%")
+
+            print("-" * 100)
+            print(f"{'TOTAL':<15} {total_trades:>12,} {total_market_traders:>10,} "
+                  f"${total_market_volume:>16,.0f} ${total_market_fees:>12,.0f} {'100.0%':>8}")
+
         print("-" * 100)
 
     # Data sources
     print("\nData Sources:")
-    print("  Volume: DeFiLlama API | Tx Count: Solana RPC | Markets: Dune Analytics")
+    print("  Volume: DeFiLlama API (protocol) / Drift API (markets) | Tx Count: Solana RPC")
     print("  Traders: Parsed from instruction accounts (Drift) / Signers (Jupiter)")
     print("  Fees: Estimated (volume * fee_rate)")
 
