@@ -349,8 +349,8 @@ with col1:
         st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
 
 with col2:
-    jupiter_traders = cache.get("jupiter_traders_6h", 0)
-    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/6h)")
+    jupiter_traders = cache.get("jupiter_traders_1h", 0)
+    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/1h)")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -411,7 +411,7 @@ with col3:
         avg_volume_per_trader = total_volume / total_traders
         st.metric("Avg Volume/Trader", f"${avg_volume_per_trader:,.0f}")
         st.write(f"Drift: {cache.get('drift_traders_1h', 0) * 6:,} traders/6h")
-        st.write(f"Jupiter: {cache.get('jupiter_traders_6h', 0):,} traders/6h")
+        st.write(f"Jupiter: {cache.get('jupiter_traders_1h', 0):,} traders/1h")
 
 with col4:
     st.subheader("Liquidations (1h)")

@@ -35,7 +35,7 @@ def update_cache():
         "drift_markets": {},
         "jupiter_markets": {},
         "drift_traders_1h": 0,
-        "jupiter_traders_6h": 0,
+        "jupiter_traders_1h": 0,
         "total_open_interest": 0,
         "global_derivatives": [],
         "liquidations_1h": {"count": 0, "txns": 0},
@@ -61,10 +61,10 @@ def update_cache():
         cache["drift_traders_1h"] = 0
 
     try:
-        cache["jupiter_traders_6h"] = fetch_jupiter_accurate_traders(hours=6)
+        cache["jupiter_traders_1h"] = fetch_jupiter_accurate_traders(hours=1)
     except Exception as e:
         print(f"Jupiter traders failed: {e}")
-        cache["jupiter_traders_6h"] = 0
+        cache["jupiter_traders_1h"] = 0
 
     # Fetch liquidation data (1h window to avoid Dune timeout)
     try:
@@ -87,11 +87,11 @@ def update_cache():
             print(f"  Tx count failed: {e}")
             tx_count = 0
 
-        # Scale traders to 24h estimate
+        # Scale traders to 24h estimate (1h samples, ~6x scaling accounting for overlap)
         if protocol_name == "Drift":
-            traders = int(cache["drift_traders_1h"] * 6)  # 1h -> 24h (not linear due to overlap)
+            traders = int(cache["drift_traders_1h"] * 6)
         elif protocol_name == "Jupiter Perps":
-            traders = int(cache["jupiter_traders_6h"] * 2)  # 6h -> 24h
+            traders = int(cache["jupiter_traders_1h"] * 6)
         else:
             traders = 0
 
