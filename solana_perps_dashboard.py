@@ -622,7 +622,7 @@ def print_dashboard(all_metrics: list, market_breakdowns: dict, hours: int):
             continue
 
         # Show accurate trader count in header
-        trader_note = f" [{accurate_traders} unique traders in 15min sample]" if accurate_traders else ""
+        trader_note = f" [{accurate_traders} unique traders in 6h sample]" if accurate_traders else ""
         source_note = " (from API)" if source == "api" else ""
         print(f"\nMARKET BREAKDOWN - {protocol.upper()}{trader_note}{source_note}")
         print("-" * 100)
