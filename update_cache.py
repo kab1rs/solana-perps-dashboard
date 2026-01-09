@@ -149,7 +149,7 @@ def update_cache():
     print(f"Global derivatives: {len(cache['global_derivatives'])}")
     print(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
     print(f"Drift traders (1h): {cache['drift_traders_1h']}")
-    print(f"Jupiter traders (6h): {cache['jupiter_traders_6h']}")
+    print(f"Jupiter traders (1h): {cache['jupiter_traders_1h']}")
 
 
 if __name__ == "__main__":
