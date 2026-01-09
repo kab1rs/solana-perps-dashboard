@@ -87,8 +87,8 @@ col1, col2 = st.columns(2)
 
 # Drift Markets
 with col1:
-    drift_traders = cache.get("drift_traders_6h", 0)
-    st.subheader(f"Drift Markets ({drift_traders:,} traders in 6h)")
+    drift_traders = cache.get("drift_traders_1h", 0)
+    st.subheader(f"Drift Markets ({drift_traders:,} traders in 1h)")
 
     drift_markets = cache.get("drift_markets", {})
     if drift_markets:

@@ -32,19 +32,21 @@ def update_cache():
         "protocols": [],
         "drift_markets": {},
         "jupiter_markets": {},
-        "drift_traders_6h": 0,
+        "drift_traders_1h": 0,
         "jupiter_traders_6h": 0,
     }
 
     # Fetch volumes from DeFiLlama (fast)
     defillama_volumes = fetch_defillama_volume()
 
-    # Fetch accurate trader counts (6h sample)
+    # Fetch accurate trader counts
+    # Drift: use 1h window (complex query, times out with 6h)
+    # Jupiter: use 6h window (simple query, fast)
     try:
-        cache["drift_traders_6h"] = fetch_drift_accurate_traders(hours=6)
+        cache["drift_traders_1h"] = fetch_drift_accurate_traders(hours=1)
     except Exception as e:
         print(f"Drift traders failed: {e}")
-        cache["drift_traders_6h"] = 0
+        cache["drift_traders_1h"] = 0
 
     try:
         cache["jupiter_traders_6h"] = fetch_jupiter_accurate_traders(hours=6)
@@ -66,11 +68,11 @@ def update_cache():
             print(f"  Tx count failed: {e}")
             tx_count = 0
 
-        # Scale 6h traders to 24h estimate
+        # Scale traders to 24h estimate
         if protocol_name == "Drift":
-            traders = int(cache["drift_traders_6h"] * 2)
+            traders = int(cache["drift_traders_1h"] * 6)  # 1h -> 24h (not linear due to overlap)
         elif protocol_name == "Jupiter Perps":
-            traders = int(cache["jupiter_traders_6h"] * 2)
+            traders = int(cache["jupiter_traders_6h"] * 2)  # 6h -> 24h
         else:
             traders = 0
 
@@ -117,7 +119,7 @@ def update_cache():
     print(f"Protocols: {len(cache['protocols'])}")
     print(f"Drift markets: {len(cache['drift_markets'])}")
     print(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
-    print(f"Drift traders (6h): {cache['drift_traders_6h']}")
+    print(f"Drift traders (1h): {cache['drift_traders_1h']}")
     print(f"Jupiter traders (6h): {cache['jupiter_traders_6h']}")
 
 
