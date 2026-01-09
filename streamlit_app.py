@@ -147,7 +147,7 @@ protocol_df["Traders"] = protocol_df["Traders"].apply(lambda x: f"{x:,}")
 
 st.dataframe(
     protocol_df[["Protocol", "Volume 24h", "Transactions", "Traders", "Fees", "Share"]],
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -174,7 +174,7 @@ with col1:
                 "Share": f"{share:.1f}%",
             })
 
-        st.dataframe(pd.DataFrame(drift_data), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
 
 # Jupiter Markets
 with col2:
@@ -199,7 +199,7 @@ with col2:
                 "Share": f"{share:.1f}%",
             })
 
-        st.dataframe(pd.DataFrame(jupiter_data), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
 
 # Footer
 st.divider()
