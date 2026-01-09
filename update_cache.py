@@ -15,6 +15,7 @@ from solana_perps_dashboard import (
     fetch_global_derivatives,
     fetch_drift_markets_from_api,
     fetch_drift_accurate_traders,
+    fetch_drift_liquidations,
     fetch_jupiter_accurate_traders,
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
@@ -37,6 +38,7 @@ def update_cache():
         "jupiter_traders_6h": 0,
         "total_open_interest": 0,
         "global_derivatives": [],
+        "liquidations_1h": {"count": 0, "txns": 0},
     }
 
     # Fetch volumes from DeFiLlama (fast)
@@ -63,6 +65,13 @@ def update_cache():
     except Exception as e:
         print(f"Jupiter traders failed: {e}")
         cache["jupiter_traders_6h"] = 0
+
+    # Fetch liquidation data (1h window to avoid Dune timeout)
+    try:
+        cache["liquidations_1h"] = fetch_drift_liquidations(hours=1)
+    except Exception as e:
+        print(f"Liquidations failed: {e}")
+        cache["liquidations_1h"] = {"count": 0, "txns": 0}
 
     # Build protocol metrics
     for protocol_name, config in PROTOCOLS.items():

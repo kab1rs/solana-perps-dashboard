@@ -215,6 +215,48 @@ def fetch_global_derivatives() -> list:
         return []
 
 
+def fetch_drift_liquidations(hours: int = 1) -> dict:
+    """
+    Fetch Drift liquidation data from Dune Analytics.
+
+    Returns liquidation count for the past N hours.
+    Uses a short window (1h) to avoid Dune query timeouts.
+    """
+    print(f"Fetching Drift liquidations ({hours}h)...", end=" ", flush=True)
+
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(hours=hours)
+
+    # Query for liquidation events - liquidate_perp instruction
+    # Discriminator is SHA256("global:liquidate_perp")[:8] = 0x4b2377f7bf128b02
+    sql = f"""
+    SELECT
+        COUNT(*) as liquidation_count,
+        COUNT(DISTINCT tx_id) as unique_txns
+    FROM solana.instruction_calls
+    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+      AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+      AND bytearray_substring(data, 1, 8) = 0x4b2377f7bf128b02
+    """
+
+    result = run_dune_query(sql, timeout=180)
+
+    if "error" in result:
+        print(f"failed: {result['error']}", file=sys.stderr)
+        return {"count": 0, "txns": 0}
+
+    rows = result.get("result", {}).get("rows", [])
+    if rows:
+        count = rows[0].get("liquidation_count", 0)
+        txns = rows[0].get("unique_txns", 0)
+        print(f"{count} liquidations ({txns} txns)")
+        return {"count": count, "txns": txns}
+
+    print("no data")
+    return {"count": 0, "txns": 0}
+
+
 def fetch_drift_markets_from_api() -> dict:
     """
     Fetch Drift market breakdown directly from Drift API.

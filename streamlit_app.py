@@ -380,7 +380,7 @@ st.divider()
 # Unique Insights Section
 st.header("Quick Insights")
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.subheader("Market Concentration")
@@ -412,6 +412,18 @@ with col3:
         st.metric("Avg Volume/Trader", f"${avg_volume_per_trader:,.0f}")
         st.write(f"Drift: {cache.get('drift_traders_1h', 0) * 6:,} traders/6h")
         st.write(f"Jupiter: {cache.get('jupiter_traders_6h', 0):,} traders/6h")
+
+with col4:
+    st.subheader("Liquidations (1h)")
+    liquidations = cache.get("liquidations_1h", {})
+    liq_count = liquidations.get("count", 0)
+    liq_txns = liquidations.get("txns", 0)
+    if liq_count > 0:
+        st.metric("Events", f"{liq_count:,}")
+        st.write(f"Transactions: {liq_txns:,}")
+        st.write("Source: Drift perps")
+    else:
+        st.write("No recent liquidations")
 
 # Footer
 st.divider()
