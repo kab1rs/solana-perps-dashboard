@@ -43,60 +43,74 @@ if st.button("🔄 Refresh Data"):
 @st.cache_data(ttl=300)  # Cache for 5 minutes
 def load_data():
     """Load all dashboard data with caching."""
-    with st.spinner("Fetching data from DeFiLlama, Drift API, and Dune..."):
-        # Fetch volumes from DeFiLlama
-        defillama_volumes = fetch_defillama_volume()
+    # Fetch volumes from DeFiLlama (fast)
+    defillama_volumes = fetch_defillama_volume()
 
-        # Fetch accurate trader counts (6h sample)
-        drift_traders_6h = fetch_drift_accurate_traders(hours=6)
-        jupiter_traders_6h = fetch_jupiter_accurate_traders(hours=6)
+    # Fetch accurate trader counts (1h sample for speed, scale to 24h estimate)
+    try:
+        drift_traders_1h = fetch_drift_accurate_traders(hours=1)
+    except Exception:
+        drift_traders_1h = 0
 
-        # Build protocol metrics
-        protocol_data = []
-        for protocol_name, config in PROTOCOLS.items():
-            volume_data = defillama_volumes.get(config["defillama_name"], {})
-            volume_24h = volume_data.get("volume_24h", 0)
+    try:
+        jupiter_traders_1h = fetch_jupiter_accurate_traders(hours=1)
+    except Exception:
+        jupiter_traders_1h = 0
 
-            program_id = config["program_id"]
-            tx_count = fetch_signature_count(program_id, 24) if program_id else 0
+    # Build protocol metrics
+    protocol_data = []
+    for protocol_name, config in PROTOCOLS.items():
+        volume_data = defillama_volumes.get(config["defillama_name"], {})
+        volume_24h = volume_data.get("volume_24h", 0)
 
-            if protocol_name == "Drift":
-                traders = int(drift_traders_6h * 2)
-            elif protocol_name == "Jupiter Perps":
-                traders = int(jupiter_traders_6h * 2)
-            else:
-                traders = 0
+        program_id = config["program_id"]
+        tx_count = fetch_signature_count(program_id, 24) if program_id else 0
 
-            fees = volume_24h * config["fee_rate"]
+        # Scale 1h traders to 24h estimate (not linear due to overlap)
+        if protocol_name == "Drift":
+            traders = int(drift_traders_1h * 6)  # ~6x for 24h
+        elif protocol_name == "Jupiter Perps":
+            traders = int(jupiter_traders_1h * 6)  # ~6x for 24h
+        else:
+            traders = 0
 
-            protocol_data.append({
-                "Protocol": protocol_name,
-                "Volume 24h": volume_24h,
-                "Transactions": tx_count,
-                "Traders": traders,
-                "Fees": fees,
-            })
+        fees = volume_24h * config["fee_rate"]
 
-        # Fetch Drift market breakdown from API
+        protocol_data.append({
+            "Protocol": protocol_name,
+            "Volume 24h": volume_24h,
+            "Transactions": tx_count,
+            "Traders": traders,
+            "Fees": fees,
+        })
+
+    # Fetch Drift market breakdown from API (fast)
+    try:
         drift_markets = fetch_drift_markets_from_api()
+    except Exception:
+        drift_markets = {}
 
-        # Fetch Jupiter market breakdown from Dune
+    # Fetch Jupiter market breakdown from Dune
+    try:
         jupiter_trades = fetch_jupiter_market_breakdown(hours=1)
-        jupiter_volume = next(
-            (p["Volume 24h"] for p in protocol_data if p["Protocol"] == "Jupiter Perps"), 0
-        )
-        jupiter_volumes = distribute_volume_by_trades(jupiter_volume, jupiter_trades)
-        jupiter_fees = calculate_market_fees(jupiter_volumes, PROTOCOLS["Jupiter Perps"]["fee_rate"])
+    except Exception:
+        jupiter_trades = {}
 
-        return {
-            "protocols": protocol_data,
-            "drift_markets": drift_markets,
-            "drift_traders_6h": drift_traders_6h,
-            "jupiter_trades": jupiter_trades,
-            "jupiter_volumes": jupiter_volumes,
-            "jupiter_fees": jupiter_fees,
-            "jupiter_traders_6h": jupiter_traders_6h,
-        }
+    jupiter_volume = next(
+        (p["Volume 24h"] for p in protocol_data if p["Protocol"] == "Jupiter Perps"), 0
+    )
+    jupiter_volumes = distribute_volume_by_trades(jupiter_volume, jupiter_trades)
+    jupiter_fees = calculate_market_fees(jupiter_volumes, PROTOCOLS["Jupiter Perps"]["fee_rate"])
+
+    return {
+        "protocols": protocol_data,
+        "drift_markets": drift_markets,
+        "drift_traders_1h": drift_traders_1h,
+        "jupiter_trades": jupiter_trades,
+        "jupiter_volumes": jupiter_volumes,
+        "jupiter_fees": jupiter_fees,
+        "jupiter_traders_1h": jupiter_traders_1h,
+    }
 
 
 # Load data
@@ -144,7 +158,7 @@ col1, col2 = st.columns(2)
 
 # Drift Markets
 with col1:
-    st.subheader(f"Drift Markets ({data['drift_traders_6h']:,} traders in 6h)")
+    st.subheader(f"Drift Markets ({data['drift_traders_1h']:,} traders in 1h)")
 
     drift_markets = data["drift_markets"]
     if drift_markets:
@@ -164,7 +178,7 @@ with col1:
 
 # Jupiter Markets
 with col2:
-    st.subheader(f"Jupiter Markets ({data['jupiter_traders_6h']:,} traders in 6h)")
+    st.subheader(f"Jupiter Markets ({data['jupiter_traders_1h']:,} traders in 1h)")
 
     jupiter_trades = data["jupiter_trades"]
     jupiter_volumes = data["jupiter_volumes"]
