@@ -170,6 +170,10 @@ def fetch_defillama_volume() -> dict:
                 volumes[protocol.get("name", "")] = {
                     "volume_24h": protocol.get("total24h", 0) or 0,
                     "volume_7d": protocol.get("total7d", 0) or 0,
+                    "volume_30d": protocol.get("total30d", 0) or 0,
+                    "change_1d": protocol.get("change_1d", 0) or 0,
+                    "change_7d": protocol.get("change_7d", 0) or 0,
+                    "change_1m": protocol.get("change_1m", 0) or 0,
                 }
 
         print(f"found {len(volumes)} protocols")
@@ -206,6 +210,12 @@ def fetch_drift_markets_from_api() -> dict:
             markets[name] = {
                 "volume": volume,
                 "open_interest": oi,
+                "funding_rate": float(c.get("funding_rate", 0)),
+                "next_funding_rate": float(c.get("next_funding_rate", 0)),
+                "last_price": float(c.get("last_price", 0)),
+                "price_high": float(c.get("high", 0)),
+                "price_low": float(c.get("low", 0)),
+                "index_price": float(c.get("index_price", 0)),
             }
 
         total_vol = sum(m["volume"] for m in markets.values())

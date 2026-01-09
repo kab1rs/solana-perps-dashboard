@@ -1,391 +1,914 @@
 {
-  "updated_at": "2026-01-09T04:20:45.543241Z",
+  "updated_at": "2026-01-09T05:10:16.527679Z",
   "protocols": [
     {
       "protocol": "Jupiter Perps",
-      "volume_24h": 453749563,
-      "transactions": 13067,
-      "traders": 3314,
-      "fees": 272249.7378
+      "volume_24h": 463506292,
+      "volume_7d": 2630215810,
+      "change_1d": 45.67,
+      "change_7d": 295.09,
+      "transactions": 13152,
+      "traders": 3146,
+      "fees": 278103.7752
     },
     {
       "protocol": "Drift",
       "volume_24h": 143711201,
-      "transactions": 19847,
-      "traders": 6750,
+      "volume_7d": 930612380,
+      "change_1d": 1.47,
+      "change_7d": 281.92,
+      "transactions": 19774,
+      "traders": 5928,
       "fees": 71855.6005
     },
     {
       "protocol": "FlashTrade",
       "volume_24h": 20423974,
+      "volume_7d": 133264145,
+      "change_1d": 44.19,
+      "change_7d": 501.7,
       "transactions": 0,
       "traders": 0,
       "fees": 10211.987000000001
     },
     {
       "protocol": "Adrena",
-      "volume_24h": 3860042,
+      "volume_24h": 3973300,
+      "volume_7d": 45228620,
+      "change_1d": 98.04,
+      "change_7d": 119.19,
       "transactions": 0,
       "traders": 0,
-      "fees": 1930.021
+      "fees": 1986.65
     }
   ],
   "drift_markets": {
     "SOL-PERP": {
-      "volume": 80601672.119832,
-      "open_interest": 1105303.1
+      "volume": 78113116.92513,
+      "open_interest": 1109815.93,
+      "funding_rate": -0.000886174,
+      "next_funding_rate": -0.000858,
+      "last_price": 139.907822,
+      "price_high": 140.8916,
+      "price_low": 132.407895,
+      "index_price": 139.968014
     },
     "BTC-PERP": {
-      "volume": 23023367.713444,
-      "open_interest": 842.1008
+      "volume": 22288960.829696,
+      "open_interest": 840.9098,
+      "funding_rate": 0.000658645,
+      "next_funding_rate": 0.000658,
+      "last_price": 91018.666922,
+      "price_high": 91535.0,
+      "price_low": 89223.0,
+      "index_price": 91023.218011
     },
     "ETH-PERP": {
-      "volume": 21515162.683297,
-      "open_interest": 11295.806
+      "volume": 21590658.572561,
+      "open_interest": 11183.152,
+      "funding_rate": 0.000474817,
+      "next_funding_rate": 0.000439,
+      "last_price": 3116.504709,
+      "price_high": 3146.73,
+      "price_low": 3051.35,
+      "index_price": 3117.181058
     },
     "APT-PERP": {
       "volume": 11959.028199,
-      "open_interest": 36269.7
+      "open_interest": 36269.7,
+      "funding_rate": 9.854e-05,
+      "next_funding_rate": 0.000128,
+      "last_price": 1.807598,
+      "price_high": 1.867,
+      "price_low": 1.782214,
+      "index_price": 1.807827
     },
     "1MBONK-PERP": {
-      "volume": 441960.850081,
-      "open_interest": 57314.5
+      "volume": 431473.592419,
+      "open_interest": 57314.1,
+      "funding_rate": 0.002172189,
+      "next_funding_rate": 0.002264,
+      "last_price": 10.899392,
+      "price_high": 11.2783,
+      "price_low": 10.596081,
+      "index_price": 10.8878
     },
     "POL-PERP": {
       "volume": 10861.951409,
-      "open_interest": 78491.0
+      "open_interest": 78491.0,
+      "funding_rate": -0.005494972,
+      "next_funding_rate": -0.005604,
+      "last_price": 0.142845,
+      "price_high": 0.131302,
+      "price_low": 0.129606,
+      "index_price": 0.143198
     },
     "ARB-PERP": {
       "volume": 17637.708637,
-      "open_interest": 260728.0
+      "open_interest": 260728.0,
+      "funding_rate": 0.000399524,
+      "next_funding_rate": 0.000399,
+      "last_price": 0.208352,
+      "price_high": 0.2124,
+      "price_low": 0.2072,
+      "index_price": 0.208352
     },
     "DOGE-PERP": {
       "volume": 27125.148482,
-      "open_interest": 4016360.0
+      "open_interest": 4016360.0,
+      "funding_rate": 0.005114086,
+      "next_funding_rate": 0.00509,
+      "last_price": 0.142851,
+      "price_high": 0.145079,
+      "price_low": 0.139249,
+      "index_price": 0.142493
     },
     "BNB-PERP": {
-      "volume": 22480.238077,
-      "open_interest": 284.5
+      "volume": 22051.70509,
+      "open_interest": 284.56,
+      "funding_rate": -0.003140624,
+      "next_funding_rate": -0.003091,
+      "last_price": 895.620075,
+      "price_high": 896.7223,
+      "price_low": 879.02,
+      "index_price": 896.522744
     },
     "SUI-PERP": {
-      "volume": 1214913.057845,
-      "open_interest": 901254.0
+      "volume": 1125105.91561,
+      "open_interest": 901256.0,
+      "funding_rate": 0.001641459,
+      "next_funding_rate": 0.001671,
+      "last_price": 1.816903,
+      "price_high": 1.844941,
+      "price_low": 1.744849,
+      "index_price": 1.815999
     },
     "1MPEPE-PERP": {
       "volume": 56521.023187,
-      "open_interest": 7731.0
+      "open_interest": 7731.0,
+      "funding_rate": -0.006453688,
+      "next_funding_rate": -0.006368,
+      "last_price": 6.119162,
+      "price_high": 6.497324,
+      "price_low": 5.989117,
+      "index_price": 6.1281
     },
     "OP-PERP": {
-      "volume": 1122.432569,
-      "open_interest": 44254.0
+      "volume": 1067.12713,
+      "open_interest": 44378.0,
+      "funding_rate": -0.003189863,
+      "next_funding_rate": -0.003226,
+      "last_price": 0.316696,
+      "price_high": 0.316944,
+      "price_low": 0.312093,
+      "index_price": 0.317021
     },
     "RENDER-PERP": {
       "volume": 103991.338269,
-      "open_interest": 62816.0
+      "open_interest": 62816.0,
+      "funding_rate": -0.006790938,
+      "next_funding_rate": -0.006654,
+      "last_price": 2.2432,
+      "price_high": 2.3333,
+      "price_low": 2.074,
+      "index_price": 2.249629
     },
     "XRP-PERP": {
-      "volume": 1322695.228185,
-      "open_interest": 661853.0
+      "volume": 1273924.64943,
+      "open_interest": 661853.0,
+      "funding_rate": 0.000732741,
+      "next_funding_rate": 0.00074,
+      "last_price": 2.131473,
+      "price_high": 2.162498,
+      "price_low": 2.0666,
+      "index_price": 2.131463
     },
     "HNT-PERP": {
       "volume": 15755.575906,
-      "open_interest": 79556.0
+      "open_interest": 79556.0,
+      "funding_rate": -0.005694829,
+      "next_funding_rate": -0.005637,
+      "last_price": 1.442466,
+      "price_high": 1.551303,
+      "price_low": 1.47308,
+      "index_price": 1.4445
     },
     "INJ-PERP": {
-      "volume": 124196.767914,
-      "open_interest": 15791.0
+      "volume": 121920.642165,
+      "open_interest": 15774.0,
+      "funding_rate": -0.003349331,
+      "next_funding_rate": -0.003317,
+      "last_price": 5.185731,
+      "price_high": 5.255515,
+      "price_low": 5.022,
+      "index_price": 5.190949
     },
     "LINK-PERP": {
-      "volume": 17142.237467,
-      "open_interest": 27352.5
+      "volume": 14983.534731,
+      "open_interest": 27359.5,
+      "funding_rate": 0.000663884,
+      "next_funding_rate": 0.000678,
+      "last_price": 13.22382,
+      "price_high": 13.350816,
+      "price_low": 13.024,
+      "index_price": 13.222965
     },
     "RLB-PERP": {
       "volume": 64.817978,
-      "open_interest": 500.0
+      "open_interest": 500.0,
+      "funding_rate": -0.000247909,
+      "next_funding_rate": 0.000887,
+      "last_price": 0.061019,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.06102
     },
     "PYTH-PERP": {
       "volume": 28604.645435,
-      "open_interest": 3501976.0
+      "open_interest": 3501976.0,
+      "funding_rate": 0.003539978,
+      "next_funding_rate": 0.003237,
+      "last_price": 0.068385,
+      "price_high": 0.0682,
+      "price_low": 0.0657,
+      "index_price": 0.068382
     },
     "TIA-PERP": {
       "volume": 6767.264119,
-      "open_interest": 57881.5
+      "open_interest": 57881.5,
+      "funding_rate": -0.003718868,
+      "next_funding_rate": -0.003616,
+      "last_price": 0.551978,
+      "price_high": 0.561672,
+      "price_low": 0.552469,
+      "index_price": 0.552581
     },
     "JTO-PERP": {
-      "volume": 193857.342545,
-      "open_interest": 359026.0
+      "volume": 196057.343543,
+      "open_interest": 364034.0,
+      "funding_rate": 0.004333665,
+      "next_funding_rate": 0.004383,
+      "last_price": 0.454604,
+      "price_high": 0.464878,
+      "price_low": 0.428779,
+      "index_price": 0.454086
     },
     "SEI-PERP": {
       "volume": 10430.437657,
-      "open_interest": 713978.0
+      "open_interest": 713978.0,
+      "funding_rate": 0.004780309,
+      "next_funding_rate": 0.004784,
+      "last_price": 0.122662,
+      "price_high": 0.1249,
+      "price_low": 0.1227,
+      "index_price": 0.12252
     },
     "AVAX-PERP": {
       "volume": 69067.652177,
-      "open_interest": 18206.2
+      "open_interest": 18206.2,
+      "funding_rate": 0.000398053,
+      "next_funding_rate": 0.000416,
+      "last_price": 13.959762,
+      "price_high": 14.103839,
+      "price_low": 13.578,
+      "index_price": 13.960377
     },
     "WIF-PERP": {
-      "volume": 369230.499376,
-      "open_interest": 705769.0
+      "volume": 355452.395939,
+      "open_interest": 705838.0,
+      "funding_rate": -0.000533893,
+      "next_funding_rate": -0.000512,
+      "last_price": 0.384087,
+      "price_high": 0.3921,
+      "price_low": 0.3743,
+      "index_price": 0.384128
     },
     "JUP-PERP": {
       "volume": 44799.629452,
-      "open_interest": 5974740.0
+      "open_interest": 5974740.0,
+      "funding_rate": 0.001118694,
+      "next_funding_rate": 0.001138,
+      "last_price": 0.21684,
+      "price_high": 0.2177,
+      "price_low": 0.2062,
+      "index_price": 0.216728
     },
     "DYM-PERP": {
       "volume": 97.934407,
-      "open_interest": 547.0
+      "open_interest": 547.0,
+      "funding_rate": -0.001130882,
+      "next_funding_rate": -0.056495,
+      "last_price": 0.070919,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.076108
     },
     "TAO-PERP": {
-      "volume": 206354.357172,
-      "open_interest": 2427.08
+      "volume": 189248.113566,
+      "open_interest": 2477.08,
+      "funding_rate": -0.004827788,
+      "next_funding_rate": -0.004667,
+      "last_price": 278.909578,
+      "price_high": 299.83,
+      "price_low": 267.51,
+      "index_price": 279.195661
     },
     "W-PERP": {
       "volume": 664.776126,
-      "open_interest": 1222235.0
+      "open_interest": 1222235.0,
+      "funding_rate": 0.002734556,
+      "next_funding_rate": 0.002735,
+      "last_price": 0.036634,
+      "price_high": 0.0376,
+      "price_low": 0.0358,
+      "index_price": 0.036595
     },
     "KMNO-PERP": {
-      "volume": 7458.764855,
-      "open_interest": 3170972.0
+      "volume": 7181.906427,
+      "open_interest": 3170910.0,
+      "funding_rate": -0.004821317,
+      "next_funding_rate": -0.004954,
+      "last_price": 0.059784,
+      "price_high": 0.0602,
+      "price_low": 0.0568,
+      "index_price": 0.059862
     },
     "TNSR-PERP": {
       "volume": 2853.729755,
-      "open_interest": 1209400.0
+      "open_interest": 1209400.0,
+      "funding_rate": 0.006162104,
+      "next_funding_rate": 0.006342,
+      "last_price": 0.072907,
+      "price_high": 0.073899,
+      "price_low": 0.072,
+      "index_price": 0.072776
     },
     "DRIFT-PERP": {
-      "volume": 139820.661077,
-      "open_interest": 8314852.0
+      "volume": 135256.102074,
+      "open_interest": 8314708.0,
+      "funding_rate": -0.000941195,
+      "next_funding_rate": -0.001017,
+      "last_price": 0.164323,
+      "price_high": 0.1683,
+      "price_low": 0.1575,
+      "index_price": 0.164324
     },
     "CLOUD-PERP": {
       "volume": 1340.225341,
-      "open_interest": 340420.0
+      "open_interest": 340420.0,
+      "funding_rate": -0.011219252,
+      "next_funding_rate": -0.011186,
+      "last_price": 0.070034,
+      "price_high": 0.07373,
+      "price_low": 0.069349,
+      "index_price": 0.071669
     },
     "IO-PERP": {
       "volume": 1639.828223,
-      "open_interest": 20.0
+      "open_interest": 20.0,
+      "funding_rate": 0.033784348,
+      "next_funding_rate": -0.035987,
+      "last_price": 0.170243,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.171405
     },
     "ZEX-PERP": {
       "volume": 7.84,
-      "open_interest": 14.0
+      "open_interest": 14.0,
+      "funding_rate": -0.008775444,
+      "next_funding_rate": 0.000845,
+      "last_price": 0.073829,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.073914
     },
     "POPCAT-PERP": {
       "volume": 5410.293503,
-      "open_interest": 1002002.0
+      "open_interest": 1002002.0,
+      "funding_rate": 0.004168542,
+      "next_funding_rate": 0.004172,
+      "last_price": 0.100449,
+      "price_high": 0.104766,
+      "price_low": 0.097065,
+      "index_price": 0.100308
     },
     "1KWEN-PERP": {
       "volume": 1159.733264,
-      "open_interest": 460.0
+      "open_interest": 460.0,
+      "funding_rate": -0.001614511,
+      "next_funding_rate": 0.000953,
+      "last_price": 0.026203,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.026228
     },
     "TRUMP-WIN-2024-BET": {
       "volume": 1381506.479951,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 0.980427,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.979815
     },
     "KAMALA-POPULAR-VOTE-2024-BET": {
       "volume": 202.763016,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 2e-06,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 2e-06
     },
     "FED-CUT-50-SEPT-2024-BET": {
       "volume": 61921.214356,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000833,
+      "last_price": 0.990633,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.990015
     },
     "REPUBLICAN-POPULAR-AND-WIN-BET": {
       "volume": 793.263281,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000831,
+      "last_price": 0.998245,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.997622
     },
     "BREAKPOINT-IGGYERIC-BET": {
       "volume": 3.894168,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": -0.320512,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "DEMOCRATS-WIN-MICHIGAN-BET": {
       "volume": 2234.536867,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "TON-PERP": {
       "volume": 160903.125737,
-      "open_interest": 45294.0
+      "open_interest": 45294.0,
+      "funding_rate": 0.005141348,
+      "next_funding_rate": 0.005135,
+      "last_price": 1.825978,
+      "price_high": 1.891804,
+      "price_low": 1.804172,
+      "index_price": 1.823978
     },
     "LANDO-F1-SGP-WIN-BET": {
       "volume": 99853.432168,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 0.974759,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.974151
     },
     "MOTHER-PERP": {
       "volume": 11723.884157,
-      "open_interest": 3646.0
+      "open_interest": 3646.0,
+      "funding_rate": 0.116474809,
+      "next_funding_rate": -0.030864,
+      "last_price": 0.002686,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.002545
     },
     "MOODENG-PERP": {
       "volume": 2497.306321,
-      "open_interest": 3159.0
+      "open_interest": 3159.0,
+      "funding_rate": 0.017000782,
+      "next_funding_rate": -0.016541,
+      "last_price": 0.073431,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.070954
     },
     "WARWICK-FIGHT-WIN-BET": {
       "volume": 2971.94903,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "DBR-PERP": {
       "volume": 32.253978,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": -0.001345943,
+      "next_funding_rate": 0.000702,
+      "last_price": 0.023722,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.023723
     },
     "WLF-5B-1W-BET": {
       "volume": 2.45,
-      "open_interest": 878.0
+      "open_interest": 878.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 1.091693,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.713525
     },
     "VRSTPN-WIN-F1-24-DRVRS-CHMP-BET": {
       "volume": 8068.712266,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 1.000623,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.999999
     },
     "LNDO-WIN-F1-24-US-GP-BET": {
       "volume": 16.516678,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "1KMEW-PERP": {
       "volume": 245409.217363,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.003754899,
+      "next_funding_rate": -0.027779,
+      "last_price": 1.084049,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1.08405
     },
     "MICHI-PERP": {
       "volume": 0.0,
-      "open_interest": 272.0
+      "open_interest": 272.0,
+      "funding_rate": 0.002807306,
+      "next_funding_rate": 0.000826,
+      "last_price": 0.025216,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.025217
     },
     "GOAT-PERP": {
       "volume": 8149.772287,
-      "open_interest": 60.0
+      "open_interest": 60.0,
+      "funding_rate": 0.009174447,
+      "next_funding_rate": -0.02377,
+      "last_price": 0.031372,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.032215
     },
     "FWOG-PERP": {
       "volume": 7816.61287,
-      "open_interest": 27655.0
+      "open_interest": 27655.0,
+      "funding_rate": -0.006039425,
+      "next_funding_rate": -0.012607,
+      "last_price": 0.016276,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.015806
     },
     "PNUT-PERP": {
       "volume": 319.544061,
-      "open_interest": 226.0
+      "open_interest": 226.0,
+      "funding_rate": 0.012804868,
+      "next_funding_rate": -0.014938,
+      "last_price": 0.088921,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.091922
     },
     "RAY-PERP": {
       "volume": 68998.290018,
-      "open_interest": 190493.0
+      "open_interest": 190493.0,
+      "funding_rate": 0.003090105,
+      "next_funding_rate": 0.003045,
+      "last_price": 1.172023,
+      "price_high": 1.201,
+      "price_low": 1.131189,
+      "index_price": 1.171257
     },
     "SUPERBOWL-LIX-LIONS-BET": {
       "volume": 418.575512,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "SUPERBOWL-LIX-CHIEFS-BET": {
       "volume": 1637.317715,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "HYPE-PERP": {
-      "volume": 2593906.040851,
-      "open_interest": 58127.5
+      "volume": 2538662.51862,
+      "open_interest": 57319.4,
+      "funding_rate": 0.000275222,
+      "next_funding_rate": 0.000284,
+      "last_price": 25.896815,
+      "price_high": 26.685378,
+      "price_low": 25.3786,
+      "index_price": 25.902436
     },
     "LTC-PERP": {
       "volume": 11626.239945,
-      "open_interest": 422.18
+      "open_interest": 422.18,
+      "funding_rate": 0.001528765,
+      "next_funding_rate": 0.001512,
+      "last_price": 81.64525,
+      "price_high": 82.154,
+      "price_low": 79.88,
+      "index_price": 81.618395
     },
     "ME-PERP": {
       "volume": 649.777624,
-      "open_interest": 86360.0
+      "open_interest": 86360.0,
+      "funding_rate": -0.00737775,
+      "next_funding_rate": -0.007459,
+      "last_price": 0.216703,
+      "price_high": 0.232653,
+      "price_low": 0.214,
+      "index_price": 0.217193
     },
     "PENGU-PERP": {
-      "volume": 8178.452016,
-      "open_interest": 2915230.0
+      "volume": 12659.081222,
+      "open_interest": 2915230.0,
+      "funding_rate": 0.000691724,
+      "next_funding_rate": 0.0,
+      "last_price": 0.012013,
+      "price_high": 0.012035,
+      "price_low": 0.011628,
+      "index_price": 0.01201
     },
     "AI16Z-PERP": {
       "volume": 6793.415642,
-      "open_interest": 3577.0
+      "open_interest": 3577.0,
+      "funding_rate": 0.017565257,
+      "next_funding_rate": -0.100377,
+      "last_price": 0.015753,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.01625
     },
     "TRUMP-PERP": {
       "volume": 63887.815927,
-      "open_interest": 18818.2
+      "open_interest": 18818.2,
+      "funding_rate": -0.005185756,
+      "next_funding_rate": -0.005122,
+      "last_price": 5.371584,
+      "price_high": 5.3781,
+      "price_low": 5.238872,
+      "index_price": 5.379329
     },
     "MELANIA-PERP": {
       "volume": 2811.061656,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.002109164,
+      "next_funding_rate": 0.000852,
+      "last_price": 0.151547,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.151548
     },
     "BERA-PERP": {
-      "volume": 709.24644,
-      "open_interest": 120295.7
+      "volume": 614.433981,
+      "open_interest": 120295.7,
+      "funding_rate": -0.002865717,
+      "next_funding_rate": -0.002814,
+      "last_price": 0.595874,
+      "price_high": 0.611148,
+      "price_low": 0.60729,
+      "index_price": 0.596374
     },
     "NBAFINALS25-OKC-BET": {
       "volume": 1439.398655,
-      "open_interest": 25.0
+      "open_interest": 25.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.00083,
+      "last_price": 0.968746,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.968495
     },
     "NBAFINALS25-BOS-BET": {
       "volume": 1.971608,
-      "open_interest": 100.0
+      "open_interest": 100.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "KAITO-PERP": {
       "volume": 6890.563396,
-      "open_interest": 50519.0
+      "open_interest": 50519.0,
+      "funding_rate": -0.010701828,
+      "next_funding_rate": -0.01053,
+      "last_price": 0.569939,
+      "price_high": 0.5741,
+      "price_low": 0.5491,
+      "index_price": 0.571534
     },
     "IP-PERP": {
       "volume": 10892.523929,
-      "open_interest": 33824.8
+      "open_interest": 33824.8,
+      "funding_rate": -0.006990384,
+      "next_funding_rate": -0.006879,
+      "last_price": 1.991656,
+      "price_high": 2.021814,
+      "price_low": 1.877842,
+      "index_price": 1.995121
     },
     "FARTCOIN-PERP": {
-      "volume": 1271924.317702,
-      "open_interest": 1720798.0
+      "volume": 1244479.217426,
+      "open_interest": 1727250.0,
+      "funding_rate": 0.002354462,
+      "next_funding_rate": 0.002198,
+      "last_price": 0.399447,
+      "price_high": 0.412572,
+      "price_low": 0.3815,
+      "index_price": 0.399643
     },
     "ADA-PERP": {
-      "volume": 81260.642316,
-      "open_interest": 485951.0
+      "volume": 79516.022956,
+      "open_interest": 485951.0,
+      "funding_rate": 0.012406073,
+      "next_funding_rate": 0.01224,
+      "last_price": 0.397709,
+      "price_high": 0.400525,
+      "price_low": 0.3882,
+      "index_price": 0.396461
     },
     "PAXG-PERP": {
       "volume": 38226.957572,
-      "open_interest": 234.702
+      "open_interest": 234.702,
+      "funding_rate": 0.000926391,
+      "next_funding_rate": 0.00092,
+      "last_price": 4471.09001,
+      "price_high": 4484.67175,
+      "price_low": 4419.754705,
+      "index_price": 4471.09
     },
     "LAUNCHCOIN-PERP": {
       "volume": 25287.201769,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": 0.33118948,
+      "next_funding_rate": -0.414289,
+      "last_price": 0.000588,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.000588
     },
     "PUMP-PERP": {
       "volume": 522367.104292,
-      "open_interest": 0.0
+      "open_interest": 0.0,
+      "funding_rate": -0.275531724,
+      "next_funding_rate": -0.015445,
+      "last_price": 0.002177,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.00219
     },
     "ASTER-PERP": {
       "volume": 241643.291018,
-      "open_interest": 225721.0
+      "open_interest": 225721.0,
+      "funding_rate": 0.008690072,
+      "next_funding_rate": 0.008422,
+      "last_price": 0.722847,
+      "price_high": 0.7472,
+      "price_low": 0.702,
+      "index_price": 0.721846
     },
     "XPL-PERP": {
-      "volume": 598129.1506,
-      "open_interest": 1524285.0
+      "volume": 589066.15675,
+      "open_interest": 1528300.0,
+      "funding_rate": 0.011799549,
+      "next_funding_rate": 0.011979,
+      "last_price": 0.170232,
+      "price_high": 0.173489,
+      "price_low": 0.1585,
+      "index_price": 0.169604
     },
     "2Z-PERP": {
       "volume": 8135.5792,
-      "open_interest": 229580.0
+      "open_interest": 229580.0,
+      "funding_rate": -0.004051495,
+      "next_funding_rate": -0.00376,
+      "last_price": 0.116774,
+      "price_high": 0.11671,
+      "price_low": 0.114597,
+      "index_price": 0.11677
     },
     "ZEC-PERP": {
-      "volume": 967780.293689,
-      "open_interest": 4468.32
+      "volume": 917082.641123,
+      "open_interest": 4468.32,
+      "funding_rate": 0.001695678,
+      "next_funding_rate": 0.001619,
+      "last_price": 433.703946,
+      "price_high": 463.88,
+      "price_low": 382.36,
+      "index_price": 433.85537
     },
     "MNT-PERP": {
       "volume": 9327.559142,
-      "open_interest": 10614.0
+      "open_interest": 10614.0,
+      "funding_rate": 0.013322308,
+      "next_funding_rate": 0.013273,
+      "last_price": 0.990432,
+      "price_high": 1.029824,
+      "price_low": 0.979206,
+      "index_price": 0.987413
     },
     "1KPUMP-PERP": {
       "volume": 123929.450245,
-      "open_interest": 45052.0
+      "open_interest": 45052.0,
+      "funding_rate": 0.012967362,
+      "next_funding_rate": 0.013135,
+      "last_price": 2.198123,
+      "price_high": 2.278544,
+      "price_low": 2.065015,
+      "index_price": 2.19
     },
     "MET-PERP": {
       "volume": 6629.199396,
-      "open_interest": 98674.0
+      "open_interest": 98674.0,
+      "funding_rate": 0.000383086,
+      "next_funding_rate": 0.000383,
+      "last_price": 0.271411,
+      "price_high": 0.2792,
+      "price_low": 0.2527,
+      "index_price": 0.271412
     },
     "1KMON-PERP": {
-      "volume": 478245.218703,
-      "open_interest": 4330.1
+      "volume": 453383.66428,
+      "open_interest": 4332.1,
+      "funding_rate": 0.001123916,
+      "next_funding_rate": 0.00111,
+      "last_price": 27.599145,
+      "price_high": 28.3522,
+      "price_low": 25.567,
+      "index_price": 27.60289
     },
     "LIT-PERP": {
-      "volume": 501222.94323,
-      "open_interest": 117775.0
+      "volume": 502678.893589,
+      "open_interest": 112810.0,
+      "funding_rate": 0.003646719,
+      "next_funding_rate": 0.003321,
+      "last_price": 3.040003,
+      "price_high": 3.214,
+      "price_low": 2.935,
+      "index_price": 3.041006
     }
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 3459,
-      "BTC": 146,
-      "OTHER": 96,
-      "ETH": 96
+      "SOL": 1531,
+      "BTC": 100,
+      "ETH": 60,
+      "OTHER": 9
     },
     "volumes": {
-      "SOL": 413357845.25072426,
-      "BTC": 17447310.033710826,
-      "OTHER": 11472203.85778246,
-      "ETH": 11472203.85778246
+      "SOL": 417428313.56,
+      "BTC": 27265076.0,
+      "ETH": 16359045.6,
+      "OTHER": 2453856.84
     }
   },
-  "drift_traders_1h": 1125,
-  "jupiter_traders_6h": 1657
+  "drift_traders_1h": 988,
+  "jupiter_traders_6h": 1573,
+  "total_open_interest": 283974309.91809493
 }

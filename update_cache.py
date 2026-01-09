@@ -34,6 +34,7 @@ def update_cache():
         "jupiter_markets": {},
         "drift_traders_1h": 0,
         "jupiter_traders_6h": 0,
+        "total_open_interest": 0,
     }
 
     # Fetch volumes from DeFiLlama (fast)
@@ -81,6 +82,9 @@ def update_cache():
         cache["protocols"].append({
             "protocol": protocol_name,
             "volume_24h": volume_24h,
+            "volume_7d": volume_data.get("volume_7d", 0),
+            "change_1d": volume_data.get("change_1d", 0),
+            "change_7d": volume_data.get("change_7d", 0),
             "transactions": tx_count,
             "traders": traders,
             "fees": fees,
@@ -89,6 +93,11 @@ def update_cache():
     # Fetch Drift market breakdown from API (fast)
     try:
         cache["drift_markets"] = fetch_drift_markets_from_api()
+        # Calculate total open interest from Drift markets
+        cache["total_open_interest"] = sum(
+            m.get("open_interest", 0) * m.get("last_price", 0)
+            for m in cache["drift_markets"].values()
+        )
     except Exception as e:
         print(f"Drift markets failed: {e}")
         cache["drift_markets"] = {}
@@ -119,6 +128,7 @@ def update_cache():
     print(f"Protocols: {len(cache['protocols'])}")
     print(f"Drift markets: {len(cache['drift_markets'])}")
     print(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
+    print(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
     print(f"Drift traders (1h): {cache['drift_traders_1h']}")
     print(f"Jupiter traders (6h): {cache['jupiter_traders_6h']}")
 
