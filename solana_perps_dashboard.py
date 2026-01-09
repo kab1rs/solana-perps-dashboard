@@ -274,17 +274,21 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
     # Build keeper exclusion list
     keeper_list = "', '".join(DRIFT_KEEPERS)
 
+    # Query uses UNNEST to extract account positions [3], [4], [5] in a single scan
+    # because user wallets appear in different positions depending on instruction type
     sql = f"""
     WITH drift_wallets AS (
-        SELECT DISTINCT account_arguments[3] as wallet
-        FROM solana.instruction_calls
+        SELECT DISTINCT elem as wallet
+        FROM solana.instruction_calls,
+             UNNEST(SLICE(account_arguments, 3, 3)) as t(elem)
         WHERE executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
           AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
           AND CARDINALITY(account_arguments) >= 3
-          AND account_arguments[3] NOT IN ('{keeper_list}')
-          AND account_arguments[3] NOT LIKE 'Sysvar%'
-          AND account_arguments[3] != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND elem NOT IN ('{keeper_list}')
+          AND elem NOT LIKE 'Sysvar%'
+          AND elem != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND elem != '11111111111111111111111111111111'
     ),
     jupiter_wallets AS (
         SELECT DISTINCT signer as wallet

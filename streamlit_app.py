@@ -118,61 +118,98 @@ if global_derivatives:
     global_total = sum(p["volume_24h"] for p in global_derivatives)
     solana_total = total_volume
 
+    # Find Solana protocol rankings
+    solana_protocols = []
+    for i, p in enumerate(global_derivatives):
+        if "Solana" in p.get("chains", []):
+            solana_protocols.append({
+                "name": p["name"],
+                "rank": i + 1,
+                "volume": p["volume_24h"],
+                "share": p["volume_24h"] / global_total * 100 if global_total > 0 else 0,
+            })
+
+    # Show Solana ranking summary at top
+    if solana_protocols:
+        cols = st.columns(len(solana_protocols) + 1)
+        with cols[0]:
+            st.metric(
+                "Solana Global Rank",
+                f"#{solana_protocols[0]['rank']}",
+                help="Highest-ranked Solana protocol globally"
+            )
+        for i, sp in enumerate(solana_protocols):
+            with cols[i + 1]:
+                st.metric(
+                    sp["name"],
+                    f"#{sp['rank']}",
+                    f"{sp['share']:.1f}% share",
+                    help=f"Volume: {format_volume(sp['volume'])}"
+                )
+
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        # Create comparison table
+        # Create comparison table with rank column
         comparison_data = []
-        for p in global_derivatives[:10]:
+        for i, p in enumerate(global_derivatives[:15]):
             chains = ", ".join(p.get("chains", [])[:2])
             is_solana = "Solana" in p.get("chains", [])
             comparison_data.append({
+                "Rank": f"#{i + 1}",
                 "Protocol": p["name"],
                 "Chain": chains,
                 "Volume 24h": format_volume(p["volume_24h"]),
                 "Market Share": f"{p['volume_24h']/global_total*100:.1f}%",
-                "24h Change": format_change(p.get("change_1d", 0)),
-                "Solana": "✓" if is_solana else "",
+                "24h": format_change(p.get("change_1d", 0)),
+                "7d": format_change(p.get("change_7d", 0)),
             })
 
         comp_df = pd.DataFrame(comparison_data)
-        st.dataframe(comp_df, width="stretch", hide_index=True)
+
+        # Style the dataframe to highlight Solana rows
+        def highlight_solana(row):
+            is_solana = any(sp["name"] == row["Protocol"] for sp in solana_protocols)
+            if is_solana:
+                return ["background-color: rgba(139, 92, 246, 0.2)"] * len(row)
+            return [""] * len(row)
+
+        styled_df = comp_df.style.apply(highlight_solana, axis=1)
+        st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
     with col2:
-        # Pie chart of top protocols
-        top_5 = global_derivatives[:5]
-        others_vol = sum(p["volume_24h"] for p in global_derivatives[5:])
+        # Bar chart for clearer comparison (better than pie for rankings)
+        top_10 = global_derivatives[:10]
+        colors = ["#8B5CF6" if "Solana" in p.get("chains", []) else "#4B5563" for p in top_10]
 
-        pie_data = {
-            "Protocol": [p["name"] for p in top_5] + ["Others"],
-            "Volume": [p["volume_24h"] for p in top_5] + [others_vol],
-        }
-        pie_df = pd.DataFrame(pie_data)
-
-        fig = px.pie(
-            pie_df,
-            values="Volume",
-            names="Protocol",
-            title="Global Perps Market Share",
-            hole=0.4,
-        )
+        fig = go.Figure(data=[
+            go.Bar(
+                x=[p["name"][:10] for p in top_10],
+                y=[p["volume_24h"] for p in top_10],
+                marker_color=colors,
+                text=[format_volume(p["volume_24h"]) for p in top_10],
+                textposition="outside",
+            )
+        ])
         fig.update_layout(
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=-0.3),
-            margin=dict(t=50, b=50, l=20, r=20),
-            height=350,
+            title="Top 10 Perps Protocols",
+            yaxis_title="24h Volume",
+            height=400,
+            margin=dict(t=50, b=80),
+            xaxis_tickangle=-45,
+        )
+        fig.add_annotation(
+            text="Purple = Solana",
+            xref="paper", yref="paper",
+            x=1, y=1,
+            showarrow=False,
+            font=dict(size=10, color="#8B5CF6"),
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    # Solana's position
-    solana_rank = next(
-        (i + 1 for i, p in enumerate(global_derivatives)
-         if "Solana" in p.get("chains", [])),
-        None
-    )
+    # Summary box
     solana_share = (solana_total / global_total * 100) if global_total > 0 else 0
-
-    st.info(f"**Solana perps rank #{solana_rank or '?'}** globally with **{solana_share:.1f}%** market share (${format_volume(solana_total)} / {format_volume(global_total)})")
+    st.info(f"**Solana perps:** {format_volume(solana_total)} total volume ({solana_share:.1f}% global share) across {len(solana_protocols)} protocols")
 
 st.divider()
 
