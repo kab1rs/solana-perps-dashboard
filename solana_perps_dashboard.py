@@ -216,31 +216,63 @@ def fetch_drift_markets_from_api() -> dict:
         return {}
 
 
-def fetch_drift_accurate_traders(minutes: int = 10) -> int:
-    """
-    Fetch accurate Drift trader count by parsing instruction accounts.
+# Known Drift keeper addresses (high-frequency bot signers)
+DRIFT_KEEPERS = [
+    'uZ1N4C9dc71Euu4GLYt5UURpFtg1WWSwo3F4Rn46Fr3',
+    '3PFkJVowwwxqhk3Z4PonV5ibsimFvXRQWiU3mAzwoaKv',
+    '8X35rQUK2u9hfn8rMPwwr6ZSEUhbmfDPEapp589XyoM1',
+    'F1RsRqBjuLdGeKtQK2LEjVJHJqVbhBYtfUzaUCi8PcFv',
+    'FetTyW8xAYfd33x4GMHoE7hTuEdWLj1fNnhJuyVMUGGa',
+    'x1r2guH31WwmBnZHEgU2aEu7okBjjd6WHS1fC9xcLYY',
+    '5ddo32xdfxBvxweFYeSDbteK53Fj68fAVvVqyRF6MpHY',
+    '7uhiFHKK7XXtKkE2wU2Hr9GQ4kZZxEnUU85SMnhRcnw2',
+]
 
-    Uses instruction_calls table to extract actual user accounts from
-    fill_perp_order instructions (account_arguments[4] = user account).
-    This is more accurate than COUNT(DISTINCT signer) which counts keepers.
+
+def fetch_drift_accurate_traders(hours: int = 1) -> int:
+    """
+    Fetch accurate Drift trader count by parsing ALL instruction accounts.
+
+    Looks at account_arguments[3], [4], [5] across all instruction types
+    to find unique user accounts, excluding known keepers and system accounts.
     """
     print("Fetching accurate Drift traders...", end=" ", flush=True)
 
     end_time = datetime.utcnow()
-    start_time = end_time - timedelta(minutes=minutes)
+    start_time = end_time - timedelta(hours=hours)
 
-    # fill_perp_order discriminator: 0xdaedaaf5278fa621
-    # account_arguments[4] contains the actual user account
+    keeper_list = "', '".join(DRIFT_KEEPERS)
+
+    # Count unique accounts at positions 3, 4, 5 across ALL instruction types
     sql = f"""
-    SELECT
-        COUNT(*) as total_fills,
-        COUNT(DISTINCT account_arguments[4]) as unique_traders
-    FROM solana.instruction_calls
-    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
-      AND SUBSTR(data, 1, 8) = 0xdaedaaf5278fa621
-      AND CARDINALITY(account_arguments) >= 4
+    WITH all_accounts AS (
+        SELECT DISTINCT account_arguments[3] as user_account
+        FROM solana.instruction_calls
+        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND CARDINALITY(account_arguments) >= 3
+        UNION
+        SELECT DISTINCT account_arguments[4] as user_account
+        FROM solana.instruction_calls
+        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND CARDINALITY(account_arguments) >= 4
+        UNION
+        SELECT DISTINCT account_arguments[5] as user_account
+        FROM solana.instruction_calls
+        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+          AND CARDINALITY(account_arguments) >= 5
+    )
+    SELECT COUNT(DISTINCT user_account) as unique_users
+    FROM all_accounts
+    WHERE user_account NOT IN ('{keeper_list}')
+      AND user_account NOT LIKE 'Sysvar%'
+      AND user_account != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+      AND user_account != '11111111111111111111111111111111'
     """
 
     result = run_dune_query(sql, timeout=300)
@@ -251,9 +283,8 @@ def fetch_drift_accurate_traders(minutes: int = 10) -> int:
 
     rows = result.get("result", {}).get("rows", [])
     if rows:
-        traders = rows[0].get("unique_traders", 0)
-        fills = rows[0].get("total_fills", 0)
-        print(f"{traders} traders ({fills:,} fills in {minutes}min)")
+        traders = rows[0].get("unique_users", 0)
+        print(f"{traders} traders ({hours}h)")
         return traders
 
     print("no data")
@@ -304,18 +335,17 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
     return markets
 
 
-def fetch_jupiter_accurate_traders(minutes: int = 15) -> int:
+def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
     """
     Fetch accurate Jupiter Perps trader count using transaction signers.
 
     Jupiter Perps uses a different model - users sign their own transactions
-    more often, so signer count is more accurate than Drift.
-    We still sample a short window for speed.
+    directly (not via keepers), so signer count is accurate.
     """
     print("Fetching accurate Jupiter traders...", end=" ", flush=True)
 
     end_time = datetime.utcnow()
-    start_time = end_time - timedelta(minutes=minutes)
+    start_time = end_time - timedelta(hours=hours)
 
     sql = f"""
     SELECT
@@ -337,7 +367,7 @@ def fetch_jupiter_accurate_traders(minutes: int = 15) -> int:
     if rows:
         traders = rows[0].get("unique_traders", 0)
         txns = rows[0].get("total_txns", 0)
-        print(f"{traders} traders ({txns:,} txns in {minutes}min)")
+        print(f"{traders} traders ({txns:,} txns in {hours}h)")
         return traders
 
     print("no data")
@@ -449,6 +479,11 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
     all_metrics = []
     market_breakdowns = {}
 
+    # First, fetch accurate 24h trader counts for protocols with program IDs
+    print("\nFetching accurate 24h trader counts...")
+    drift_24h_traders = fetch_drift_accurate_traders(hours=6)  # 6h sample, more reliable
+    jupiter_24h_traders = fetch_jupiter_accurate_traders(hours=6)  # 6h sample
+
     for protocol_name, config in PROTOCOLS.items():
         print(f"\nProcessing {protocol_name}...", end=" ", flush=True)
 
@@ -460,8 +495,14 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
         program_id = config["program_id"]
         tx_count = fetch_signature_count(program_id, hours) if program_id else 0
 
-        # Estimate derived metrics
-        traders = int(tx_count * 0.7)
+        # Use accurate trader counts (scale 6h to 24h estimate)
+        if protocol_name == "Drift":
+            traders = int(drift_24h_traders * 2)  # Rough 6h->24h scaling (not 4x due to overlap)
+        elif protocol_name == "Jupiter Perps":
+            traders = int(jupiter_24h_traders * 2)  # Rough 6h->24h scaling
+        else:
+            traders = 0  # No data for other protocols
+
         fees = volume_24h * config["fee_rate"]
 
         metrics = {
@@ -481,7 +522,8 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
 
         # Drift market breakdown from API (actual per-market volumes)
         drift_markets = fetch_drift_markets_from_api()
-        drift_accurate_traders = fetch_drift_accurate_traders(minutes=15)
+        # Use the 6h trader count we already fetched
+        drift_accurate_traders = drift_24h_traders
 
         if drift_markets:
             drift_fee_rate = PROTOCOLS["Drift"]["fee_rate"]
@@ -509,7 +551,8 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
 
         # Jupiter Perps market breakdown with accurate trader count
         jupiter_trade_counts = fetch_jupiter_market_breakdown(hours=1)
-        jupiter_accurate_traders = fetch_jupiter_accurate_traders(minutes=15)
+        # Use the 6h trader count we already fetched
+        jupiter_accurate_traders = jupiter_24h_traders
 
         if jupiter_trade_counts:
             jupiter_volume = next(
@@ -633,7 +676,7 @@ def print_dashboard(all_metrics: list, market_breakdowns: dict, hours: int):
     # Data sources
     print("\nData Sources:")
     print("  Volume: DeFiLlama API (protocol) / Drift API (markets) | Tx Count: Solana RPC")
-    print("  Traders: Parsed from instruction accounts (Drift) / Signers (Jupiter)")
+    print("  Traders: Dune Analytics (6h sample, scaled) - Drift: instruction accounts, Jupiter: signers")
     print("  Fees: Estimated (volume * fee_rate)")
 
 
