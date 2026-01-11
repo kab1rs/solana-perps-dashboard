@@ -69,6 +69,30 @@ def format_volume(value):
     return f"${value:,.0f}"
 
 
+def get_time_window_data(cache: dict, window: str) -> dict:
+    """Get data for selected time window with fallback to legacy format."""
+    time_windows = cache.get("time_windows", {})
+
+    if window in time_windows:
+        return time_windows[window]
+
+    # Fallback to legacy format for backward compatibility
+    if window == "1h":
+        return {
+            "drift_traders": cache.get("drift_traders_1h", 0),
+            "jupiter_traders": cache.get("jupiter_traders_1h", 0),
+            "liquidations": cache.get("liquidations_1h", {}),
+            "wallet_overlap": cache.get("wallet_overlap", {})
+        }
+
+    return {
+        "drift_traders": 0,
+        "jupiter_traders": 0,
+        "liquidations": {"count": 0, "txns": 0, "error": "No data"},
+        "wallet_overlap": {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": "No data"}
+    }
+
+
 # Load cached data
 cache = load_cache()
 
@@ -77,9 +101,18 @@ if cache is None:
     st.stop()
 
 # Header
-st.title("📊 Solana Perps Insights")
+st.title("Solana Perps Insights")
 updated_at = cache.get("updated_at", "Unknown")
 st.caption(f"Data updated: {updated_at} | Refreshes every 15 minutes")
+
+# Time window selector
+time_window = st.radio(
+    "Time Window",
+    options=["1h", "4h", "8h", "24h"],
+    index=0,
+    horizontal=True,
+    help="Select time window for trader counts, liquidations, and wallet overlap data"
+)
 
 # Calculate totals
 protocol_df = pd.DataFrame(cache["protocols"])
@@ -377,8 +410,9 @@ st.header("Market Deep Dive")
 col1, col2 = st.columns(2)
 
 with col1:
-    drift_traders = cache.get("drift_traders_1h", 0)
-    st.subheader(f"Drift Markets ({drift_traders:,} traders/1h)")
+    window_data = get_time_window_data(cache, time_window)
+    drift_traders = window_data.get("drift_traders", 0)
+    st.subheader(f"Drift Markets ({drift_traders:,} traders/{time_window})")
 
     if drift_markets:
         drift_data = []
@@ -402,8 +436,8 @@ with col1:
         st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
 
 with col2:
-    jupiter_traders = cache.get("jupiter_traders_1h", 0)
-    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/1h)")
+    jupiter_traders = window_data.get("jupiter_traders", 0)
+    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/{time_window})")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -432,9 +466,9 @@ st.divider()
 
 # Cross-Platform Wallet Analysis
 st.header("Cross-Platform Traders")
-st.caption("Wallet overlap between Drift and Jupiter Perps (1h window)")
+st.caption(f"Wallet overlap between Drift and Jupiter Perps ({time_window} window)")
 
-wallet_data = cache.get("wallet_overlap", {})
+wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
 if wallet_data.get("error"):
     st.warning(f"Wallet data unavailable: {wallet_data.get('error', 'Query timeout')}")
@@ -502,7 +536,7 @@ else:
                 )
             ])
             fig.update_layout(
-                title="Total Traders per Platform (1h)",
+                title=f"Total Traders per Platform ({time_window})",
                 yaxis_title="Unique Wallets",
                 height=300,
                 margin=dict(t=50, b=20),
@@ -542,21 +576,22 @@ with col2:
             st.write(f"**#{i}** {market}: ${oi:,.0f}")
 
 with col3:
-    st.subheader("Active Traders (1h)")
-    drift_1h = cache.get("drift_traders_1h", 0)
-    jupiter_1h = cache.get("jupiter_traders_1h", 0)
-    if drift_1h > 0 or jupiter_1h > 0:
-        st.metric("Drift", f"{drift_1h:,}")
-        st.metric("Jupiter", f"{jupiter_1h:,}")
+    st.subheader(f"Active Traders ({time_window})")
+    insights_window = get_time_window_data(cache, time_window)
+    drift_count = insights_window.get("drift_traders", 0)
+    jupiter_count = insights_window.get("jupiter_traders", 0)
+    if drift_count > 0 or jupiter_count > 0:
+        st.metric("Drift", f"{drift_count:,}")
+        st.metric("Jupiter", f"{jupiter_count:,}")
     else:
         st.write("No trader data available")
 
 with col4:
-    st.subheader("Liquidations (1h)")
-    liquidations = cache.get("liquidations_1h", {})
+    st.subheader(f"Liquidations ({time_window})")
+    liquidations = insights_window.get("liquidations", {})
     if liquidations.get("error"):
         st.warning("Data unavailable")
-        st.caption("Query timeout")
+        st.caption(liquidations.get("error", "Query timeout"))
     elif liquidations.get("count", 0) > 0:
         st.metric("Events", f"{liquidations['count']:,}")
         st.write(f"Txns: {liquidations.get('txns', 0):,}")

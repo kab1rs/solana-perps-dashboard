@@ -10,6 +10,9 @@ import json
 import os
 from datetime import datetime
 
+# Time windows to cache (in hours)
+TIME_WINDOWS = [1, 4, 8, 24]
+
 from solana_perps_dashboard import (
     fetch_defillama_volume,
     fetch_global_derivatives,
@@ -35,10 +38,12 @@ def update_cache():
         "protocols": [],
         "drift_markets": {},
         "jupiter_markets": {},
-        "drift_traders_1h": 0,
-        "jupiter_traders_1h": 0,
         "total_open_interest": 0,
         "global_derivatives": [],
+        "time_windows": {},
+        # Legacy keys for backward compatibility
+        "drift_traders_1h": 0,
+        "jupiter_traders_1h": 0,
         "liquidations_1h": {"count": 0, "txns": 0},
         "wallet_overlap": {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0},
     }
@@ -53,34 +58,54 @@ def update_cache():
         print(f"Global derivatives failed: {e}")
         cache["global_derivatives"] = []
 
-    # Fetch accurate trader counts
-    # Drift: use 1h window (complex query, times out with 6h)
-    # Jupiter: use 6h window (simple query, fast)
-    try:
-        cache["drift_traders_1h"] = fetch_drift_accurate_traders(hours=1)
-    except Exception as e:
-        print(f"Drift traders failed: {e}")
-        cache["drift_traders_1h"] = 0
+    # Fetch time-windowed data for each window
+    for hours in TIME_WINDOWS:
+        window_key = f"{hours}h"
+        print(f"\nFetching {window_key} window data...")
+        cache["time_windows"][window_key] = {}
 
-    try:
-        cache["jupiter_traders_1h"] = fetch_jupiter_accurate_traders(hours=1)
-    except Exception as e:
-        print(f"Jupiter traders failed: {e}")
-        cache["jupiter_traders_1h"] = 0
+        # Drift traders
+        try:
+            cache["time_windows"][window_key]["drift_traders"] = fetch_drift_accurate_traders(hours=hours)
+        except Exception as e:
+            print(f"  Drift traders ({window_key}) failed: {e}")
+            cache["time_windows"][window_key]["drift_traders"] = 0
+            cache["time_windows"][window_key]["drift_traders_error"] = str(e)
 
-    # Fetch liquidation data (1h window to avoid Dune timeout)
-    try:
-        cache["liquidations_1h"] = fetch_drift_liquidations(hours=1)
-    except Exception as e:
-        print(f"Liquidations failed: {e}")
-        cache["liquidations_1h"] = {"count": 0, "txns": 0, "error": str(e)}
+        # Jupiter traders
+        try:
+            cache["time_windows"][window_key]["jupiter_traders"] = fetch_jupiter_accurate_traders(hours=hours)
+        except Exception as e:
+            print(f"  Jupiter traders ({window_key}) failed: {e}")
+            cache["time_windows"][window_key]["jupiter_traders"] = 0
+            cache["time_windows"][window_key]["jupiter_traders_error"] = str(e)
 
-    # Fetch cross-platform wallet data (1h window)
-    try:
-        cache["wallet_overlap"] = fetch_cross_platform_wallets(hours=1)
-    except Exception as e:
-        print(f"Wallet overlap failed: {e}")
-        cache["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
+        # Liquidations (skip for 24h to avoid timeout)
+        if hours <= 8:
+            try:
+                cache["time_windows"][window_key]["liquidations"] = fetch_drift_liquidations(hours=hours)
+            except Exception as e:
+                print(f"  Liquidations ({window_key}) failed: {e}")
+                cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": str(e)}
+        else:
+            cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
+
+        # Wallet overlap (skip for 8h+ to avoid timeout)
+        if hours <= 4:
+            try:
+                cache["time_windows"][window_key]["wallet_overlap"] = fetch_cross_platform_wallets(hours=hours)
+            except Exception as e:
+                print(f"  Wallet overlap ({window_key}) failed: {e}")
+                cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
+        else:
+            cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": "Skipped (query timeout)"}
+
+    # Set legacy keys from 1h window for backward compatibility
+    if "1h" in cache["time_windows"]:
+        cache["drift_traders_1h"] = cache["time_windows"]["1h"].get("drift_traders", 0)
+        cache["jupiter_traders_1h"] = cache["time_windows"]["1h"].get("jupiter_traders", 0)
+        cache["liquidations_1h"] = cache["time_windows"]["1h"].get("liquidations", {"count": 0, "txns": 0})
+        cache["wallet_overlap"] = cache["time_windows"]["1h"].get("wallet_overlap", {})
 
     # Build protocol metrics
     for protocol_name, config in PROTOCOLS.items():
@@ -157,8 +182,13 @@ def update_cache():
     print(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
     print(f"Global derivatives: {len(cache['global_derivatives'])}")
     print(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
-    print(f"Drift traders (1h): {cache['drift_traders_1h']}")
-    print(f"Jupiter traders (1h): {cache['jupiter_traders_1h']}")
+    print(f"\nTime window data:")
+    for window_key, data in cache["time_windows"].items():
+        drift_t = data.get("drift_traders", 0)
+        jup_t = data.get("jupiter_traders", 0)
+        liq = data.get("liquidations", {}).get("count", 0)
+        multi = data.get("wallet_overlap", {}).get("multi_platform", 0)
+        print(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Liqs={liq}, MultiPlatform={multi}")
 
 
 if __name__ == "__main__":
