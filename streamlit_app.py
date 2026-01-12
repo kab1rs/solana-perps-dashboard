@@ -159,7 +159,7 @@ with col1:
 with col2:
     st.metric("Drift Open Interest", format_volume(total_oi), help="Source: Drift API. Jupiter OI not yet available.")
 with col3:
-    st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter unique wallets.")
+    st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter + Pacifica. Note: Pacifica uses off-chain matching, so count shows active on-chain users (deposits/settlements) which may undercount actual traders.")
 with col4:
     st.metric("Fees Generated", f"${total_fees:,.0f}", help="Estimated from volume × protocol fee rates.")
 with col5:
@@ -286,7 +286,13 @@ with col1:
     display_df["7d Change"] = display_df["change_7d"].apply(format_change)
     display_df["Volume 24h"] = display_df["volume_24h"].apply(lambda x: f"${x:,.0f}")
     display_df["Fees"] = display_df["fees"].apply(lambda x: f"${x:,.0f}")
-    display_df["Traders"] = display_df["traders"].apply(lambda x: f"{x:,}")
+    # Add asterisk to Pacifica traders to indicate it's an estimate
+    def format_traders(row):
+        count = row["traders"]
+        if row["protocol"] == "Pacifica" and count > 0:
+            return f"{count:,}*"
+        return f"{count:,}"
+    display_df["Traders"] = display_df.apply(format_traders, axis=1)
     display_df = display_df.rename(columns={"protocol": "Protocol"})
 
     st.dataframe(
@@ -294,6 +300,9 @@ with col1:
         width="stretch",
         hide_index=True,
     )
+    # Add footnote for Pacifica if present
+    if "Pacifica" in display_df["Protocol"].values:
+        st.caption("*Pacifica uses off-chain matching. Trader count shows on-chain users only and may differ from actual traders.")
 
 with col2:
     # Solana protocols pie chart
@@ -623,9 +632,15 @@ with col3:
     insights_window = get_time_window_data(cache, time_window)
     drift_count = insights_window.get("drift_traders", 0)
     jupiter_count = insights_window.get("jupiter_traders", 0)
-    if drift_count > 0 or jupiter_count > 0:
+    pacifica_count = insights_window.get("pacifica_traders", 0)
+    if drift_count > 0 or jupiter_count > 0 or pacifica_count > 0:
         st.metric("Drift", f"{drift_count:,}")
         st.metric("Jupiter", f"{jupiter_count:,}")
+        st.metric(
+            "Pacifica",
+            f"{pacifica_count:,}",
+            help="Pacifica uses hybrid architecture (off-chain CLOB, on-chain settlement). This count represents active on-chain users, not all traders. May undercount due to off-chain activity, or overcount depositors who haven't traded."
+        )
     else:
         st.write("No trader data available")
 

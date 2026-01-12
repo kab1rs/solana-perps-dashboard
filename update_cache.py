@@ -90,6 +90,7 @@ from solana_perps_dashboard import (
     fetch_drift_liquidations,
     fetch_cross_platform_wallets,
     fetch_jupiter_accurate_traders,
+    fetch_pacifica_traders,
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
     distribute_volume_by_trades,
@@ -162,6 +163,7 @@ def update_cache():
         queries = {
             "drift_traders": lambda h=hours: fetch_drift_accurate_traders(hours=h),
             "jupiter_traders": lambda h=hours: fetch_jupiter_accurate_traders(hours=h),
+            "pacifica_traders": lambda h=hours: fetch_pacifica_traders(hours=h),
         }
         if hours <= 8:
             queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
@@ -181,6 +183,9 @@ def update_cache():
                         cache["time_windows"][window_key][name] = 0
                         cache["time_windows"][window_key][f"{name}_error"] = str(e)
                     elif name == "jupiter_traders":
+                        cache["time_windows"][window_key][name] = 0
+                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
+                    elif name == "pacifica_traders":
                         cache["time_windows"][window_key][name] = 0
                         cache["time_windows"][window_key][f"{name}_error"] = str(e)
                     elif name == "liquidations":
@@ -236,6 +241,8 @@ def update_cache():
             traders = cache["time_windows"].get("24h", {}).get("drift_traders", 0)
         elif protocol_name == "Jupiter Perpetual Exchange":
             traders = cache["time_windows"].get("24h", {}).get("jupiter_traders", 0)
+        elif protocol_name == "Pacifica":
+            traders = cache["time_windows"].get("24h", {}).get("pacifica_traders", 0)
         else:
             traders = 0  # No Dune query for this protocol
 
@@ -279,9 +286,10 @@ def update_cache():
     for window_key, data in cache["time_windows"].items():
         drift_t = data.get("drift_traders", 0)
         jup_t = data.get("jupiter_traders", 0)
+        paci_t = data.get("pacifica_traders", 0)
         liq = data.get("liquidations", {}).get("count", 0)
         multi = data.get("wallet_overlap", {}).get("multi_platform", 0)
-        logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Liqs={liq}, MultiPlatform={multi}")
+        logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Pacifica={paci_t}, Liqs={liq}, MultiPlatform={multi}")
 
 
 if __name__ == "__main__":

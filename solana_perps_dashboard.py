@@ -63,6 +63,10 @@ PROTOCOL_METADATA = {
         "program_id": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
         "fee_rate": 0.0005,  # 0.05%
     },
+    "Pacifica": {
+        "program_id": "PCFA5iYgmqK6MqPhWNKg7Yv7auX7VZ4Cx7T1eJyrAMH",
+        "fee_rate": 0.0005,  # 0.05% (estimate)
+    },
 }
 
 # Drift market accounts (identified via Dune analysis)
@@ -493,6 +497,37 @@ def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
         return traders
 
     logger.warning("No data")
+    return 0
+
+
+def fetch_pacifica_traders(hours: int = 1) -> int:
+    """Fetch unique Pacifica trader count from transaction signers.
+
+    Note: Pacifica uses hybrid architecture (off-chain CLOB, on-chain settlement).
+    This counts users who have interacted with the on-chain program, which may
+    undercount actual traders since many trades happen off-chain.
+    """
+    logger.info("Fetching Pacifica traders...")
+
+    start, end = get_time_range(hours)
+    sql = f"""
+    SELECT COUNT(*) as total_txns, COUNT(DISTINCT signer) as unique_traders
+    FROM solana.transactions
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
+      AND CONTAINS(account_keys, 'PCFA5iYgmqK6MqPhWNKg7Yv7auX7VZ4Cx7T1eJyrAMH')
+    """
+
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        logger.error(f"Pacifica traders failed: {error}")
+        return 0
+    if rows:
+        traders = rows[0].get("unique_traders", 0)
+        txns = rows[0].get("total_txns", 0)
+        logger.info(f"{traders} Pacifica traders ({txns:,} txns in {hours}h)")
+        return traders
+
+    logger.warning("No Pacifica data")
     return 0
 
 
