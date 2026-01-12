@@ -19,6 +19,7 @@ Usage:
 
 import argparse
 import json
+import logging
 import os
 import sys
 import time
@@ -28,6 +29,13 @@ from urllib.error import HTTPError
 
 from dotenv import load_dotenv
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # RPC endpoint (uses public fallback if not set)
 RPC_URL = os.environ.get("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
@@ -103,7 +111,7 @@ def rpc_call(method: str, params: list) -> dict:
         with urlopen(req, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
             if "error" in result:
-                print(f"RPC Error: {result['error']}", file=sys.stderr)
+                logger.error(f"RPC Error: {result['error']}")
                 return {}
             return result.get("result", {})
     except HTTPError as e:
@@ -112,7 +120,7 @@ def rpc_call(method: str, params: list) -> dict:
             return rpc_call(method, params)
         return {}
     except Exception as e:
-        print(f"RPC call failed: {e}", file=sys.stderr)
+        logger.error(f"RPC call failed: {e}")
         return {}
 
 
@@ -186,7 +194,7 @@ def run_dune_query_safe(sql: str, timeout: int = 180):
 
 def fetch_defillama_volume() -> dict:
     """Fetch volume data from DeFiLlama derivatives overview."""
-    print("Fetching volume from DeFiLlama...", end=" ", flush=True)
+    logger.info("Fetching volume from DeFiLlama...")
 
     try:
         req = Request(DEFILLAMA_URL, headers={"User-Agent": "Mozilla/5.0"})
@@ -205,16 +213,16 @@ def fetch_defillama_volume() -> dict:
                     "change_1m": protocol.get("change_1m", 0) or 0,
                 }
 
-        print(f"found {len(volumes)} protocols")
+        logger.info(f"Found {len(volumes)} protocols")
         return volumes
     except Exception as e:
-        print(f"failed: {e}", file=sys.stderr)
+        logger.error(f"Failed: {e}")
         return {}
 
 
 def fetch_global_derivatives() -> list:
     """Fetch top derivatives protocols globally for cross-chain comparison."""
-    print("Fetching global derivatives...", end=" ", flush=True)
+    logger.info("Fetching global derivatives...")
 
     try:
         req = Request(DEFILLAMA_URL, headers={"User-Agent": "Mozilla/5.0"})
@@ -237,16 +245,16 @@ def fetch_global_derivatives() -> list:
         # Sort by 24h volume descending
         protocols.sort(key=lambda x: x["volume_24h"], reverse=True)
 
-        print(f"found {len(protocols)} protocols")
+        logger.info(f"Found {len(protocols)} protocols")
         return protocols[:15]  # Top 15
     except Exception as e:
-        print(f"failed: {e}", file=sys.stderr)
+        logger.error(f"Failed: {e}")
         return []
 
 
 def fetch_drift_liquidations(hours: int = 1) -> dict:
     """Fetch Drift liquidation count for the past N hours."""
-    print(f"Fetching Drift liquidations ({hours}h)...", end=" ", flush=True)
+    logger.info(f"Fetching Drift liquidations ({hours}h)...")
 
     start, end = get_time_range(hours)
     sql = f"""
@@ -259,21 +267,21 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
 
     rows, error = run_dune_query_safe(sql, timeout=180)
     if error:
-        print(f"failed: {error}", file=sys.stderr)
+        logger.error(f"Failed: {error}")
         return {"count": 0, "txns": 0, "error": error}
     if rows:
         count = rows[0].get("liquidation_count", 0)
         txns = rows[0].get("unique_txns", 0)
-        print(f"{count} liquidations ({txns} txns)")
+        logger.info(f"{count} liquidations ({txns} txns)")
         return {"count": count, "txns": txns}
 
-    print("no data")
+    logger.warning("No data")
     return {"count": 0, "txns": 0}
 
 
 def fetch_cross_platform_wallets(hours: int = 1) -> dict:
     """Fetch wallet overlap between Drift and Jupiter for the past N hours."""
-    print(f"Fetching cross-platform wallets ({hours}h)...", end=" ", flush=True)
+    logger.info(f"Fetching cross-platform wallets ({hours}h)...")
 
     start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
@@ -304,7 +312,7 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
 
     rows, error = run_dune_query_safe(sql, timeout=300)
     if error:
-        print(f"failed: {error}", file=sys.stderr)
+        logger.error(f"Failed: {error}")
         return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": error}
     if rows:
         data = {
@@ -313,10 +321,10 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
             "jupiter_only": rows[0].get("jupiter_only", 0),
         }
         total = data["multi_platform"] + data["drift_only"] + data["jupiter_only"]
-        print(f"{total} total ({data['multi_platform']} multi-platform)")
+        logger.info(f"{total} total ({data['multi_platform']} multi-platform)")
         return data
 
-    print("no data")
+    logger.warning("No data")
     return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0}
 
 
@@ -327,7 +335,7 @@ def fetch_drift_markets_from_api() -> dict:
     Returns actual 24h volume per market from official Drift data.
     Much faster and more accurate than Dune queries.
     """
-    print("Fetching Drift markets from API...", end=" ", flush=True)
+    logger.info("Fetching Drift markets from API...")
 
     try:
         req = Request(DRIFT_DATA_API, headers={"User-Agent": "Mozilla/5.0"})
@@ -356,10 +364,10 @@ def fetch_drift_markets_from_api() -> dict:
             }
 
         total_vol = sum(m["volume"] for m in markets.values())
-        print(f"found {len(markets)} markets, ${total_vol:,.0f} vol")
+        logger.info(f"Found {len(markets)} markets, ${total_vol:,.0f} vol")
         return markets
     except Exception as e:
-        print(f"failed: {e}", file=sys.stderr)
+        logger.error(f"Failed: {e}")
         return {}
 
 
@@ -378,7 +386,7 @@ DRIFT_KEEPERS = [
 
 def fetch_drift_accurate_traders(hours: int = 1) -> int:
     """Fetch unique Drift trader count from account positions 3-5, excluding keepers."""
-    print("Fetching accurate Drift traders...", end=" ", flush=True)
+    logger.info("Fetching accurate Drift traders...")
 
     start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
@@ -409,20 +417,20 @@ def fetch_drift_accurate_traders(hours: int = 1) -> int:
 
     rows, error = run_dune_query_safe(sql, timeout=300)
     if error:
-        print("failed", file=sys.stderr)
+        logger.error("Failed")
         return 0
     if rows:
         traders = rows[0].get("unique_users", 0)
-        print(f"{traders} traders ({hours}h)")
+        logger.info(f"{traders} traders ({hours}h)")
         return traders
 
-    print("no data")
+    logger.warning("No data")
     return 0
 
 
 def fetch_drift_market_breakdown(hours: int = 1) -> dict:
     """Fetch Drift market breakdown with trade counts from Dune."""
-    print("Fetching Drift markets from Dune...", end=" ", flush=True)
+    logger.info("Fetching Drift markets from Dune...")
 
     case_parts = [f"WHEN CONTAINS(account_keys, '{acc}') THEN '{mkt}'" for acc, mkt in DRIFT_MARKET_ACCOUNTS.items()]
     start, end = get_time_range(hours)
@@ -437,17 +445,17 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
 
     rows, error = run_dune_query_safe(sql, timeout=180)
     if error:
-        print(f"failed: {error[:50]}", file=sys.stderr)
+        logger.error(f"Failed: {error[:50]}")
         return {}
 
     markets = {row["market"]: row["tx_count"] for row in (rows or [])}
-    print(f"found {len(markets)} markets, {sum(markets.values()):,} txns")
+    logger.info(f"Found {len(markets)} markets, {sum(markets.values()):,} txns")
     return markets
 
 
 def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
     """Fetch unique Jupiter Perps trader count from transaction signers."""
-    print("Fetching accurate Jupiter traders...", end=" ", flush=True)
+    logger.info("Fetching accurate Jupiter traders...")
 
     start, end = get_time_range(hours)
     sql = f"""
@@ -459,21 +467,21 @@ def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
 
     rows, error = run_dune_query_safe(sql, timeout=180)
     if error:
-        print("failed", file=sys.stderr)
+        logger.error("Failed")
         return 0
     if rows:
         traders = rows[0].get("unique_traders", 0)
         txns = rows[0].get("total_txns", 0)
-        print(f"{traders} traders ({txns:,} txns in {hours}h)")
+        logger.info(f"{traders} traders ({txns:,} txns in {hours}h)")
         return traders
 
-    print("no data")
+    logger.warning("No data")
     return 0
 
 
 def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
     """Fetch Jupiter Perps market breakdown with trade counts from Dune."""
-    print("Fetching Jupiter markets from Dune...", end=" ", flush=True)
+    logger.info("Fetching Jupiter markets from Dune...")
 
     case_parts = [f"WHEN CONTAINS(account_keys, '{acc}') THEN '{mkt}'" for acc, mkt in JUPITER_CUSTODY_ACCOUNTS.items()]
     start, end = get_time_range(hours)
@@ -488,11 +496,11 @@ def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
 
     rows, error = run_dune_query_safe(sql, timeout=180)
     if error:
-        print(f"failed: {error[:50]}", file=sys.stderr)
+        logger.error(f"Failed: {error[:50]}")
         return {}
 
     markets = {row["market"]: row["tx_count"] for row in (rows or [])}
-    print(f"found {len(markets)} markets, {sum(markets.values()):,} txns")
+    logger.info(f"Found {len(markets)} markets, {sum(markets.values()):,} txns")
     return markets
 
 
@@ -558,12 +566,12 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
     market_breakdowns = {}
 
     # First, fetch accurate 24h trader counts for protocols with program IDs
-    print("\nFetching accurate 24h trader counts...")
+    logger.info("Fetching accurate 24h trader counts...")
     drift_24h_traders = fetch_drift_accurate_traders(hours=6)  # 6h sample, more reliable
     jupiter_24h_traders = fetch_jupiter_accurate_traders(hours=6)  # 6h sample
 
     for protocol_name, config in PROTOCOLS.items():
-        print(f"\nProcessing {protocol_name}...", end=" ", flush=True)
+        logger.info(f"Processing {protocol_name}...")
 
         # Get volume from DeFiLlama
         volume_data = defillama_volumes.get(config["defillama_name"], {})
@@ -591,7 +599,7 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
             "fees_usd": fees,
         }
 
-        print(f"{tx_count:,} txns, ${volume_24h:,.0f} vol")
+        logger.info(f"{tx_count:,} txns, ${volume_24h:,.0f} vol")
         all_metrics.append(metrics)
 
     # Fetch market breakdowns for both protocols

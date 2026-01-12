@@ -7,8 +7,16 @@ Run via GitHub Actions every 15 minutes.
 """
 
 import json
+import logging
 import os
 from datetime import datetime
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Time windows to cache (in hours)
 TIME_WINDOWS = [1, 4, 8, 24]
@@ -30,8 +38,8 @@ from solana_perps_dashboard import (
 
 def update_cache():
     """Fetch all data and save to cache file."""
-    print(f"Updating cache at {datetime.utcnow().isoformat()}Z")
-    print("=" * 60)
+    logger.info(f"Updating cache at {datetime.utcnow().isoformat()}Z")
+    logger.info("=" * 60)
 
     cache = {
         "updated_at": datetime.utcnow().isoformat() + "Z",
@@ -55,20 +63,20 @@ def update_cache():
     try:
         cache["global_derivatives"] = fetch_global_derivatives()
     except Exception as e:
-        print(f"Global derivatives failed: {e}")
+        logger.error(f"Global derivatives failed: {e}")
         cache["global_derivatives"] = []
 
     # Fetch time-windowed data for each window
     for hours in TIME_WINDOWS:
         window_key = f"{hours}h"
-        print(f"\nFetching {window_key} window data...")
+        logger.info(f"Fetching {window_key} window data...")
         cache["time_windows"][window_key] = {}
 
         # Drift traders
         try:
             cache["time_windows"][window_key]["drift_traders"] = fetch_drift_accurate_traders(hours=hours)
         except Exception as e:
-            print(f"  Drift traders ({window_key}) failed: {e}")
+            logger.error(f"Drift traders ({window_key}) failed: {e}")
             cache["time_windows"][window_key]["drift_traders"] = 0
             cache["time_windows"][window_key]["drift_traders_error"] = str(e)
 
@@ -76,7 +84,7 @@ def update_cache():
         try:
             cache["time_windows"][window_key]["jupiter_traders"] = fetch_jupiter_accurate_traders(hours=hours)
         except Exception as e:
-            print(f"  Jupiter traders ({window_key}) failed: {e}")
+            logger.error(f"Jupiter traders ({window_key}) failed: {e}")
             cache["time_windows"][window_key]["jupiter_traders"] = 0
             cache["time_windows"][window_key]["jupiter_traders_error"] = str(e)
 
@@ -85,7 +93,7 @@ def update_cache():
             try:
                 cache["time_windows"][window_key]["liquidations"] = fetch_drift_liquidations(hours=hours)
             except Exception as e:
-                print(f"  Liquidations ({window_key}) failed: {e}")
+                logger.error(f"Liquidations ({window_key}) failed: {e}")
                 cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": str(e)}
         else:
             cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
@@ -95,7 +103,7 @@ def update_cache():
             try:
                 cache["time_windows"][window_key]["wallet_overlap"] = fetch_cross_platform_wallets(hours=hours)
             except Exception as e:
-                print(f"  Wallet overlap ({window_key}) failed: {e}")
+                logger.error(f"Wallet overlap ({window_key}) failed: {e}")
                 cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
         else:
             cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": "Skipped (query timeout)"}
@@ -109,7 +117,7 @@ def update_cache():
 
     # Build protocol metrics
     for protocol_name, config in PROTOCOLS.items():
-        print(f"\nProcessing {protocol_name}...")
+        logger.info(f"Processing {protocol_name}...")
         volume_data = defillama_volumes.get(config["defillama_name"], {})
         volume_24h = volume_data.get("volume_24h", 0)
 
@@ -118,7 +126,7 @@ def update_cache():
         try:
             tx_count = fetch_signature_count(program_id, 24) if program_id else 0
         except Exception as e:
-            print(f"  Tx count failed: {e}")
+            logger.error(f"Tx count failed: {e}")
             tx_count = 0
 
         # Use actual 24h trader counts from Dune
@@ -151,7 +159,7 @@ def update_cache():
             for m in cache["drift_markets"].values()
         )
     except Exception as e:
-        print(f"Drift markets failed: {e}")
+        logger.error(f"Drift markets failed: {e}")
         cache["drift_markets"] = {}
 
     # Fetch Jupiter market breakdown from Dune
@@ -166,7 +174,7 @@ def update_cache():
             "volumes": jupiter_volumes,
         }
     except Exception as e:
-        print(f"Jupiter markets failed: {e}")
+        logger.error(f"Jupiter markets failed: {e}")
         cache["jupiter_markets"] = {}
 
     # Save to file
@@ -175,20 +183,20 @@ def update_cache():
     with open(cache_path, "w") as f:
         json.dump(cache, f, indent=2)
 
-    print(f"\n{'=' * 60}")
-    print(f"Cache saved to {cache_path}")
-    print(f"Protocols: {len(cache['protocols'])}")
-    print(f"Drift markets: {len(cache['drift_markets'])}")
-    print(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
-    print(f"Global derivatives: {len(cache['global_derivatives'])}")
-    print(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
-    print(f"\nTime window data:")
+    logger.info("=" * 60)
+    logger.info(f"Cache saved to {cache_path}")
+    logger.info(f"Protocols: {len(cache['protocols'])}")
+    logger.info(f"Drift markets: {len(cache['drift_markets'])}")
+    logger.info(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
+    logger.info(f"Global derivatives: {len(cache['global_derivatives'])}")
+    logger.info(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
+    logger.info("Time window data:")
     for window_key, data in cache["time_windows"].items():
         drift_t = data.get("drift_traders", 0)
         jup_t = data.get("jupiter_traders", 0)
         liq = data.get("liquidations", {}).get("count", 0)
         multi = data.get("wallet_overlap", {}).get("multi_platform", 0)
-        print(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Liqs={liq}, MultiPlatform={multi}")
+        logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Liqs={liq}, MultiPlatform={multi}")
 
 
 if __name__ == "__main__":
