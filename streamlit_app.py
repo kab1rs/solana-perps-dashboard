@@ -7,6 +7,8 @@ Data refreshed every 15 minutes via GitHub Actions.
 """
 
 import json
+from datetime import datetime, timezone
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -32,6 +34,22 @@ st.markdown("""
     .negative { color: #ff4444; }
 </style>
 """, unsafe_allow_html=True)
+
+# Sidebar navigation
+with st.sidebar:
+    st.title("Navigation")
+    st.markdown("""
+- [Overview](#solana-perps-overview)
+- [Cross-Chain](#cross-chain-comparison)
+- [Protocol Breakdown](#solana-protocol-breakdown)
+- [Best Venue](#best-venue-by-asset)
+- [Funding Rates](#funding-rate-overview)
+- [Market Deep Dive](#market-deep-dive)
+- [Cross-Platform](#cross-platform-traders)
+- [Quick Insights](#quick-insights)
+    """)
+    st.divider()
+    st.caption("Data refreshes every 15 min")
 
 
 def load_cache():
@@ -104,6 +122,15 @@ if cache is None:
 st.title("Solana Perps Insights")
 updated_at = cache.get("updated_at", "Unknown")
 st.caption(f"Data updated: {updated_at} | Refreshes every 15 minutes")
+
+# Check data freshness and show warning if stale
+try:
+    updated_time = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+    age_minutes = (datetime.now(timezone.utc) - updated_time).total_seconds() / 60
+    if age_minutes > 30:
+        st.warning(f"Data is {int(age_minutes)} minutes old. Cache may be stale.")
+except (ValueError, TypeError):
+    pass  # Silently ignore parsing errors
 
 # Time window selector
 time_window = st.radio(
@@ -212,33 +239,34 @@ if global_derivatives:
 
     with col2:
         # Bar chart for clearer comparison (better than pie for rankings)
-        top_10 = global_derivatives[:10]
-        colors = ["#8B5CF6" if "Solana" in p.get("chains", []) else "#4B5563" for p in top_10]
+        with st.spinner("Loading chart..."):
+            top_10 = global_derivatives[:10]
+            colors = ["#8B5CF6" if "Solana" in p.get("chains", []) else "#4B5563" for p in top_10]
 
-        fig = go.Figure(data=[
-            go.Bar(
-                x=[p["name"][:10] for p in top_10],
-                y=[p["volume_24h"] for p in top_10],
-                marker_color=colors,
-                text=[format_volume(p["volume_24h"]) for p in top_10],
-                textposition="outside",
+            fig = go.Figure(data=[
+                go.Bar(
+                    x=[p["name"][:10] for p in top_10],
+                    y=[p["volume_24h"] for p in top_10],
+                    marker_color=colors,
+                    text=[format_volume(p["volume_24h"]) for p in top_10],
+                    textposition="outside",
+                )
+            ])
+            fig.update_layout(
+                title="Top 10 Perps Protocols",
+                yaxis_title="24h Volume",
+                height=400,
+                margin=dict(t=50, b=80),
+                xaxis_tickangle=-45,
             )
-        ])
-        fig.update_layout(
-            title="Top 10 Perps Protocols",
-            yaxis_title="24h Volume",
-            height=400,
-            margin=dict(t=50, b=80),
-            xaxis_tickangle=-45,
-        )
-        fig.add_annotation(
-            text="Purple = Solana",
-            xref="paper", yref="paper",
-            x=1, y=1,
-            showarrow=False,
-            font=dict(size=10, color="#8B5CF6"),
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            fig.add_annotation(
+                text="Purple = Solana",
+                xref="paper", yref="paper",
+                x=1, y=1,
+                showarrow=False,
+                font=dict(size=10, color="#8B5CF6"),
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     # Summary box
     solana_share = (solana_total / global_total * 100) if global_total > 0 else 0
@@ -269,21 +297,22 @@ with col1:
 
 with col2:
     # Solana protocols pie chart
-    fig = px.pie(
-        protocol_df,
-        values="volume_24h",
-        names="protocol",
-        title="Solana Perps Market Share",
-        hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Set2,
-    )
-    fig.update_layout(
-        showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
-        margin=dict(t=50, b=50, l=20, r=20),
-        height=350,
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    with st.spinner("Loading chart..."):
+        fig = px.pie(
+            protocol_df,
+            values="volume_24h",
+            names="protocol",
+            title="Solana Perps Market Share",
+            hole=0.4,
+            color_discrete_sequence=px.colors.qualitative.Set2,
+        )
+        fig.update_layout(
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+            margin=dict(t=50, b=50, l=20, r=20),
+            height=350,
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
@@ -345,44 +374,45 @@ col1, col2 = st.columns([2, 1])
 
 with col1:
     if drift_markets:
-        # Get top markets by volume for funding display
-        sorted_markets = sorted(
-            [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
-            key=lambda x: x[1]["volume"],
-            reverse=True
-        )[:12]
+        with st.spinner("Loading chart..."):
+            # Get top markets by volume for funding display
+            sorted_markets = sorted(
+                [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
+                key=lambda x: x[1]["volume"],
+                reverse=True
+            )[:12]
 
-        funding_data = []
-        for market, info in sorted_markets:
-            funding = info.get("funding_rate", 0) * 100  # Convert to percentage
-            funding_data.append({
-                "Market": market.replace("-PERP", ""),
-                "Funding %": funding,
-                "Direction": "Longs Pay" if funding > 0 else "Shorts Pay" if funding < 0 else "Neutral",
-            })
+            funding_data = []
+            for market, info in sorted_markets:
+                funding = info.get("funding_rate", 0) * 100  # Convert to percentage
+                funding_data.append({
+                    "Market": market.replace("-PERP", ""),
+                    "Funding %": funding,
+                    "Direction": "Longs Pay" if funding > 0 else "Shorts Pay" if funding < 0 else "Neutral",
+                })
 
-        funding_df = pd.DataFrame(funding_data)
+            funding_df = pd.DataFrame(funding_data)
 
-        # Create bar chart
-        colors = ["#ff4444" if f > 0 else "#00ff88" for f in funding_df["Funding %"]]
-        fig = go.Figure(data=[
-            go.Bar(
-                x=funding_df["Market"],
-                y=funding_df["Funding %"],
-                marker_color=colors,
-                text=[f"{f:.4f}%" for f in funding_df["Funding %"]],
-                textposition="outside",
+            # Create bar chart
+            colors = ["#ff4444" if f > 0 else "#00ff88" for f in funding_df["Funding %"]]
+            fig = go.Figure(data=[
+                go.Bar(
+                    x=funding_df["Market"],
+                    y=funding_df["Funding %"],
+                    marker_color=colors,
+                    text=[f"{f:.4f}%" for f in funding_df["Funding %"]],
+                    textposition="outside",
+                )
+            ])
+            fig.update_layout(
+                title="Funding Rates (Top Markets)",
+                xaxis_title="Market",
+                yaxis_title="Funding Rate %",
+                height=350,
+                margin=dict(t=50, b=50),
             )
-        ])
-        fig.update_layout(
-            title="Funding Rates (Top Markets)",
-            xaxis_title="Market",
-            yaxis_title="Funding Rate %",
-            height=350,
-            margin=dict(t=50, b=50),
-        )
-        fig.add_hline(y=0, line_dash="dash", line_color="gray")
-        st.plotly_chart(fig, use_container_width=True)
+            fig.add_hline(y=0, line_dash="dash", line_color="gray")
+            st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     st.subheader("Funding Extremes")
@@ -514,34 +544,36 @@ else:
         col1, col2 = st.columns([1, 1])
 
         with col1:
-            fig = px.pie(
-                values=[multi, drift_only, jupiter_only],
-                names=["Both Platforms", "Drift Only", "Jupiter Only"],
-                title="Trader Distribution by Platform",
-                color_discrete_sequence=["#8B5CF6", "#3B82F6", "#10B981"],
-                hole=0.4,
-            )
-            fig.update_layout(height=300, margin=dict(t=50, b=20, l=20, r=20))
-            st.plotly_chart(fig, use_container_width=True)
+            with st.spinner("Loading chart..."):
+                fig = px.pie(
+                    values=[multi, drift_only, jupiter_only],
+                    names=["Both Platforms", "Drift Only", "Jupiter Only"],
+                    title="Trader Distribution by Platform",
+                    color_discrete_sequence=["#8B5CF6", "#3B82F6", "#10B981"],
+                    hole=0.4,
+                )
+                fig.update_layout(height=300, margin=dict(t=50, b=20, l=20, r=20))
+                st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            # Bar chart showing totals per platform
-            fig = go.Figure(data=[
-                go.Bar(
-                    x=["Drift Total", "Jupiter Total"],
-                    y=[multi + drift_only, multi + jupiter_only],
-                    marker_color=["#3B82F6", "#10B981"],
-                    text=[f"{multi + drift_only:,}", f"{multi + jupiter_only:,}"],
-                    textposition="outside",
+            with st.spinner("Loading chart..."):
+                # Bar chart showing totals per platform
+                fig = go.Figure(data=[
+                    go.Bar(
+                        x=["Drift Total", "Jupiter Total"],
+                        y=[multi + drift_only, multi + jupiter_only],
+                        marker_color=["#3B82F6", "#10B981"],
+                        text=[f"{multi + drift_only:,}", f"{multi + jupiter_only:,}"],
+                        textposition="outside",
+                    )
+                ])
+                fig.update_layout(
+                    title=f"Total Traders per Platform ({time_window})",
+                    yaxis_title="Unique Wallets",
+                    height=300,
+                    margin=dict(t=50, b=20),
                 )
-            ])
-            fig.update_layout(
-                title=f"Total Traders per Platform ({time_window})",
-                yaxis_title="Unique Wallets",
-                height=300,
-                margin=dict(t=50, b=20),
-            )
-            st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("No wallet data available for the current period")
 
