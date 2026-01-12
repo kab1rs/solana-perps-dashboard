@@ -453,18 +453,19 @@ st.divider()
 # Market Deep Dive
 st.header("Market Deep Dive")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
+
+window_data = get_time_window_data(cache, time_window)
 
 with col1:
-    window_data = get_time_window_data(cache, time_window)
     drift_traders = window_data.get("drift_traders", 0)
-    st.subheader(f"Drift Markets ({drift_traders:,} traders/{time_window})")
+    st.subheader(f"Drift ({drift_traders:,} traders/{time_window})")
 
     if drift_markets:
         drift_data = []
         total_vol = sum(m["volume"] for m in drift_markets.values())
 
-        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:15]
+        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:12]
 
         for market, info in sorted_markets:
             share = (info["volume"] / total_vol * 100) if total_vol > 0 else 0
@@ -475,7 +476,7 @@ with col1:
                 "Market": market,
                 "Volume 24h": f"${info['volume']:,.0f}",
                 "Funding": format_funding(funding),
-                "Open Interest": f"${oi_usd:,.0f}",
+                "OI": f"${oi_usd:,.0f}",
                 "Share": f"{share:.1f}%",
             })
 
@@ -483,7 +484,7 @@ with col1:
 
 with col2:
     jupiter_traders = window_data.get("jupiter_traders", 0)
-    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/{time_window})")
+    st.subheader(f"Jupiter ({jupiter_traders:,} traders/{time_window})")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -508,11 +509,48 @@ with col2:
 
         st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
 
+with col3:
+    pacifica_traders = window_data.get("pacifica_traders", 0)
+    st.subheader(f"Pacifica ({pacifica_traders:,} traders/{time_window})")
+
+    # Get Pacifica volume from protocols list
+    pacifica_protocol = next(
+        (p for p in cache.get("protocols", []) if p.get("protocol") == "Pacifica"),
+        None
+    )
+
+    if pacifica_protocol:
+        pacifica_vol = pacifica_protocol.get("volume_24h", 0)
+        pacifica_vol_7d = pacifica_protocol.get("volume_7d", 0)
+        pacifica_fees = pacifica_protocol.get("fees", 0)
+        change_1d = pacifica_protocol.get("change_1d", 0)
+
+        # Summary metrics
+        st.metric("24h Volume", format_volume(pacifica_vol), f"{change_1d:+.1f}%")
+
+        # Additional stats
+        pacifica_stats = [
+            {"Metric": "7d Volume", "Value": format_volume(pacifica_vol_7d)},
+            {"Metric": "24h Fees", "Value": f"${pacifica_fees:,.0f}"},
+            {"Metric": f"Traders ({time_window})", "Value": f"{pacifica_traders:,}"},
+        ]
+
+        # Add 24h traders if different from selected window
+        if time_window != "24h":
+            traders_24h = cache.get("time_windows", {}).get("24h", {}).get("pacifica_traders", 0)
+            pacifica_stats.append({"Metric": "Traders (24h)", "Value": f"{traders_24h:,}"})
+
+        st.dataframe(pd.DataFrame(pacifica_stats), width="stretch", hide_index=True)
+
+        st.caption("Market-level breakdown unavailable (off-chain CLOB)")
+    else:
+        st.info("No Pacifica data available")
+
 st.divider()
 
 # Cross-Platform Wallet Analysis
 st.header("Cross-Platform Traders")
-st.caption(f"Wallet overlap between Drift and Jupiter Perps ({time_window} window)")
+st.caption(f"Wallet overlap between Drift, Jupiter, and Pacifica ({time_window} window)")
 
 wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
@@ -523,77 +561,117 @@ if wallet_data.get("error"):
     else:
         st.caption(wallet_data.get("error", "Unknown error"))
 else:
-    multi = wallet_data.get("multi_platform", 0)
+    # Extract all overlap categories
     drift_only = wallet_data.get("drift_only", 0)
     jupiter_only = wallet_data.get("jupiter_only", 0)
-    total = multi + drift_only + jupiter_only
+    pacifica_only = wallet_data.get("pacifica_only", 0)
+    drift_jupiter = wallet_data.get("drift_jupiter", 0)
+    drift_pacifica = wallet_data.get("drift_pacifica", 0)
+    jupiter_pacifica = wallet_data.get("jupiter_pacifica", 0)
+    all_three = wallet_data.get("all_three", 0)
 
-    if total > 0:
-        col1, col2, col3, col4 = st.columns(4)
+    # Calculate totals per platform
+    drift_total = drift_only + drift_jupiter + drift_pacifica + all_three
+    jupiter_total = jupiter_only + drift_jupiter + jupiter_pacifica + all_three
+    pacifica_total = pacifica_only + drift_pacifica + jupiter_pacifica + all_three
+    multi_platform = drift_jupiter + drift_pacifica + jupiter_pacifica + all_three
+    total_unique = drift_only + jupiter_only + pacifica_only + drift_jupiter + drift_pacifica + jupiter_pacifica + all_three
+
+    if total_unique > 0:
+        # Top metrics row
+        col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
             st.metric(
-                "Multi-Platform",
-                f"{multi:,}",
-                help="Wallets active on BOTH Drift and Jupiter"
+                "All 3 Platforms",
+                f"{all_three:,}",
+                help="Wallets active on Drift, Jupiter, AND Pacifica"
             )
 
         with col2:
             st.metric(
-                "Drift Exclusive",
-                f"{drift_only:,}",
-                help="Wallets active ONLY on Drift"
+                "Multi-Platform",
+                f"{multi_platform:,}",
+                help="Wallets active on 2+ platforms"
             )
 
         with col3:
             st.metric(
-                "Jupiter Exclusive",
+                "Drift Only",
+                f"{drift_only:,}",
+                help="Wallets active ONLY on Drift"
+            )
+
+        with col4:
+            st.metric(
+                "Jupiter Only",
                 f"{jupiter_only:,}",
                 help="Wallets active ONLY on Jupiter"
             )
 
-        with col4:
-            overlap_pct = (multi / total * 100) if total > 0 else 0
+        with col5:
             st.metric(
-                "Overlap Rate",
-                f"{overlap_pct:.1f}%",
-                help="Percentage of traders using both platforms"
+                "Pacifica Only",
+                f"{pacifica_only:,}",
+                help="Wallets active ONLY on Pacifica"
             )
 
-        # Visualization: Platform distribution pie chart
+        # Visualization row
         col1, col2 = st.columns([1, 1])
 
         with col1:
             with st.spinner("Loading chart..."):
-                fig = px.pie(
-                    values=[multi, drift_only, jupiter_only],
-                    names=["Both Platforms", "Drift Only", "Jupiter Only"],
-                    title="Trader Distribution by Platform",
-                    color_discrete_sequence=["#8B5CF6", "#3B82F6", "#10B981"],
-                    hole=0.4,
-                )
-                fig.update_layout(height=300, margin=dict(t=50, b=20, l=20, r=20))
-                st.plotly_chart(fig, use_container_width=True)
+                # Pie chart showing distribution
+                pie_values = [drift_only, jupiter_only, pacifica_only, drift_jupiter, drift_pacifica, jupiter_pacifica, all_three]
+                pie_names = ["Drift Only", "Jupiter Only", "Pacifica Only", "Drift+Jupiter", "Drift+Pacifica", "Jupiter+Pacifica", "All Three"]
+                pie_colors = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#6366F1", "#14B8A6", "#EC4899"]
+
+                # Filter out zero values for cleaner chart
+                filtered = [(v, n, c) for v, n, c in zip(pie_values, pie_names, pie_colors) if v > 0]
+                if filtered:
+                    values, names, colors = zip(*filtered)
+                    fig = px.pie(
+                        values=values,
+                        names=names,
+                        title="Trader Distribution",
+                        color_discrete_sequence=colors,
+                        hole=0.4,
+                    )
+                    fig.update_layout(height=350, margin=dict(t=50, b=20, l=20, r=20))
+                    st.plotly_chart(fig, use_container_width=True)
 
         with col2:
             with st.spinner("Loading chart..."):
                 # Bar chart showing totals per platform
                 fig = go.Figure(data=[
                     go.Bar(
-                        x=["Drift Total", "Jupiter Total"],
-                        y=[multi + drift_only, multi + jupiter_only],
-                        marker_color=["#3B82F6", "#10B981"],
-                        text=[f"{multi + drift_only:,}", f"{multi + jupiter_only:,}"],
+                        x=["Drift", "Jupiter", "Pacifica"],
+                        y=[drift_total, jupiter_total, pacifica_total],
+                        marker_color=["#3B82F6", "#10B981", "#F59E0B"],
+                        text=[f"{drift_total:,}", f"{jupiter_total:,}", f"{pacifica_total:,}"],
                         textposition="outside",
                     )
                 ])
                 fig.update_layout(
                     title=f"Total Traders per Platform ({time_window})",
                     yaxis_title="Unique Wallets",
-                    height=300,
+                    height=350,
                     margin=dict(t=50, b=20),
                 )
                 st.plotly_chart(fig, use_container_width=True)
+
+        # Overlap details expander
+        with st.expander("Overlap Details"):
+            overlap_details = [
+                {"Combination": "Drift + Jupiter (not Pacifica)", "Count": drift_jupiter},
+                {"Combination": "Drift + Pacifica (not Jupiter)", "Count": drift_pacifica},
+                {"Combination": "Jupiter + Pacifica (not Drift)", "Count": jupiter_pacifica},
+                {"Combination": "All Three Platforms", "Count": all_three},
+            ]
+            st.dataframe(pd.DataFrame(overlap_details), hide_index=True)
+
+            overlap_pct = (multi_platform / total_unique * 100) if total_unique > 0 else 0
+            st.caption(f"**{overlap_pct:.1f}%** of traders use 2+ platforms ({multi_platform:,} of {total_unique:,} unique wallets)")
     else:
         st.info("No wallet data available for the current period")
 

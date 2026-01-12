@@ -301,7 +301,17 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
 
 
 def fetch_cross_platform_wallets(hours: int = 1) -> dict:
-    """Fetch wallet overlap between Drift and Jupiter for the past N hours."""
+    """Fetch wallet overlap between Drift, Jupiter, and Pacifica for the past N hours.
+
+    Returns counts for all possible combinations:
+    - drift_only: Only on Drift
+    - jupiter_only: Only on Jupiter
+    - pacifica_only: Only on Pacifica
+    - drift_jupiter: On Drift and Jupiter (not Pacifica)
+    - drift_pacifica: On Drift and Pacifica (not Jupiter)
+    - jupiter_pacifica: On Jupiter and Pacifica (not Drift)
+    - all_three: On all three platforms
+    """
     logger.info(f"Fetching cross-platform wallets ({hours}h)...")
 
     start, end = get_time_range(hours)
@@ -323,30 +333,70 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
         FROM solana.transactions
         WHERE CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
           AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
+    ),
+    pacifica_wallets AS (
+        SELECT DISTINCT signer as wallet
+        FROM solana.transactions
+        WHERE CONTAINS(account_keys, 'PCFA5iYgmqK6MqPhWNKg7Yv7auX7VZ4Cx7T1eJyrAMH')
+          AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
+    ),
+    combined AS (
+        SELECT
+            COALESCE(d.wallet, j.wallet, p.wallet) as wallet,
+            CASE WHEN d.wallet IS NOT NULL THEN 1 ELSE 0 END as on_drift,
+            CASE WHEN j.wallet IS NOT NULL THEN 1 ELSE 0 END as on_jupiter,
+            CASE WHEN p.wallet IS NOT NULL THEN 1 ELSE 0 END as on_pacifica
+        FROM drift_wallets d
+        FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
+        FULL OUTER JOIN pacifica_wallets p ON COALESCE(d.wallet, j.wallet) = p.wallet
     )
     SELECT
-        COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NOT NULL THEN 1 END) as multi_platform,
-        COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NULL THEN 1 END) as drift_only,
-        COUNT(CASE WHEN d.wallet IS NULL AND j.wallet IS NOT NULL THEN 1 END) as jupiter_only
-    FROM drift_wallets d FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
+        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 0 AND on_pacifica = 0 THEN 1 END) as drift_only,
+        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 1 AND on_pacifica = 0 THEN 1 END) as jupiter_only,
+        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 0 AND on_pacifica = 1 THEN 1 END) as pacifica_only,
+        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 1 AND on_pacifica = 0 THEN 1 END) as drift_jupiter,
+        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 0 AND on_pacifica = 1 THEN 1 END) as drift_pacifica,
+        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 1 AND on_pacifica = 1 THEN 1 END) as jupiter_pacifica,
+        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 1 AND on_pacifica = 1 THEN 1 END) as all_three
+    FROM combined
     """
 
     rows, error = run_dune_query_safe(sql, timeout=300)
     if error:
         logger.error(f"Failed: {error}")
-        return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": error}
-    if rows:
-        data = {
-            "multi_platform": rows[0].get("multi_platform", 0),
-            "drift_only": rows[0].get("drift_only", 0),
-            "jupiter_only": rows[0].get("jupiter_only", 0),
+        return {
+            "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
+            "drift_jupiter": 0, "drift_pacifica": 0, "jupiter_pacifica": 0,
+            "all_three": 0, "error": error,
+            # Legacy fields for backward compatibility
+            "multi_platform": 0,
         }
-        total = data["multi_platform"] + data["drift_only"] + data["jupiter_only"]
-        logger.info(f"{total} total ({data['multi_platform']} multi-platform)")
+    if rows:
+        row = rows[0]
+        data = {
+            "drift_only": row.get("drift_only", 0),
+            "jupiter_only": row.get("jupiter_only", 0),
+            "pacifica_only": row.get("pacifica_only", 0),
+            "drift_jupiter": row.get("drift_jupiter", 0),
+            "drift_pacifica": row.get("drift_pacifica", 0),
+            "jupiter_pacifica": row.get("jupiter_pacifica", 0),
+            "all_three": row.get("all_three", 0),
+            # Legacy field: count of wallets on 2+ platforms
+            "multi_platform": (
+                row.get("drift_jupiter", 0) + row.get("drift_pacifica", 0) +
+                row.get("jupiter_pacifica", 0) + row.get("all_three", 0)
+            ),
+        }
+        total = sum(v for k, v in data.items() if k != "multi_platform")
+        logger.info(f"{total} total wallets ({data['all_three']} on all 3, {data['multi_platform']} multi-platform)")
         return data
 
     logger.warning("No data")
-    return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0}
+    return {
+        "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
+        "drift_jupiter": 0, "drift_pacifica": 0, "jupiter_pacifica": 0,
+        "all_three": 0, "multi_platform": 0,
+    }
 
 
 def fetch_drift_markets_from_api() -> dict:
