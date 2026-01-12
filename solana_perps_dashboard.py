@@ -88,49 +88,73 @@ JUPITER_CUSTODY_ACCOUNTS = {
 }
 
 
-def rpc_call(method: str, params: list) -> dict:
-    """Make an RPC call to the Solana node."""
+def rpc_call(method: str, params: list, max_retries: int = 3) -> dict:
+    """Make an RPC call to the Solana node with retry logic."""
     payload = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params}
-    req = Request(
-        RPC_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
-    )
-    try:
-        with urlopen(req, timeout=30) as response:
-            result = json.loads(response.read().decode("utf-8"))
-            if "error" in result:
-                logger.error(f"RPC Error: {result['error']}")
-                return {}
-            return result.get("result", {})
-    except HTTPError as e:
-        if e.code == 429:
-            time.sleep(2)
-            return rpc_call(method, params)
-        return {}
-    except Exception as e:
-        logger.error(f"RPC call failed: {e}")
-        return {}
+
+    for attempt in range(max_retries):
+        req = Request(
+            RPC_URL,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
+        )
+        try:
+            with urlopen(req, timeout=30) as response:
+                result = json.loads(response.read().decode("utf-8"))
+                if "error" in result:
+                    logger.error(f"RPC Error: {result['error']}")
+                    return {}
+                return result.get("result", {})
+        except HTTPError as e:
+            if e.code == 429:
+                wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
+                logger.warning(f"Rate limited, waiting {wait_time}s (attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
+                continue
+            logger.error(f"HTTP error {e.code}: {e.reason}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+                continue
+            return {}
+        except Exception as e:
+            logger.error(f"RPC call failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+                continue
+            return {}
+
+    return {}
 
 
-def run_dune_query(sql: str, timeout: int = 180) -> dict:
-    """Execute SQL on Dune Analytics and return results."""
-    # Start query execution
+def run_dune_query(sql: str, timeout: int = 180, max_retries: int = 3) -> dict:
+    """Execute SQL on Dune Analytics and return results with retry logic."""
     url = f"{DUNE_API_URL}/sql/execute"
     payload = {"sql": sql, "performance": "medium"}
-    req = Request(
-        url,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "X-DUNE-API-KEY": DUNE_API_KEY},
-        method="POST"
-    )
 
-    try:
-        with urlopen(req, timeout=30) as response:
-            result = json.loads(response.read().decode("utf-8"))
-            execution_id = result.get("execution_id")
-    except Exception as e:
-        return {"error": str(e)}
+    # Start query execution with retry
+    execution_id = None
+    for attempt in range(max_retries):
+        req = Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json", "X-DUNE-API-KEY": DUNE_API_KEY},
+            method="POST"
+        )
+        try:
+            with urlopen(req, timeout=30) as response:
+                result = json.loads(response.read().decode("utf-8"))
+                execution_id = result.get("execution_id")
+                break
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt
+                logger.warning(f"Dune query start failed, retrying in {wait_time}s: {e}")
+                time.sleep(wait_time)
+            else:
+                return {"error": str(e)}
+
+    if not execution_id:
+        return {"error": "Failed to start query"}
 
     # Poll for results
     start_time = time.time()

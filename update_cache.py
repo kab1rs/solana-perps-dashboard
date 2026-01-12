@@ -11,6 +11,8 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
 # Configure logging
 logging.basicConfig(
@@ -21,6 +23,64 @@ logger = logging.getLogger(__name__)
 
 # Time windows to cache (in hours)
 TIME_WINDOWS = [1, 4, 8, 24]
+
+# Cache file path
+CACHE_PATH = Path("data/cache.json")
+
+# Required keys for valid cache
+REQUIRED_CACHE_KEYS = ["protocols", "drift_markets", "time_windows", "updated_at"]
+
+
+def load_existing_cache() -> Optional[dict]:
+    """Load existing cache file as fallback."""
+    if not CACHE_PATH.exists():
+        return None
+    try:
+        with open(CACHE_PATH) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        logger.error(f"Failed to load existing cache: {e}")
+        return None
+
+
+def validate_cache(cache: dict) -> bool:
+    """Validate cache has required data."""
+    # Check required keys exist
+    for key in REQUIRED_CACHE_KEYS:
+        if key not in cache:
+            logger.error(f"Cache missing required key: {key}")
+            return False
+
+    # Must have at least some protocol data
+    if not cache.get("protocols"):
+        logger.error("Cache has no protocol data")
+        return False
+
+    # Must have Drift markets (our primary data source)
+    if not cache.get("drift_markets"):
+        logger.error("Cache has no Drift market data")
+        return False
+
+    return True
+
+
+def save_cache(cache: dict, old_cache: Optional[dict]) -> bool:
+    """Save cache if valid, otherwise keep old cache."""
+    if validate_cache(cache):
+        os.makedirs("data", exist_ok=True)
+        with open(CACHE_PATH, "w") as f:
+            json.dump(cache, f, indent=2)
+        logger.info(f"Cache saved to {CACHE_PATH}")
+        return True
+    else:
+        logger.error("New cache is invalid!")
+        if old_cache and validate_cache(old_cache):
+            logger.info("Keeping previous cache")
+            # Update timestamp to indicate we tried
+            old_cache["last_update_attempt"] = datetime.utcnow().isoformat() + "Z"
+            with open(CACHE_PATH, "w") as f:
+                json.dump(old_cache, f, indent=2)
+        return False
 
 from solana_perps_dashboard import (
     fetch_defillama_volume,
@@ -41,6 +101,11 @@ def update_cache():
     """Fetch all data and save to cache file."""
     logger.info(f"Updating cache at {datetime.utcnow().isoformat()}Z")
     logger.info("=" * 60)
+
+    # Load existing cache as fallback
+    old_cache = load_existing_cache()
+    if old_cache:
+        logger.info(f"Loaded existing cache from {old_cache.get('updated_at', 'unknown')}")
 
     cache = {
         "updated_at": datetime.utcnow().isoformat() + "Z",
@@ -202,14 +267,9 @@ def update_cache():
         logger.error(f"Jupiter markets failed: {e}")
         cache["jupiter_markets"] = {}
 
-    # Save to file
-    os.makedirs("data", exist_ok=True)
-    cache_path = "data/cache.json"
-    with open(cache_path, "w") as f:
-        json.dump(cache, f, indent=2)
-
+    # Save to file (with validation and fallback)
     logger.info("=" * 60)
-    logger.info(f"Cache saved to {cache_path}")
+    save_cache(cache, old_cache)
     logger.info(f"Protocols: {len(cache['protocols'])}")
     logger.info(f"Drift markets: {len(cache['drift_markets'])}")
     logger.info(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")

@@ -155,15 +155,15 @@ total_oi = cache.get("total_open_interest", 0)
 st.header("Solana Perps Overview")
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    st.metric("24h Volume", format_volume(total_volume))
+    st.metric("24h Volume", format_volume(total_volume), help="Source: DeFiLlama. Sum of all Solana perps protocols.")
 with col2:
-    st.metric("Open Interest", format_volume(total_oi))
+    st.metric("Drift Open Interest", format_volume(total_oi), help="Source: Drift API. Jupiter OI not yet available.")
 with col3:
-    st.metric("Traders (24h)", f"{total_traders:,}")
+    st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter unique wallets.")
 with col4:
-    st.metric("Fees Generated", f"${total_fees:,.0f}")
+    st.metric("Fees Generated", f"${total_fees:,.0f}", help="Estimated from volume × protocol fee rates.")
 with col5:
-    st.metric("Transactions", f"{total_txns:,}")
+    st.metric("Transactions", f"{total_txns:,}", help="Source: Solana RPC. Program signature counts.")
 
 st.divider()
 
@@ -381,11 +381,11 @@ def is_valid_funding_market(info: dict) -> bool:
 with col1:
     if drift_markets:
         with st.spinner("Loading chart..."):
-            # Get top markets by volume for funding display (with OI and funding filters)
+            # Get markets sorted by absolute funding rate (most extreme first)
             sorted_markets = sorted(
                 [(k, v) for k, v in drift_markets.items()
                  if v.get("volume", 0) > 10000 and is_valid_funding_market(v)],
-                key=lambda x: x[1]["volume"],
+                key=lambda x: abs(x[1].get("funding_rate", 0)),
                 reverse=True
             )[:12]
 
@@ -508,7 +508,11 @@ st.caption(f"Wallet overlap between Drift and Jupiter Perps ({time_window} windo
 wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
 if wallet_data.get("error"):
-    st.warning(f"Wallet data unavailable: {wallet_data.get('error', 'Query timeout')}")
+    st.warning(f"Wallet data unavailable for {time_window} window")
+    if "timeout" in wallet_data.get("error", "").lower() or "skipped" in wallet_data.get("error", "").lower():
+        st.caption("Wallet overlap queries time out beyond 4h due to data volume. Try 1h or 4h window.")
+    else:
+        st.caption(wallet_data.get("error", "Unknown error"))
 else:
     multi = wallet_data.get("multi_platform", 0)
     drift_only = wallet_data.get("drift_only", 0)
@@ -629,8 +633,11 @@ with col4:
     st.subheader(f"Liquidations ({time_window})")
     liquidations = insights_window.get("liquidations", {})
     if liquidations.get("error"):
-        st.warning("Data unavailable")
-        st.caption(liquidations.get("error", "Query timeout"))
+        st.warning(f"Liquidations unavailable for {time_window}")
+        if "timeout" in liquidations.get("error", "").lower() or "skipped" in liquidations.get("error", "").lower():
+            st.caption("Liquidation queries time out beyond 8h. Try a shorter window.")
+        else:
+            st.caption(liquidations.get("error", "Unknown error"))
     elif liquidations.get("count", 0) > 0:
         st.metric("Events", f"{liquidations['count']:,}")
         st.write(f"Txns: {liquidations.get('txns', 0):,}")
