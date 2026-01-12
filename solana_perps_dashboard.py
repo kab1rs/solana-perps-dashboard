@@ -67,6 +67,14 @@ PROTOCOL_METADATA = {
         "program_id": "PCFA5iYgmqK6MqPhWNKg7Yv7auX7VZ4Cx7T1eJyrAMH",
         "fee_rate": 0.0005,  # 0.05% (estimate)
     },
+    "FlashTrade": {
+        "program_id": "FLASH6Lo6h3iasJKWDs2F8TkW2UKf3s15C8PMGuVfgBn",
+        "fee_rate": 0.0005,  # 0.05%
+    },
+    "Adrena Protocol": {
+        "program_id": "13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet",
+        "fee_rate": 0.0005,  # 0.05%
+    },
 }
 
 # Drift market accounts (identified via Dune analysis)
@@ -623,6 +631,58 @@ def fetch_pacifica_traders(hours: int = 1) -> int:
         return traders
 
     logger.warning("No Pacifica data")
+    return 0
+
+
+def fetch_flashtrade_traders(hours: int = 1) -> int:
+    """Fetch unique FlashTrade trader count from Dune."""
+    logger.info(f"Fetching FlashTrade traders from Dune ({hours}h)...")
+
+    start, end = get_time_range(hours)
+    sql = f"""
+    SELECT COUNT(*) as total_txns, COUNT(DISTINCT signer) as unique_traders
+    FROM solana.transactions
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
+      AND CONTAINS(account_keys, 'FLASH6Lo6h3iasJKWDs2F8TkW2UKf3s15C8PMGuVfgBn')
+    """
+
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        logger.error(f"FlashTrade traders failed: {error}")
+        return 0
+    if rows:
+        traders = rows[0].get("unique_traders", 0)
+        txns = rows[0].get("total_txns", 0)
+        logger.info(f"{traders} FlashTrade traders ({txns:,} txns in {hours}h)")
+        return traders
+
+    logger.warning("No FlashTrade data")
+    return 0
+
+
+def fetch_adrena_traders(hours: int = 1) -> int:
+    """Fetch unique Adrena trader count from Dune."""
+    logger.info(f"Fetching Adrena traders from Dune ({hours}h)...")
+
+    start, end = get_time_range(hours)
+    sql = f"""
+    SELECT COUNT(*) as total_txns, COUNT(DISTINCT signer) as unique_traders
+    FROM solana.transactions
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
+      AND CONTAINS(account_keys, '13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet')
+    """
+
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        logger.error(f"Adrena traders failed: {error}")
+        return 0
+    if rows:
+        traders = rows[0].get("unique_traders", 0)
+        txns = rows[0].get("total_txns", 0)
+        logger.info(f"{traders} Adrena traders ({txns:,} txns in {hours}h)")
+        return traders
+
+    logger.warning("No Adrena data")
     return 0
 
 

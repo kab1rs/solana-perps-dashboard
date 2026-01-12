@@ -91,6 +91,8 @@ from solana_perps_dashboard import (
     fetch_cross_platform_wallets,
     fetch_jupiter_accurate_traders,
     fetch_pacifica_traders,
+    fetch_flashtrade_traders,
+    fetch_adrena_traders,
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
     distribute_volume_by_trades,
@@ -164,6 +166,8 @@ def update_cache():
             "drift_traders": lambda h=hours: fetch_drift_accurate_traders(hours=h),
             "jupiter_traders": lambda h=hours: fetch_jupiter_accurate_traders(hours=h),
             "pacifica_traders": lambda h=hours: fetch_pacifica_traders(hours=h),
+            "flashtrade_traders": lambda h=hours: fetch_flashtrade_traders(hours=h),
+            "adrena_traders": lambda h=hours: fetch_adrena_traders(hours=h),
         }
         if hours <= 8:
             queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
@@ -179,13 +183,7 @@ def update_cache():
                     cache["time_windows"][window_key][name] = future.result()
                 except Exception as e:
                     logger.error(f"{name} ({window_key}) failed: {e}")
-                    if name == "drift_traders":
-                        cache["time_windows"][window_key][name] = 0
-                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
-                    elif name == "jupiter_traders":
-                        cache["time_windows"][window_key][name] = 0
-                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
-                    elif name == "pacifica_traders":
+                    if name in ("drift_traders", "jupiter_traders", "pacifica_traders", "flashtrade_traders", "adrena_traders"):
                         cache["time_windows"][window_key][name] = 0
                         cache["time_windows"][window_key][f"{name}_error"] = str(e)
                     elif name == "liquidations":
@@ -243,6 +241,10 @@ def update_cache():
             traders = cache["time_windows"].get("24h", {}).get("jupiter_traders", 0)
         elif protocol_name == "Pacifica":
             traders = cache["time_windows"].get("24h", {}).get("pacifica_traders", 0)
+        elif protocol_name == "FlashTrade":
+            traders = cache["time_windows"].get("24h", {}).get("flashtrade_traders", 0)
+        elif protocol_name == "Adrena Protocol":
+            traders = cache["time_windows"].get("24h", {}).get("adrena_traders", 0)
         else:
             traders = 0  # No Dune query for this protocol
 
@@ -287,9 +289,11 @@ def update_cache():
         drift_t = data.get("drift_traders", 0)
         jup_t = data.get("jupiter_traders", 0)
         paci_t = data.get("pacifica_traders", 0)
+        flash_t = data.get("flashtrade_traders", 0)
+        adrena_t = data.get("adrena_traders", 0)
         liq = data.get("liquidations", {}).get("count", 0)
         multi = data.get("wallet_overlap", {}).get("multi_platform", 0)
-        logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Pacifica={paci_t}, Liqs={liq}, MultiPlatform={multi}")
+        logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Pacifica={paci_t}, Flash={flash_t}, Adrena={adrena_t}, Liqs={liq}, Multi={multi}")
 
 
 if __name__ == "__main__":

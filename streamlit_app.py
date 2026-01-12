@@ -711,14 +711,19 @@ with col3:
     drift_count = insights_window.get("drift_traders", 0)
     jupiter_count = insights_window.get("jupiter_traders", 0)
     pacifica_count = insights_window.get("pacifica_traders", 0)
-    if drift_count > 0 or jupiter_count > 0 or pacifica_count > 0:
-        st.metric("Drift", f"{drift_count:,}")
-        st.metric("Jupiter", f"{jupiter_count:,}")
-        st.metric(
-            "Pacifica",
-            f"{pacifica_count:,}",
-            help="Pacifica uses hybrid architecture (off-chain CLOB, on-chain settlement). This count represents active on-chain users, not all traders. May undercount due to off-chain activity, or overcount depositors who haven't traded."
-        )
+    flashtrade_count = insights_window.get("flashtrade_traders", 0)
+    adrena_count = insights_window.get("adrena_traders", 0)
+    total_traders = drift_count + jupiter_count + pacifica_count + flashtrade_count + adrena_count
+    if total_traders > 0:
+        # Show as compact table for all 5 protocols
+        trader_data = [
+            {"Protocol": "Drift", "Traders": f"{drift_count:,}"},
+            {"Protocol": "Jupiter", "Traders": f"{jupiter_count:,}"},
+            {"Protocol": "Pacifica", "Traders": f"{pacifica_count:,}"},
+            {"Protocol": "FlashTrade", "Traders": f"{flashtrade_count:,}"},
+            {"Protocol": "Adrena", "Traders": f"{adrena_count:,}"},
+        ]
+        st.dataframe(pd.DataFrame(trader_data), hide_index=True, height=212)
     else:
         st.write("No trader data available")
 
