@@ -9,6 +9,7 @@ Run via GitHub Actions every 15 minutes.
 import json
 import logging
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 # Configure logging
@@ -56,56 +57,76 @@ def update_cache():
         "wallet_overlap": {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0},
     }
 
-    # Fetch volumes from DeFiLlama (fast)
-    defillama_volumes = fetch_defillama_volume()
+    # Fetch fast APIs in parallel
+    logger.info("Fetching fast APIs in parallel...")
+    defillama_volumes = {}
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        future_to_name = {
+            executor.submit(fetch_defillama_volume): "defillama",
+            executor.submit(fetch_global_derivatives): "global",
+            executor.submit(fetch_drift_markets_from_api): "drift_markets",
+        }
+        for future in as_completed(future_to_name):
+            name = future_to_name[future]
+            try:
+                result = future.result()
+                if name == "defillama":
+                    defillama_volumes = result
+                elif name == "global":
+                    cache["global_derivatives"] = result
+                elif name == "drift_markets":
+                    cache["drift_markets"] = result
+                    cache["total_open_interest"] = sum(
+                        m.get("open_interest", 0) * m.get("last_price", 0)
+                        for m in result.values()
+                    )
+            except Exception as e:
+                logger.error(f"{name} failed: {e}")
+                if name == "global":
+                    cache["global_derivatives"] = []
+                elif name == "drift_markets":
+                    cache["drift_markets"] = {}
 
-    # Fetch global derivatives for cross-chain comparison
-    try:
-        cache["global_derivatives"] = fetch_global_derivatives()
-    except Exception as e:
-        logger.error(f"Global derivatives failed: {e}")
-        cache["global_derivatives"] = []
-
-    # Fetch time-windowed data for each window
+    # Fetch time-windowed Dune queries in parallel per window
     for hours in TIME_WINDOWS:
         window_key = f"{hours}h"
-        logger.info(f"Fetching {window_key} window data...")
+        logger.info(f"Fetching {window_key} window data (parallel)...")
         cache["time_windows"][window_key] = {}
 
-        # Drift traders
-        try:
-            cache["time_windows"][window_key]["drift_traders"] = fetch_drift_accurate_traders(hours=hours)
-        except Exception as e:
-            logger.error(f"Drift traders ({window_key}) failed: {e}")
-            cache["time_windows"][window_key]["drift_traders"] = 0
-            cache["time_windows"][window_key]["drift_traders_error"] = str(e)
-
-        # Jupiter traders
-        try:
-            cache["time_windows"][window_key]["jupiter_traders"] = fetch_jupiter_accurate_traders(hours=hours)
-        except Exception as e:
-            logger.error(f"Jupiter traders ({window_key}) failed: {e}")
-            cache["time_windows"][window_key]["jupiter_traders"] = 0
-            cache["time_windows"][window_key]["jupiter_traders_error"] = str(e)
-
-        # Liquidations (skip for 24h to avoid timeout)
+        # Build list of queries to run for this window
+        queries = {
+            "drift_traders": lambda h=hours: fetch_drift_accurate_traders(hours=h),
+            "jupiter_traders": lambda h=hours: fetch_jupiter_accurate_traders(hours=h),
+        }
         if hours <= 8:
-            try:
-                cache["time_windows"][window_key]["liquidations"] = fetch_drift_liquidations(hours=hours)
-            except Exception as e:
-                logger.error(f"Liquidations ({window_key}) failed: {e}")
-                cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": str(e)}
-        else:
-            cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
-
-        # Wallet overlap (skip for 8h+ to avoid timeout)
+            queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
         if hours <= 4:
-            try:
-                cache["time_windows"][window_key]["wallet_overlap"] = fetch_cross_platform_wallets(hours=hours)
-            except Exception as e:
-                logger.error(f"Wallet overlap ({window_key}) failed: {e}")
-                cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
-        else:
+            queries["wallet_overlap"] = lambda h=hours: fetch_cross_platform_wallets(hours=h)
+
+        # Run queries in parallel
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            future_to_name = {executor.submit(fn): name for name, fn in queries.items()}
+            for future in as_completed(future_to_name):
+                name = future_to_name[future]
+                try:
+                    cache["time_windows"][window_key][name] = future.result()
+                except Exception as e:
+                    logger.error(f"{name} ({window_key}) failed: {e}")
+                    if name == "drift_traders":
+                        cache["time_windows"][window_key][name] = 0
+                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
+                    elif name == "jupiter_traders":
+                        cache["time_windows"][window_key][name] = 0
+                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
+                    elif name == "liquidations":
+                        cache["time_windows"][window_key][name] = {"count": 0, "txns": 0, "error": str(e)}
+                    elif name == "wallet_overlap":
+                        cache["time_windows"][window_key][name] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
+
+        # Set defaults for skipped queries
+        if hours > 8:
+            cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
+        if hours > 4:
             cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": "Skipped (query timeout)"}
 
     # Set legacy keys from 1h window for backward compatibility
@@ -115,19 +136,29 @@ def update_cache():
         cache["liquidations_1h"] = cache["time_windows"]["1h"].get("liquidations", {"count": 0, "txns": 0})
         cache["wallet_overlap"] = cache["time_windows"]["1h"].get("wallet_overlap", {})
 
+    # Fetch signature counts in parallel
+    logger.info("Fetching signature counts in parallel...")
+    tx_counts = {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_protocol = {
+            executor.submit(fetch_signature_count, config["program_id"], 24): name
+            for name, config in PROTOCOLS.items()
+            if config["program_id"]
+        }
+        for future in as_completed(future_to_protocol):
+            protocol_name = future_to_protocol[future]
+            try:
+                tx_counts[protocol_name] = future.result()
+            except Exception as e:
+                logger.error(f"Tx count for {protocol_name} failed: {e}")
+                tx_counts[protocol_name] = 0
+
     # Build protocol metrics
     for protocol_name, config in PROTOCOLS.items():
         logger.info(f"Processing {protocol_name}...")
         volume_data = defillama_volumes.get(config["defillama_name"], {})
         volume_24h = volume_data.get("volume_24h", 0)
-
-        # Get tx count from RPC
-        program_id = config["program_id"]
-        try:
-            tx_count = fetch_signature_count(program_id, 24) if program_id else 0
-        except Exception as e:
-            logger.error(f"Tx count failed: {e}")
-            tx_count = 0
+        tx_count = tx_counts.get(protocol_name, 0)
 
         # Use actual 24h trader counts from Dune
         if protocol_name == "Drift":
@@ -149,18 +180,6 @@ def update_cache():
             "traders": traders,
             "fees": fees,
         })
-
-    # Fetch Drift market breakdown from API (fast)
-    try:
-        cache["drift_markets"] = fetch_drift_markets_from_api()
-        # Calculate total open interest from Drift markets
-        cache["total_open_interest"] = sum(
-            m.get("open_interest", 0) * m.get("last_price", 0)
-            for m in cache["drift_markets"].values()
-        )
-    except Exception as e:
-        logger.error(f"Drift markets failed: {e}")
-        cache["drift_markets"] = {}
 
     # Fetch Jupiter market breakdown from Dune
     try:
