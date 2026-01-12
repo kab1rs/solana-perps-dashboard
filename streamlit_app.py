@@ -372,12 +372,19 @@ st.header("Funding Rate Overview")
 
 col1, col2 = st.columns([2, 1])
 
+def is_valid_funding_market(info: dict) -> bool:
+    """Filter for valid funding rate markets: min OI and reasonable funding."""
+    oi_usd = info.get("open_interest", 0) * info.get("last_price", 0)
+    funding = abs(info.get("funding_rate", 0))
+    return oi_usd >= 10000 and funding < 0.05  # $10k OI min, <5% funding
+
 with col1:
     if drift_markets:
         with st.spinner("Loading chart..."):
-            # Get top markets by volume for funding display
+            # Get top markets by volume for funding display (with OI and funding filters)
             sorted_markets = sorted(
-                [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
+                [(k, v) for k, v in drift_markets.items()
+                 if v.get("volume", 0) > 10000 and is_valid_funding_market(v)],
                 key=lambda x: x[1]["volume"],
                 reverse=True
             )[:12]
@@ -418,10 +425,10 @@ with col2:
     st.subheader("Funding Extremes")
 
     if drift_markets:
-        sorted_by_funding = sorted(
-            [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000],
-            key=lambda x: x[1].get("funding_rate", 0)
-        )
+        # Filter for valid markets (min OI, reasonable funding)
+        valid_markets = [(k, v) for k, v in drift_markets.items()
+                         if v.get("volume", 0) > 10000 and is_valid_funding_market(v)]
+        sorted_by_funding = sorted(valid_markets, key=lambda x: x[1].get("funding_rate", 0))
 
         if sorted_by_funding:
             lowest = sorted_by_funding[0]
