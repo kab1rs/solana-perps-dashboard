@@ -33,7 +33,7 @@ from solana_perps_dashboard import (
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
     distribute_volume_by_trades,
-    PROTOCOLS,
+    PROTOCOL_METADATA,
 )
 
 
@@ -136,14 +136,14 @@ def update_cache():
         cache["liquidations_1h"] = cache["time_windows"]["1h"].get("liquidations", {"count": 0, "txns": 0})
         cache["wallet_overlap"] = cache["time_windows"]["1h"].get("wallet_overlap", {})
 
-    # Fetch signature counts in parallel
+    # Fetch signature counts in parallel for protocols with program IDs
     logger.info("Fetching signature counts in parallel...")
     tx_counts = {}
     with ThreadPoolExecutor(max_workers=4) as executor:
         future_to_protocol = {
-            executor.submit(fetch_signature_count, config["program_id"], 24): name
-            for name, config in PROTOCOLS.items()
-            if config["program_id"]
+            executor.submit(fetch_signature_count, metadata["program_id"], 24): name
+            for name, metadata in PROTOCOL_METADATA.items()
+            if metadata.get("program_id")
         }
         for future in as_completed(future_to_protocol):
             protocol_name = future_to_protocol[future]
@@ -153,22 +153,28 @@ def update_cache():
                 logger.error(f"Tx count for {protocol_name} failed: {e}")
                 tx_counts[protocol_name] = 0
 
-    # Build protocol metrics
-    for protocol_name, config in PROTOCOLS.items():
-        logger.info(f"Processing {protocol_name}...")
-        volume_data = defillama_volumes.get(config["defillama_name"], {})
+    # Build protocol metrics dynamically from DeFiLlama data
+    for protocol_name, volume_data in defillama_volumes.items():
         volume_24h = volume_data.get("volume_24h", 0)
+        if volume_24h < 1000:  # Skip tiny protocols
+            continue
+
+        logger.info(f"Processing {protocol_name}...")
+
+        # Get extra metadata if available
+        metadata = PROTOCOL_METADATA.get(protocol_name, {})
+        fee_rate = metadata.get("fee_rate", 0.0005)  # Default 0.05%
         tx_count = tx_counts.get(protocol_name, 0)
 
-        # Use actual 24h trader counts from Dune
-        if protocol_name == "Drift":
+        # Use actual 24h trader counts from Dune for known protocols
+        if protocol_name == "Drift Trade":
             traders = cache["time_windows"].get("24h", {}).get("drift_traders", 0)
-        elif protocol_name == "Jupiter Perps":
+        elif protocol_name == "Jupiter Perpetual Exchange":
             traders = cache["time_windows"].get("24h", {}).get("jupiter_traders", 0)
         else:
-            traders = 0
+            traders = 0  # No Dune query for this protocol
 
-        fees = volume_24h * config["fee_rate"]
+        fees = volume_24h * fee_rate
 
         cache["protocols"].append({
             "protocol": protocol_name,
@@ -185,7 +191,7 @@ def update_cache():
     try:
         jupiter_trades = fetch_jupiter_market_breakdown(hours=1)
         jupiter_volume = next(
-            (p["volume_24h"] for p in cache["protocols"] if p["protocol"] == "Jupiter Perps"), 0
+            (p["volume_24h"] for p in cache["protocols"] if p["protocol"] == "Jupiter Perpetual Exchange"), 0
         )
         jupiter_volumes = distribute_volume_by_trades(jupiter_volume, jupiter_trades)
         cache["jupiter_markets"] = {

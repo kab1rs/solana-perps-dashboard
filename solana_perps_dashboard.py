@@ -52,27 +52,16 @@ DUNE_API_URL = "https://api.dune.com/api/v1"
 # Drift Data API (provides per-market volume data directly)
 DRIFT_DATA_API = "https://data.api.drift.trade/contracts"
 
-# Protocols: map display name to (program_id, defillama_name)
-PROTOCOLS = {
-    "Jupiter Perps": {
+# Protocol metadata: keyed by DeFiLlama name for protocols we have extra data for
+# Other Solana protocols from DeFiLlama will use defaults (no program_id, 0.05% fee)
+PROTOCOL_METADATA = {
+    "Jupiter Perpetual Exchange": {
         "program_id": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
-        "defillama_name": "Jupiter Perpetual Exchange",
         "fee_rate": 0.0006,  # 0.06%
     },
-    "Drift": {
+    "Drift Trade": {
         "program_id": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
-        "defillama_name": "Drift Trade",
         "fee_rate": 0.0005,  # 0.05%
-    },
-    "FlashTrade": {
-        "program_id": None,
-        "defillama_name": "FlashTrade",
-        "fee_rate": 0.0005,
-    },
-    "Adrena": {
-        "program_id": None,
-        "defillama_name": "Adrena Protocol",
-        "fee_rate": 0.0005,
     },
 }
 
@@ -570,26 +559,31 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
     drift_24h_traders = fetch_drift_accurate_traders(hours=6)  # 6h sample, more reliable
     jupiter_24h_traders = fetch_jupiter_accurate_traders(hours=6)  # 6h sample
 
-    for protocol_name, config in PROTOCOLS.items():
+    # Build protocol metrics dynamically from DeFiLlama data
+    for protocol_name, volume_data in defillama_volumes.items():
+        volume_24h = volume_data.get("volume_24h", 0)
+        if volume_24h < 1000:  # Skip tiny protocols
+            continue
+
         logger.info(f"Processing {protocol_name}...")
 
-        # Get volume from DeFiLlama
-        volume_data = defillama_volumes.get(config["defillama_name"], {})
-        volume_24h = volume_data.get("volume_24h", 0)
+        # Get extra metadata if available
+        metadata = PROTOCOL_METADATA.get(protocol_name, {})
+        program_id = metadata.get("program_id")
+        fee_rate = metadata.get("fee_rate", 0.0005)  # Default 0.05%
 
-        # Get tx count from RPC
-        program_id = config["program_id"]
+        # Get tx count from RPC if we have program ID
         tx_count = fetch_signature_count(program_id, hours) if program_id else 0
 
-        # Use accurate trader counts (scale 6h to 24h estimate)
-        if protocol_name == "Drift":
-            traders = int(drift_24h_traders * 2)  # Rough 6h->24h scaling (not 4x due to overlap)
-        elif protocol_name == "Jupiter Perps":
+        # Use accurate trader counts for known protocols
+        if protocol_name == "Drift Trade":
+            traders = int(drift_24h_traders * 2)  # Rough 6h->24h scaling
+        elif protocol_name == "Jupiter Perpetual Exchange":
             traders = int(jupiter_24h_traders * 2)  # Rough 6h->24h scaling
         else:
-            traders = 0  # No data for other protocols
+            traders = 0  # No Dune query for this protocol
 
-        fees = volume_24h * config["fee_rate"]
+        fees = volume_24h * fee_rate
 
         metrics = {
             "protocol": protocol_name,
@@ -612,7 +606,7 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
         drift_accurate_traders = drift_24h_traders
 
         if drift_markets:
-            drift_fee_rate = PROTOCOLS["Drift"]["fee_rate"]
+            drift_fee_rate = PROTOCOL_METADATA["Drift Trade"]["fee_rate"]
 
             # Use actual volumes from API and calculate fees
             drift_volumes = {m: data["volume"] for m, data in drift_markets.items()}
@@ -644,7 +638,7 @@ def collect_all_data(hours: int = 24, fetch_markets: bool = True) -> tuple:
             jupiter_volume = next(
                 (m["volume_usd"] for m in all_metrics if m["protocol"] == "Jupiter Perps"), 0
             )
-            jupiter_fee_rate = PROTOCOLS["Jupiter Perps"]["fee_rate"]
+            jupiter_fee_rate = PROTOCOL_METADATA["Jupiter Perpetual Exchange"]["fee_rate"]
 
             # Distribute volume and calculate fees
             jupiter_volumes = distribute_volume_by_trades(jupiter_volume, jupiter_trade_counts)
