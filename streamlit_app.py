@@ -175,7 +175,7 @@ if age_minutes and age_minutes > 30:
 time_window = st.radio(
     "Time Window",
     options=["1h", "4h", "8h", "24h"],
-    index=0,
+    index=3,  # Default to 24h
     horizontal=True,
     help="Select time window for trader counts, liquidations, and wallet overlap data"
 )
