@@ -4,13 +4,15 @@ Update cached data for Streamlit dashboard.
 
 This script fetches all data from various sources and saves to data/cache.json.
 Run via GitHub Actions every 15 minutes.
+
+Also maintains historical data in data/history.json for trend analysis.
 """
 
 import json
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -24,8 +26,13 @@ logger = logging.getLogger(__name__)
 # Time windows to cache (in hours)
 TIME_WINDOWS = [1, 4, 8, 24]
 
-# Cache file path
+# Cache file paths
 CACHE_PATH = Path("data/cache.json")
+HISTORY_PATH = Path("data/history.json")
+
+# History retention: keep 7 days of hourly snapshots
+HISTORY_RETENTION_HOURS = 24 * 7  # 168 hours
+HISTORY_SNAPSHOT_INTERVAL_MINUTES = 60  # Save snapshot every hour
 
 # Required keys for valid cache
 REQUIRED_CACHE_KEYS = ["protocols", "drift_markets", "time_windows", "updated_at"]
@@ -81,6 +88,116 @@ def save_cache(cache: dict, old_cache: Optional[dict]) -> bool:
             with open(CACHE_PATH, "w") as f:
                 json.dump(old_cache, f, indent=2)
         return False
+
+
+def load_history() -> dict:
+    """Load existing history file."""
+    if not HISTORY_PATH.exists():
+        return {"snapshots": [], "last_snapshot_at": None}
+    try:
+        with open(HISTORY_PATH) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        logger.error(f"Failed to load history: {e}")
+        return {"snapshots": [], "last_snapshot_at": None}
+
+
+def should_save_snapshot(history: dict) -> bool:
+    """Check if enough time has passed to save a new snapshot."""
+    last_snapshot = history.get("last_snapshot_at")
+    if not last_snapshot:
+        return True
+
+    try:
+        last_time = datetime.fromisoformat(last_snapshot.replace("Z", "+00:00"))
+        elapsed_minutes = (datetime.now(tz=last_time.tzinfo) - last_time).total_seconds() / 60
+        return elapsed_minutes >= HISTORY_SNAPSHOT_INTERVAL_MINUTES
+    except (ValueError, TypeError):
+        return True
+
+
+def extract_snapshot(cache: dict) -> dict:
+    """Extract key metrics for historical snapshot."""
+    now = datetime.utcnow().isoformat() + "Z"
+
+    # Protocol-level metrics
+    protocols = {}
+    for p in cache.get("protocols", []):
+        name = p.get("protocol", "")
+        if name:
+            protocols[name] = {
+                "volume_24h": p.get("volume_24h", 0),
+                "traders": p.get("traders", 0),
+                "fees": p.get("fees", 0),
+            }
+
+    # Aggregate metrics
+    total_volume = sum(p.get("volume_24h", 0) for p in cache.get("protocols", []))
+    total_traders = sum(p.get("traders", 0) for p in cache.get("protocols", []))
+    total_oi = cache.get("total_open_interest", 0)
+
+    # Top market funding rates
+    drift_markets = cache.get("drift_markets", {})
+    funding_rates = {}
+    for market, data in drift_markets.items():
+        if data.get("volume", 0) > 10000:  # Only significant markets
+            funding_rates[market] = data.get("funding_rate", 0)
+
+    return {
+        "timestamp": now,
+        "total_volume_24h": total_volume,
+        "total_traders_24h": total_traders,
+        "total_open_interest": total_oi,
+        "protocols": protocols,
+        "funding_rates": funding_rates,
+    }
+
+
+def prune_old_snapshots(history: dict) -> dict:
+    """Remove snapshots older than retention period."""
+    cutoff = datetime.utcnow() - timedelta(hours=HISTORY_RETENTION_HOURS)
+    cutoff_str = cutoff.isoformat() + "Z"
+
+    original_count = len(history.get("snapshots", []))
+    history["snapshots"] = [
+        s for s in history.get("snapshots", [])
+        if s.get("timestamp", "") >= cutoff_str
+    ]
+    pruned_count = original_count - len(history["snapshots"])
+
+    if pruned_count > 0:
+        logger.info(f"Pruned {pruned_count} old snapshots (>{HISTORY_RETENTION_HOURS}h)")
+
+    return history
+
+
+def save_history_snapshot(cache: dict) -> bool:
+    """Save a historical snapshot if enough time has passed."""
+    history = load_history()
+
+    if not should_save_snapshot(history):
+        logger.info("Skipping history snapshot (interval not reached)")
+        return False
+
+    # Extract and append new snapshot
+    snapshot = extract_snapshot(cache)
+    history["snapshots"].append(snapshot)
+    history["last_snapshot_at"] = snapshot["timestamp"]
+
+    # Prune old data
+    history = prune_old_snapshots(history)
+
+    # Save
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(HISTORY_PATH, "w") as f:
+            json.dump(history, f, indent=2)
+        logger.info(f"History snapshot saved ({len(history['snapshots'])} total snapshots)")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save history: {e}")
+        return False
+
 
 from solana_perps_dashboard import (
     fetch_defillama_volume,
@@ -278,7 +395,12 @@ def update_cache():
 
     # Save to file (with validation and fallback)
     logger.info("=" * 60)
-    save_cache(cache, old_cache)
+    cache_saved = save_cache(cache, old_cache)
+
+    # Save historical snapshot (hourly) if cache was valid
+    if cache_saved:
+        save_history_snapshot(cache)
+
     logger.info(f"Protocols: {len(cache['protocols'])}")
     logger.info(f"Drift markets: {len(cache['drift_markets'])}")
     logger.info(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")

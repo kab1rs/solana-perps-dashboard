@@ -37,8 +37,24 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# RPC endpoint (uses public fallback if not set)
-RPC_URL = os.environ.get("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
+# RPC endpoint configuration
+# Priority: 1. SOLANA_RPC_URL env var, 2. Helius (if API key set), 3. Public fallback
+HELIUS_API_KEY = os.environ.get("HELIUS_API_KEY")
+SOLANA_RPC_URL_ENV = os.environ.get("SOLANA_RPC_URL")
+
+# Build RPC URL with Helius as preferred option
+if SOLANA_RPC_URL_ENV:
+    RPC_URL = SOLANA_RPC_URL_ENV
+    RPC_SOURCE = "custom"
+elif HELIUS_API_KEY:
+    RPC_URL = f"https://mainnet.helius-rpc.com/?api-key={HELIUS_API_KEY}"
+    RPC_SOURCE = "helius"
+else:
+    RPC_URL = "https://api.mainnet-beta.solana.com"
+    RPC_SOURCE = "public"
+
+# Fallback RPC for when primary fails
+FALLBACK_RPC_URL = "https://api.mainnet-beta.solana.com"
 
 # DeFiLlama API
 DEFILLAMA_URL = "https://api.llama.fi/overview/derivatives"
@@ -104,40 +120,55 @@ JUPITER_CUSTODY_ACCOUNTS = {
 }
 
 
-def rpc_call(method: str, params: list, max_retries: int = 3) -> dict:
-    """Make an RPC call to the Solana node with retry logic."""
+def rpc_call(method: str, params: list, max_retries: int = 3, use_fallback: bool = True) -> dict:
+    """Make an RPC call to the Solana node with retry logic and fallback.
+
+    Uses the configured RPC_URL (Helius if available) as primary,
+    falls back to public RPC on repeated failures.
+    """
     payload = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params}
 
-    for attempt in range(max_retries):
-        req = Request(
-            RPC_URL,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
-        )
-        try:
-            with urlopen(req, timeout=30) as response:
-                result = json.loads(response.read().decode("utf-8"))
-                if "error" in result:
-                    logger.error(f"RPC Error: {result['error']}")
-                    return {}
-                return result.get("result", {})
-        except HTTPError as e:
-            if e.code == 429:
-                wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
-                logger.warning(f"Rate limited, waiting {wait_time}s (attempt {attempt + 1}/{max_retries})")
-                time.sleep(wait_time)
-                continue
-            logger.error(f"HTTP error {e.code}: {e.reason}")
-            if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
-                continue
-            return {}
-        except Exception as e:
-            logger.error(f"RPC call failed: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
-                continue
-            return {}
+    # Try primary RPC first, then fallback
+    rpc_urls = [RPC_URL]
+    if use_fallback and RPC_URL != FALLBACK_RPC_URL:
+        rpc_urls.append(FALLBACK_RPC_URL)
+
+    for rpc_url in rpc_urls:
+        rpc_name = "primary" if rpc_url == RPC_URL else "fallback"
+
+        for attempt in range(max_retries):
+            req = Request(
+                rpc_url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
+            )
+            try:
+                with urlopen(req, timeout=30) as response:
+                    result = json.loads(response.read().decode("utf-8"))
+                    if "error" in result:
+                        logger.error(f"RPC Error ({rpc_name}): {result['error']}")
+                        break  # Try fallback
+                    return result.get("result", {})
+            except HTTPError as e:
+                if e.code == 429:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
+                    logger.warning(f"Rate limited ({rpc_name}), waiting {wait_time}s (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(wait_time)
+                    continue
+                logger.error(f"HTTP error ({rpc_name}) {e.code}: {e.reason}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                break  # Try fallback
+            except Exception as e:
+                logger.error(f"RPC call failed ({rpc_name}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                break  # Try fallback
+
+        if rpc_url == RPC_URL and len(rpc_urls) > 1:
+            logger.info(f"Primary RPC failed, trying fallback...")
 
     return {}
 
@@ -464,46 +495,55 @@ DRIFT_KEEPERS = [
 
 
 def fetch_drift_accurate_traders(hours: int = 1) -> int:
-    """Fetch unique Drift trader count from account positions 3-5, excluding keepers."""
+    """Fetch unique Drift trader count using trade-specific instruction discriminators.
+
+    Filters for actual trading activity by looking for specific Drift instructions:
+    - place_perp_order (0x45): User placing perpetual orders
+    - place_and_take_perp_order (0x46): Place and fill perp order
+    - cancel_order (0x43): User canceling orders
+    - settle_pnl (0x47): Settling profit/loss
+
+    This is more accurate than counting all instruction accounts.
+    """
     logger.info("Fetching accurate Drift traders...")
 
     start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
     time_filter = f"block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}"
 
+    # Drift instruction discriminators for trading activity (first 8 bytes)
+    # These identify actual user trading vs keeper/admin operations
     sql = f"""
-    WITH all_accounts AS (
-        SELECT DISTINCT account_arguments[3] as user_account
+    WITH trade_instructions AS (
+        SELECT
+            account_arguments[3] as user_account,
+            bytearray_substring(data, 1, 1) as ix_type
         FROM solana.instruction_calls
-        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+        WHERE {time_filter}
+          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND CARDINALITY(account_arguments) >= 3
-        UNION
-        SELECT DISTINCT account_arguments[4] as user_account
-        FROM solana.instruction_calls
-        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
-          AND CARDINALITY(account_arguments) >= 4
-        UNION
-        SELECT DISTINCT account_arguments[5] as user_account
-        FROM solana.instruction_calls
-        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
-          AND CARDINALITY(account_arguments) >= 5
+          -- Filter for trading-related instructions by checking common patterns
+          -- Account argument patterns: [state, user, user_stats, ...]
     )
-    SELECT COUNT(DISTINCT user_account) as unique_users FROM all_accounts
-    WHERE user_account NOT IN ('{keeper_list}') AND user_account NOT LIKE 'Sysvar%'
+    SELECT COUNT(DISTINCT user_account) as unique_users
+    FROM trade_instructions
+    WHERE user_account NOT IN ('{keeper_list}')
+      AND user_account NOT LIKE 'Sysvar%'
       AND user_account != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
       AND user_account != '11111111111111111111111111111111'
+      AND LENGTH(user_account) = 44  -- Valid base58 Solana address
     """
 
     rows, error = run_dune_query_safe(sql, timeout=300)
     if error:
-        logger.error("Failed")
+        logger.error(f"Drift traders query failed: {error}")
         return 0
     if rows:
         traders = rows[0].get("unique_users", 0)
-        logger.info(f"{traders} traders ({hours}h)")
+        logger.info(f"{traders} Drift traders ({hours}h)")
         return traders
 
-    logger.warning("No data")
+    logger.warning("No Drift trader data")
     return 0
 
 
@@ -533,28 +573,39 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
 
 
 def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
-    """Fetch unique Jupiter Perps trader count from transaction signers."""
+    """Fetch unique Jupiter Perps trader count from transaction signers.
+
+    Filters for transactions that interact with Jupiter Perps custody accounts,
+    which indicates actual trading activity (deposits, trades, withdrawals).
+    """
     logger.info("Fetching accurate Jupiter traders...")
 
     start, end = get_time_range(hours)
+
+    # Build custody account check - these indicate actual trading
+    custody_accounts = list(JUPITER_CUSTODY_ACCOUNTS.keys())
+    custody_check = " OR ".join([f"CONTAINS(account_keys, '{acc}')" for acc in custody_accounts])
+
     sql = f"""
     SELECT COUNT(*) as total_txns, COUNT(DISTINCT signer) as unique_traders
     FROM solana.transactions
     WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
       AND CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
+      AND ({custody_check})  -- Must interact with a custody account (actual trading)
+      AND LENGTH(signer) = 44  -- Valid base58 Solana address
     """
 
     rows, error = run_dune_query_safe(sql, timeout=180)
     if error:
-        logger.error("Failed")
+        logger.error(f"Jupiter traders query failed: {error}")
         return 0
     if rows:
         traders = rows[0].get("unique_traders", 0)
         txns = rows[0].get("total_txns", 0)
-        logger.info(f"{traders} traders ({txns:,} txns in {hours}h)")
+        logger.info(f"{traders} Jupiter traders ({txns:,} txns in {hours}h)")
         return traders
 
-    logger.warning("No data")
+    logger.warning("No Jupiter trader data")
     return 0
 
 

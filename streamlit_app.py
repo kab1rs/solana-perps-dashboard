@@ -49,6 +49,26 @@ with st.sidebar:
 - [Quick Insights](#quick-insights)
     """)
     st.divider()
+
+    # Data freshness indicator in sidebar
+    def get_cache_age_display(cache_data):
+        """Get formatted cache age with status indicator."""
+        if not cache_data:
+            return "No data", "red", None
+        updated_at = cache_data.get("updated_at", "")
+        try:
+            updated_time = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+            age_minutes = (datetime.now(timezone.utc) - updated_time).total_seconds() / 60
+            if age_minutes < 20:
+                return f"{int(age_minutes)}m ago", "green", age_minutes
+            elif age_minutes < 45:
+                return f"{int(age_minutes)}m ago", "yellow", age_minutes
+            else:
+                return f"{int(age_minutes)}m ago", "red", age_minutes
+        except (ValueError, TypeError):
+            return "Unknown", "gray", None
+
+    # Will be populated after cache loads
     st.caption("Data refreshes every 15 min")
 
 
@@ -59,6 +79,18 @@ def load_cache():
         return None
     with open(cache_path) as f:
         return json.load(f)
+
+
+def load_history():
+    """Load historical data from JSON file."""
+    history_path = Path(__file__).parent / "data" / "history.json"
+    if not history_path.exists():
+        return None
+    try:
+        with open(history_path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return None
 
 
 def format_change(value):
@@ -120,17 +152,24 @@ if cache is None:
 
 # Header
 st.title("Solana Perps Insights")
-updated_at = cache.get("updated_at", "Unknown")
-st.caption(f"Data updated: {updated_at} | Refreshes every 15 minutes")
 
-# Check data freshness and show warning if stale
-try:
-    updated_time = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
-    age_minutes = (datetime.now(timezone.utc) - updated_time).total_seconds() / 60
-    if age_minutes > 30:
-        st.warning(f"Data is {int(age_minutes)} minutes old. Cache may be stale.")
-except (ValueError, TypeError):
-    pass  # Silently ignore parsing errors
+# Show data freshness status prominently
+age_text, age_status, age_minutes = get_cache_age_display(cache)
+status_colors = {"green": "#00ff88", "yellow": "#ffaa00", "red": "#ff4444", "gray": "#888888"}
+status_icon = {"green": "🟢", "yellow": "🟡", "red": "🔴", "gray": "⚪"}
+
+col_header1, col_header2 = st.columns([3, 1])
+with col_header1:
+    st.caption(f"Data refreshes every 15 minutes")
+with col_header2:
+    st.markdown(
+        f"<span style='color: {status_colors[age_status]}'>{status_icon[age_status]} Updated: {age_text}</span>",
+        unsafe_allow_html=True
+    )
+
+# Show warning banner if data is stale
+if age_minutes and age_minutes > 30:
+    st.warning(f"Data is {int(age_minutes)} minutes old. Cache may be stale or refresh failed.")
 
 # Time window selector
 time_window = st.radio(
@@ -153,17 +192,120 @@ total_oi = cache.get("total_open_interest", 0)
 
 # Top metrics row
 st.header("Solana Perps Overview")
-col1, col2, col3, col4, col5 = st.columns(5)
-with col1:
+
+# Determine column count based on available data
+show_transactions = total_txns > 0
+num_cols = 5 if show_transactions else 4
+
+cols = st.columns(num_cols)
+with cols[0]:
     st.metric("24h Volume", format_volume(total_volume), help="Source: DeFiLlama. Sum of all Solana perps protocols.")
-with col2:
+with cols[1]:
     st.metric("Drift Open Interest", format_volume(total_oi), help="Source: Drift API. Jupiter OI not yet available.")
-with col3:
+with cols[2]:
     st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter + Pacifica. Note: Pacifica uses off-chain matching, so count shows active on-chain users (deposits/settlements) which may undercount actual traders.")
-with col4:
+with cols[3]:
     st.metric("Fees Generated", f"${total_fees:,.0f}", help="Estimated from volume × protocol fee rates.")
-with col5:
-    st.metric("Transactions", f"{total_txns:,}", help="Source: Solana RPC. Program signature counts.")
+if show_transactions:
+    with cols[4]:
+        st.metric("Transactions", f"{total_txns:,}", help="Source: Solana RPC. Program signature counts.")
+
+st.divider()
+
+# Historical Trends Section
+history = load_history()
+if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
+    with st.expander("Historical Trends (7 days)", expanded=False):
+        snapshots = history["snapshots"]
+
+        # Parse timestamps and build dataframe
+        trend_data = []
+        for s in snapshots:
+            try:
+                ts = datetime.fromisoformat(s["timestamp"].replace("Z", "+00:00"))
+                trend_data.append({
+                    "timestamp": ts,
+                    "volume": s.get("total_volume_24h", 0),
+                    "traders": s.get("total_traders_24h", 0),
+                    "open_interest": s.get("total_open_interest", 0),
+                })
+            except (ValueError, KeyError):
+                continue
+
+        if trend_data:
+            trend_df = pd.DataFrame(trend_data)
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                # Volume trend
+                fig_vol = go.Figure()
+                fig_vol.add_trace(go.Scatter(
+                    x=trend_df["timestamp"],
+                    y=trend_df["volume"],
+                    mode="lines+markers",
+                    name="24h Volume",
+                    line=dict(color="#8B5CF6", width=2),
+                    marker=dict(size=4),
+                ))
+                fig_vol.update_layout(
+                    title="Volume Trend",
+                    yaxis_title="24h Volume (USD)",
+                    height=250,
+                    margin=dict(t=40, b=40, l=60, r=20),
+                    yaxis_tickformat="$,.0s",
+                )
+                st.plotly_chart(fig_vol, use_container_width=True)
+
+            with col2:
+                # Open Interest trend
+                fig_oi = go.Figure()
+                fig_oi.add_trace(go.Scatter(
+                    x=trend_df["timestamp"],
+                    y=trend_df["open_interest"],
+                    mode="lines+markers",
+                    name="Open Interest",
+                    line=dict(color="#10B981", width=2),
+                    marker=dict(size=4),
+                ))
+                fig_oi.update_layout(
+                    title="Open Interest Trend",
+                    yaxis_title="Open Interest (USD)",
+                    height=250,
+                    margin=dict(t=40, b=40, l=60, r=20),
+                    yaxis_tickformat="$,.0s",
+                )
+                st.plotly_chart(fig_oi, use_container_width=True)
+
+            # Traders trend (full width)
+            fig_traders = go.Figure()
+            fig_traders.add_trace(go.Scatter(
+                x=trend_df["timestamp"],
+                y=trend_df["traders"],
+                mode="lines+markers",
+                name="Traders",
+                line=dict(color="#F59E0B", width=2),
+                marker=dict(size=4),
+                fill="tozeroy",
+                fillcolor="rgba(245, 158, 11, 0.1)",
+            ))
+            fig_traders.update_layout(
+                title="Active Traders Trend",
+                yaxis_title="24h Traders",
+                height=200,
+                margin=dict(t=40, b=40, l=60, r=20),
+            )
+            st.plotly_chart(fig_traders, use_container_width=True)
+
+            # Show change summary
+            if len(trend_df) >= 2:
+                latest = trend_df.iloc[-1]
+                oldest = trend_df.iloc[0]
+                vol_change = ((latest["volume"] - oldest["volume"]) / oldest["volume"] * 100) if oldest["volume"] > 0 else 0
+                oi_change = ((latest["open_interest"] - oldest["open_interest"]) / oldest["open_interest"] * 100) if oldest["open_interest"] > 0 else 0
+                trader_change = ((latest["traders"] - oldest["traders"]) / oldest["traders"] * 100) if oldest["traders"] > 0 else 0
+
+                st.caption(f"Changes over {len(trend_df)} snapshots: Volume {vol_change:+.1f}% | OI {oi_change:+.1f}% | Traders {trader_change:+.1f}%")
 
 st.divider()
 
@@ -379,13 +521,44 @@ st.divider()
 # Funding Rate Heatmap
 st.header("Funding Rate Overview")
 
-col1, col2 = st.columns([2, 1])
+# Define extreme funding threshold (0.1% = 87.6% annualized)
+EXTREME_FUNDING_THRESHOLD = 0.001  # 0.1% per funding period
 
 def is_valid_funding_market(info: dict) -> bool:
     """Filter for valid funding rate markets: min OI and reasonable funding."""
     oi_usd = info.get("open_interest", 0) * info.get("last_price", 0)
     funding = abs(info.get("funding_rate", 0))
     return oi_usd >= 10000 and funding < 0.05  # $10k OI min, <5% funding
+
+def get_annualized_funding(rate: float) -> float:
+    """Calculate annualized funding rate (assuming 1h funding periods)."""
+    return rate * 24 * 365 * 100  # Convert to percentage
+
+# Check for extreme funding rates and show alert
+if drift_markets:
+    extreme_markets = []
+    for market, info in drift_markets.items():
+        if info.get("volume", 0) > 10000 and is_valid_funding_market(info):
+            funding = info.get("funding_rate", 0)
+            if abs(funding) >= EXTREME_FUNDING_THRESHOLD:
+                annualized = get_annualized_funding(funding)
+                extreme_markets.append({
+                    "market": market,
+                    "funding": funding,
+                    "annualized": annualized,
+                    "direction": "longs" if funding > 0 else "shorts"
+                })
+
+    if extreme_markets:
+        # Sort by absolute funding rate
+        extreme_markets.sort(key=lambda x: abs(x["funding"]), reverse=True)
+        alert_msg = "**Extreme Funding Rates Detected:**\n"
+        for em in extreme_markets[:3]:  # Show top 3
+            direction_icon = "🔴" if em["direction"] == "longs" else "🟢"
+            alert_msg += f"- {direction_icon} **{em['market']}**: {em['funding']*100:.4f}% ({em['annualized']:.1f}% APR) - {em['direction']} pay\n"
+        st.warning(alert_msg)
+
+col1, col2 = st.columns([2, 1])
 
 with col1:
     if drift_markets:
@@ -401,23 +574,37 @@ with col1:
             funding_data = []
             for market, info in sorted_markets:
                 funding = info.get("funding_rate", 0) * 100  # Convert to percentage
+                annualized = get_annualized_funding(info.get("funding_rate", 0))
+                is_extreme = abs(info.get("funding_rate", 0)) >= EXTREME_FUNDING_THRESHOLD
                 funding_data.append({
                     "Market": market.replace("-PERP", ""),
                     "Funding %": funding,
+                    "Annualized": annualized,
                     "Direction": "Longs Pay" if funding > 0 else "Shorts Pay" if funding < 0 else "Neutral",
+                    "Extreme": is_extreme,
                 })
 
             funding_df = pd.DataFrame(funding_data)
 
-            # Create bar chart
-            colors = ["#ff4444" if f > 0 else "#00ff88" for f in funding_df["Funding %"]]
+            # Create bar chart with extreme highlighting
+            def get_funding_color(row):
+                if row["Extreme"]:
+                    return "#ff0000" if row["Funding %"] > 0 else "#00ff00"  # Brighter for extreme
+                return "#ff4444" if row["Funding %"] > 0 else "#00ff88"
+
+            colors = [get_funding_color(row) for _, row in funding_df.iterrows()]
+
             fig = go.Figure(data=[
                 go.Bar(
                     x=funding_df["Market"],
                     y=funding_df["Funding %"],
                     marker_color=colors,
+                    marker_line_width=[3 if e else 0 for e in funding_df["Extreme"]],
+                    marker_line_color="white",
                     text=[f"{f:.4f}%" for f in funding_df["Funding %"]],
                     textposition="outside",
+                    hovertemplate="<b>%{x}</b><br>Funding: %{y:.4f}%<br>Annualized: %{customdata:.1f}%<extra></extra>",
+                    customdata=funding_df["Annualized"],
                 )
             ])
             fig.update_layout(
@@ -428,7 +615,11 @@ with col1:
                 margin=dict(t=50, b=50),
             )
             fig.add_hline(y=0, line_dash="dash", line_color="gray")
+            # Add threshold lines for extreme funding
+            fig.add_hline(y=0.1, line_dash="dot", line_color="orange", opacity=0.5)
+            fig.add_hline(y=-0.1, line_dash="dot", line_color="orange", opacity=0.5)
             st.plotly_chart(fig, use_container_width=True)
+            st.caption("White border = extreme funding (>0.1%). Orange dotted lines = threshold. Hover for annualized rates.")
 
 with col2:
     st.subheader("Funding Extremes")
@@ -441,12 +632,18 @@ with col2:
 
         if sorted_by_funding:
             lowest = sorted_by_funding[0]
+            lowest_rate = lowest[1].get('funding_rate', 0)
+            lowest_apr = get_annualized_funding(lowest_rate)
             st.markdown(f"**Shorts Pay Most:**")
-            st.markdown(f"🟢 {lowest[0]}: {format_funding(lowest[1].get('funding_rate', 0))}")
+            st.markdown(f"🟢 {lowest[0]}: {format_funding(lowest_rate)}")
+            st.caption(f"({lowest_apr:.1f}% APR)")
 
             highest = sorted_by_funding[-1]
+            highest_rate = highest[1].get('funding_rate', 0)
+            highest_apr = get_annualized_funding(highest_rate)
             st.markdown(f"**Longs Pay Most:**")
-            st.markdown(f"🔴 {highest[0]}: {format_funding(highest[1].get('funding_rate', 0))}")
+            st.markdown(f"🔴 {highest[0]}: {format_funding(highest_rate)}")
+            st.caption(f"({highest_apr:.1f}% APR)")
 
 st.divider()
 
