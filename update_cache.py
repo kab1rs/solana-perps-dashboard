@@ -121,11 +121,11 @@ def update_cache():
             print(f"  Tx count failed: {e}")
             tx_count = 0
 
-        # Scale traders to 24h estimate (1h samples, ~6x scaling accounting for overlap)
+        # Use actual 24h trader counts from Dune
         if protocol_name == "Drift":
-            traders = int(cache["drift_traders_1h"] * 6)
+            traders = cache["time_windows"].get("24h", {}).get("drift_traders", 0)
         elif protocol_name == "Jupiter Perps":
-            traders = int(cache["jupiter_traders_1h"] * 6)
+            traders = cache["time_windows"].get("24h", {}).get("jupiter_traders", 0)
         else:
             traders = 0
 
