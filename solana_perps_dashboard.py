@@ -19,20 +19,23 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
 import time
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 
-# RPC endpoint
-RPC_URL = "https://ellipsis.rpcpool.com/7ba0a839-324a-417c-8b44-f37b444f43ee"
+# RPC endpoint (uses public fallback if not set)
+RPC_URL = os.environ.get("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
 
 # DeFiLlama API
 DEFILLAMA_URL = "https://api.llama.fi/overview/derivatives"
 
-# Dune API
-DUNE_API_KEY = "l1JAVmXJYrPw9DFGIBtcSXkszCLgTVUz"
+# Dune API (required)
+DUNE_API_KEY = os.environ.get("DUNE_API_KEY")
+if not DUNE_API_KEY:
+    raise ValueError("DUNE_API_KEY environment variable is required")
 DUNE_API_URL = "https://api.dune.com/api/v1"
 
 # Drift Data API (provides per-market volume data directly)

@@ -5,10 +5,11 @@ Verifies trader counts, volume, and fees by examining raw transactions.
 """
 
 import json
+import os
 import sys
 from urllib.request import urlopen, Request
 
-RPC_URL = "https://ellipsis.rpcpool.com/7ba0a839-324a-417c-8b44-f37b444f43ee"
+RPC_URL = os.environ.get("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
 
 PROTOCOLS = {
     "Jupiter Perps": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",

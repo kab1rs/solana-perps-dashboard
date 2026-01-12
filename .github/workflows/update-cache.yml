@@ -25,6 +25,9 @@ jobs:
           # No external dependencies needed - uses stdlib only
 
       - name: Run cache update
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
         run: python update_cache.py
 
       - name: Commit and push if changed
