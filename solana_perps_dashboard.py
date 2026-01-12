@@ -161,6 +161,29 @@ def run_dune_query(sql: str, timeout: int = 180) -> dict:
     return {"error": "Query timeout"}
 
 
+# --- Helper functions for Dune queries ---
+
+def get_time_range(hours: int) -> tuple:
+    """Return (start_time, end_time) for a given hour window."""
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(hours=hours)
+    return start_time, end_time
+
+
+def format_timestamp(dt: datetime) -> str:
+    """Format datetime for Dune SQL TIMESTAMP literal."""
+    return f"TIMESTAMP '{dt.strftime('%Y-%m-%d %H:%M:%S')}'"
+
+
+def run_dune_query_safe(sql: str, timeout: int = 180):
+    """Run Dune query with error handling. Returns (rows, error)."""
+    result = run_dune_query(sql, timeout=timeout)
+    if "error" in result:
+        return None, result["error"]
+    rows = result.get("result", {}).get("rows", [])
+    return rows, None
+
+
 def fetch_defillama_volume() -> dict:
     """Fetch volume data from DeFiLlama derivatives overview."""
     print("Fetching volume from DeFiLlama...", end=" ", flush=True)
@@ -222,37 +245,22 @@ def fetch_global_derivatives() -> list:
 
 
 def fetch_drift_liquidations(hours: int = 1) -> dict:
-    """
-    Fetch Drift liquidation data from Dune Analytics.
-
-    Returns liquidation count for the past N hours.
-    Uses a short window (1h) to avoid Dune query timeouts.
-    """
+    """Fetch Drift liquidation count for the past N hours."""
     print(f"Fetching Drift liquidations ({hours}h)...", end=" ", flush=True)
 
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
-
-    # Query for liquidation events - liquidate_perp instruction
-    # Discriminator is SHA256("global:liquidate_perp")[:8] = 0x4b2377f7bf128b02
+    start, end = get_time_range(hours)
     sql = f"""
-    SELECT
-        COUNT(*) as liquidation_count,
-        COUNT(DISTINCT tx_id) as unique_txns
+    SELECT COUNT(*) as liquidation_count, COUNT(DISTINCT tx_id) as unique_txns
     FROM solana.instruction_calls
-    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
       AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
       AND bytearray_substring(data, 1, 8) = 0x4b2377f7bf128b02
     """
 
-    result = run_dune_query(sql, timeout=180)
-
-    if "error" in result:
-        print(f"failed: {result['error']}", file=sys.stderr)
-        return {"count": 0, "txns": 0, "error": result["error"]}
-
-    rows = result.get("result", {}).get("rows", [])
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        print(f"failed: {error}", file=sys.stderr)
+        return {"count": 0, "txns": 0, "error": error}
     if rows:
         count = rows[0].get("liquidation_count", 0)
         txns = rows[0].get("unique_txns", 0)
@@ -264,35 +272,20 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
 
 
 def fetch_cross_platform_wallets(hours: int = 1) -> dict:
-    """
-    Fetch wallets trading on Drift and/or Jupiter in the last N hours.
-
-    Returns counts of:
-    - multi_platform: wallets on BOTH Drift AND Jupiter
-    - drift_only: wallets ONLY on Drift
-    - jupiter_only: wallets ONLY on Jupiter
-    """
+    """Fetch wallet overlap between Drift and Jupiter for the past N hours."""
     print(f"Fetching cross-platform wallets ({hours}h)...", end=" ", flush=True)
 
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
-
-    # Build keeper exclusion list
+    start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
 
-    # Query uses UNNEST to extract account positions [3], [4], [5] in a single scan
-    # because user wallets appear in different positions depending on instruction type
     sql = f"""
     WITH drift_wallets AS (
         SELECT DISTINCT elem as wallet
-        FROM solana.instruction_calls,
-             UNNEST(SLICE(account_arguments, 3, 3)) as t(elem)
+        FROM solana.instruction_calls, UNNEST(SLICE(account_arguments, 3, 3)) as t(elem)
         WHERE executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
-          AND block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
           AND CARDINALITY(account_arguments) >= 3
-          AND elem NOT IN ('{keeper_list}')
-          AND elem NOT LIKE 'Sysvar%'
+          AND elem NOT IN ('{keeper_list}') AND elem NOT LIKE 'Sysvar%'
           AND elem != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND elem != '11111111111111111111111111111111'
     ),
@@ -300,29 +293,19 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
         SELECT DISTINCT signer as wallet
         FROM solana.transactions
         WHERE CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
-          AND block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+          AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
     )
     SELECT
         COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NOT NULL THEN 1 END) as multi_platform,
         COUNT(CASE WHEN d.wallet IS NOT NULL AND j.wallet IS NULL THEN 1 END) as drift_only,
         COUNT(CASE WHEN d.wallet IS NULL AND j.wallet IS NOT NULL THEN 1 END) as jupiter_only
-    FROM drift_wallets d
-    FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
+    FROM drift_wallets d FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
     """
 
-    result = run_dune_query(sql, timeout=300)
-
-    if "error" in result:
-        print(f"failed: {result['error']}", file=sys.stderr)
-        return {
-            "multi_platform": 0,
-            "drift_only": 0,
-            "jupiter_only": 0,
-            "error": result["error"]
-        }
-
-    rows = result.get("result", {}).get("rows", [])
+    rows, error = run_dune_query_safe(sql, timeout=300)
+    if error:
+        print(f"failed: {error}", file=sys.stderr)
+        return {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": error}
     if rows:
         data = {
             "multi_platform": rows[0].get("multi_platform", 0),
@@ -394,58 +377,40 @@ DRIFT_KEEPERS = [
 
 
 def fetch_drift_accurate_traders(hours: int = 1) -> int:
-    """
-    Fetch accurate Drift trader count by parsing ALL instruction accounts.
-
-    Looks at account_arguments[3], [4], [5] across all instruction types
-    to find unique user accounts, excluding known keepers and system accounts.
-    """
+    """Fetch unique Drift trader count from account positions 3-5, excluding keepers."""
     print("Fetching accurate Drift traders...", end=" ", flush=True)
 
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
-
+    start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
+    time_filter = f"block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}"
 
-    # Count unique accounts at positions 3, 4, 5 across ALL instruction types
     sql = f"""
     WITH all_accounts AS (
         SELECT DISTINCT account_arguments[3] as user_account
         FROM solana.instruction_calls
-        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND CARDINALITY(account_arguments) >= 3
         UNION
         SELECT DISTINCT account_arguments[4] as user_account
         FROM solana.instruction_calls
-        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND CARDINALITY(account_arguments) >= 4
         UNION
         SELECT DISTINCT account_arguments[5] as user_account
         FROM solana.instruction_calls
-        WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
-          AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
+        WHERE {time_filter} AND executing_account = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND CARDINALITY(account_arguments) >= 5
     )
-    SELECT COUNT(DISTINCT user_account) as unique_users
-    FROM all_accounts
-    WHERE user_account NOT IN ('{keeper_list}')
-      AND user_account NOT LIKE 'Sysvar%'
+    SELECT COUNT(DISTINCT user_account) as unique_users FROM all_accounts
+    WHERE user_account NOT IN ('{keeper_list}') AND user_account NOT LIKE 'Sysvar%'
       AND user_account != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
       AND user_account != '11111111111111111111111111111111'
     """
 
-    result = run_dune_query(sql, timeout=300)
-
-    if "error" in result:
-        print(f"failed", file=sys.stderr)
+    rows, error = run_dune_query_safe(sql, timeout=300)
+    if error:
+        print("failed", file=sys.stderr)
         return 0
-
-    rows = result.get("result", {}).get("rows", [])
     if rows:
         traders = rows[0].get("unique_users", 0)
         print(f"{traders} traders ({hours}h)")
@@ -459,75 +424,43 @@ def fetch_drift_market_breakdown(hours: int = 1) -> dict:
     """Fetch Drift market breakdown with trade counts from Dune."""
     print("Fetching Drift markets from Dune...", end=" ", flush=True)
 
-    # Build CASE statement for market identification
-    case_parts = []
-    for account, market in DRIFT_MARKET_ACCOUNTS.items():
-        case_parts.append(f"WHEN CONTAINS(account_keys, '{account}') THEN '{market}'")
-    case_stmt = "\n        ".join(case_parts)
-
-    # Query last N hours
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
+    case_parts = [f"WHEN CONTAINS(account_keys, '{acc}') THEN '{mkt}'" for acc, mkt in DRIFT_MARKET_ACCOUNTS.items()]
+    start, end = get_time_range(hours)
 
     sql = f"""
-    SELECT
-        CASE
-            {case_stmt}
-            ELSE 'OTHER'
-        END as market,
-        COUNT(*) as tx_count
+    SELECT CASE {' '.join(case_parts)} ELSE 'OTHER' END as market, COUNT(*) as tx_count
     FROM solana.transactions
-    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
       AND CONTAINS(account_keys, 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-    GROUP BY 1
-    ORDER BY 2 DESC
+    GROUP BY 1 ORDER BY 2 DESC
     """
 
-    result = run_dune_query(sql, timeout=180)
-
-    if "error" in result:
-        print(f"failed: {result.get('error', '')[:50]}", file=sys.stderr)
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        print(f"failed: {error[:50]}", file=sys.stderr)
         return {}
 
-    rows = result.get("result", {}).get("rows", [])
-    markets = {row["market"]: row["tx_count"] for row in rows}
-
-    total = sum(markets.values())
-    print(f"found {len(markets)} markets, {total:,} txns")
-
+    markets = {row["market"]: row["tx_count"] for row in (rows or [])}
+    print(f"found {len(markets)} markets, {sum(markets.values()):,} txns")
     return markets
 
 
 def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
-    """
-    Fetch accurate Jupiter Perps trader count using transaction signers.
-
-    Jupiter Perps uses a different model - users sign their own transactions
-    directly (not via keepers), so signer count is accurate.
-    """
+    """Fetch unique Jupiter Perps trader count from transaction signers."""
     print("Fetching accurate Jupiter traders...", end=" ", flush=True)
 
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
-
+    start, end = get_time_range(hours)
     sql = f"""
-    SELECT
-        COUNT(*) as total_txns,
-        COUNT(DISTINCT signer) as unique_traders
+    SELECT COUNT(*) as total_txns, COUNT(DISTINCT signer) as unique_traders
     FROM solana.transactions
-    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
       AND CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
     """
 
-    result = run_dune_query(sql, timeout=180)
-
-    if "error" in result:
-        print(f"failed", file=sys.stderr)
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        print("failed", file=sys.stderr)
         return 0
-
-    rows = result.get("result", {}).get("rows", [])
     if rows:
         traders = rows[0].get("unique_traders", 0)
         txns = rows[0].get("total_txns", 0)
@@ -542,43 +475,24 @@ def fetch_jupiter_market_breakdown(hours: int = 1) -> dict:
     """Fetch Jupiter Perps market breakdown with trade counts from Dune."""
     print("Fetching Jupiter markets from Dune...", end=" ", flush=True)
 
-    # Build CASE statement for market identification
-    case_parts = []
-    for account, market in JUPITER_CUSTODY_ACCOUNTS.items():
-        case_parts.append(f"WHEN CONTAINS(account_keys, '{account}') THEN '{market}'")
-    case_stmt = "\n        ".join(case_parts)
-
-    # Query last N hours
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(hours=hours)
+    case_parts = [f"WHEN CONTAINS(account_keys, '{acc}') THEN '{mkt}'" for acc, mkt in JUPITER_CUSTODY_ACCOUNTS.items()]
+    start, end = get_time_range(hours)
 
     sql = f"""
-    SELECT
-        CASE
-            {case_stmt}
-            ELSE 'OTHER'
-        END as market,
-        COUNT(*) as tx_count
+    SELECT CASE {' '.join(case_parts)} ELSE 'OTHER' END as market, COUNT(*) as tx_count
     FROM solana.transactions
-    WHERE block_time >= TIMESTAMP '{start_time.strftime("%Y-%m-%d %H:%M:%S")}'
-      AND block_time < TIMESTAMP '{end_time.strftime("%Y-%m-%d %H:%M:%S")}'
+    WHERE block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
       AND CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
-    GROUP BY 1
-    ORDER BY 2 DESC
+    GROUP BY 1 ORDER BY 2 DESC
     """
 
-    result = run_dune_query(sql, timeout=180)
-
-    if "error" in result:
-        print(f"failed: {result.get('error', '')[:50]}", file=sys.stderr)
+    rows, error = run_dune_query_safe(sql, timeout=180)
+    if error:
+        print(f"failed: {error[:50]}", file=sys.stderr)
         return {}
 
-    rows = result.get("result", {}).get("rows", [])
-    markets = {row["market"]: row["tx_count"] for row in rows}
-
-    total = sum(markets.values())
-    print(f"found {len(markets)} markets, {total:,} txns")
-
+    markets = {row["market"]: row["tx_count"] for row in (rows or [])}
+    print(f"found {len(markets)} markets, {sum(markets.values()):,} txns")
     return markets
 
 
