@@ -500,14 +500,59 @@ def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
     return 0
 
 
-def fetch_pacifica_traders(hours: int = 1) -> int:
-    """Fetch unique Pacifica trader count from transaction signers.
+def fetch_pacifica_traders_from_api() -> dict:
+    """Fetch Pacifica trader counts from their leaderboard API.
 
-    Note: Pacifica uses hybrid architecture (off-chain CLOB, on-chain settlement).
-    This counts users who have interacted with the on-chain program, which may
-    undercount actual traders since many trades happen off-chain.
+    Returns dict with trader counts for different time windows:
+    - traders_24h: active in last 24 hours (volume_1d > 0)
+    - traders_7d: active in last 7 days
+    - traders_30d: active in last 30 days
+    - traders_all: total all-time traders
+
+    This is more accurate than on-chain queries since Pacifica uses
+    off-chain order matching.
     """
-    logger.info("Fetching Pacifica traders...")
+    logger.info("Fetching Pacifica traders from leaderboard API...")
+    try:
+        req = Request(
+            "https://app.pacifica.fi/api/v1/leaderboard",
+            headers={"User-Agent": "SolanaPerpsBot/1.0"}
+        )
+        with urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode())
+
+        if not data.get("success") or "data" not in data:
+            logger.warning("Pacifica API returned unexpected format")
+            return None
+
+        traders = data["data"]
+        result = {
+            "traders_24h": sum(1 for t in traders if float(t.get("volume_1d", 0)) > 0),
+            "traders_7d": sum(1 for t in traders if float(t.get("volume_7d", 0)) > 0),
+            "traders_30d": sum(1 for t in traders if float(t.get("volume_30d", 0)) > 0),
+            "traders_all": len(traders),
+        }
+        logger.info(f"Pacifica API: {result['traders_24h']:,} traders (24h), {result['traders_all']:,} total")
+        return result
+    except Exception as e:
+        logger.warning(f"Pacifica leaderboard API failed: {e}")
+        return None
+
+
+def fetch_pacifica_traders(hours: int = 1) -> int:
+    """Fetch unique Pacifica trader count - tries API first, falls back to Dune.
+
+    For 24h window, uses leaderboard API which is more accurate.
+    For other windows, falls back to on-chain Dune query (may undercount).
+    """
+    # For 24h, try the leaderboard API first (more accurate)
+    if hours == 24:
+        api_data = fetch_pacifica_traders_from_api()
+        if api_data and api_data.get("traders_24h"):
+            return api_data["traders_24h"]
+
+    # Fall back to on-chain Dune query
+    logger.info(f"Fetching Pacifica traders from Dune ({hours}h)...")
 
     start, end = get_time_range(hours)
     sql = f"""
@@ -524,7 +569,7 @@ def fetch_pacifica_traders(hours: int = 1) -> int:
     if rows:
         traders = rows[0].get("unique_traders", 0)
         txns = rows[0].get("total_txns", 0)
-        logger.info(f"{traders} Pacifica traders ({txns:,} txns in {hours}h)")
+        logger.info(f"{traders} Pacifica traders ({txns:,} txns in {hours}h) [on-chain only]")
         return traders
 
     logger.warning("No Pacifica data")
