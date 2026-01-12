@@ -26,6 +26,9 @@ from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # RPC endpoint (uses public fallback if not set)
 RPC_URL = os.environ.get("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
 
