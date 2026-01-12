@@ -753,10 +753,7 @@ wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
 if wallet_data.get("error"):
     st.warning(f"Wallet data unavailable for {time_window} window")
-    if "timeout" in wallet_data.get("error", "").lower() or "skipped" in wallet_data.get("error", "").lower():
-        st.caption("Wallet overlap queries time out beyond 4h due to data volume. Try 1h or 4h window.")
-    else:
-        st.caption(wallet_data.get("error", "Unknown error"))
+    st.caption(wallet_data.get("error", "Query failed - data may be temporarily unavailable"))
 else:
     # Extract all overlap categories
     drift_only = wallet_data.get("drift_only", 0)

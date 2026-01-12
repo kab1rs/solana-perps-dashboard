@@ -288,7 +288,7 @@ def update_cache():
         }
         if hours <= 8:
             queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
-        if hours <= 4:
+        if hours <= 24:
             queries["wallet_overlap"] = lambda h=hours: fetch_cross_platform_wallets(hours=h)
 
         # Run queries in parallel
@@ -311,8 +311,6 @@ def update_cache():
         # Set defaults for skipped queries
         if hours > 8:
             cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
-        if hours > 4:
-            cache["time_windows"][window_key]["wallet_overlap"] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": "Skipped (query timeout)"}
 
     # Set legacy keys from 1h window for backward compatibility
     if "1h" in cache["time_windows"]:
