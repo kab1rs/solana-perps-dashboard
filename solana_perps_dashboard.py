@@ -81,10 +81,14 @@ DRIFT_MARKET_ACCOUNTS = {
 }
 
 # Jupiter Perps custody accounts (markets identified by custody address)
+# JLP pool has 5 tokens: SOL, BTC, ETH, USDC, USDT
+# Addresses from: https://station.jup.ag/guides/perpetual-exchange/onchain-accounts
 JUPITER_CUSTODY_ACCOUNTS = {
     "7xS2gz2bTp3fwCC7knJvUWTEU9Tycczu6VhJYKgi1wdz": "SOL",
     "5Pv3gM9JrFFH883SWAhvJC9RPYmo8UNxuFtv5bMMALkm": "BTC",
     "AQCGyheWPLeo6Qp9WpYS9m3Qj479t7R636N9ey1rEjEn": "ETH",
+    "G18jKKXQwBbrHeiK3C9MRXhkHsLHf7XgCSisykV46EZa": "USDC",
+    "4vkNeXiYEUizLdrpdPS1eC2mccyM4NUPRtERrk6ZETkk": "USDT",
 }
 
 
