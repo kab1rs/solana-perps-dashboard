@@ -339,8 +339,76 @@ def fetch_drift_liquidations(hours: int = 1) -> dict:
     return {"count": 0, "txns": 0}
 
 
+# --- Pacifica API functions (defined early for use in cross-platform wallets) ---
+
+def fetch_pacifica_traders_from_api() -> dict:
+    """Fetch Pacifica trader data from their leaderboard API.
+
+    Returns dict with trader counts and wallet addresses for different time windows.
+    This is the authoritative source since Pacifica uses off-chain order matching.
+    """
+    logger.info("Fetching Pacifica traders from leaderboard API...")
+    try:
+        req = Request(
+            "https://app.pacifica.fi/api/v1/leaderboard",
+            headers={"User-Agent": "SolanaPerpsBot/1.0"}
+        )
+        with urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode())
+
+        if not data.get("success") or "data" not in data:
+            logger.warning("Pacifica API returned unexpected format")
+            return None
+
+        traders = data["data"]
+
+        # Count traders active in each time window
+        traders_24h = [t for t in traders if float(t.get("volume_1d", 0)) > 0]
+        traders_7d = [t for t in traders if float(t.get("volume_7d", 0)) > 0]
+
+        result = {
+            "traders_24h": len(traders_24h),
+            "traders_7d": len(traders_7d),
+            "traders_30d": sum(1 for t in traders if float(t.get("volume_30d", 0)) > 0),
+            "traders_all": len(traders),
+            # Include wallet addresses for cross-platform analysis
+            "wallets_24h": set(t.get("address") for t in traders_24h if t.get("address")),
+            "wallets_7d": set(t.get("address") for t in traders_7d if t.get("address")),
+        }
+        logger.info(f"Pacifica API: {result['traders_24h']:,} traders (24h), {result['traders_all']:,} total")
+        return result
+    except Exception as e:
+        logger.warning(f"Pacifica leaderboard API failed: {e}")
+        return None
+
+
+# Cache for Pacifica API data (to avoid multiple calls per update cycle)
+_pacifica_api_cache = {"data": None, "timestamp": None}
+
+
+def get_pacifica_api_data() -> dict:
+    """Get Pacifica API data with caching (refreshes every 5 minutes)."""
+    global _pacifica_api_cache
+    now = time.time()
+
+    # Return cached data if fresh (< 5 minutes old)
+    if _pacifica_api_cache["data"] and _pacifica_api_cache["timestamp"]:
+        age = now - _pacifica_api_cache["timestamp"]
+        if age < 300:  # 5 minutes
+            return _pacifica_api_cache["data"]
+
+    # Fetch fresh data
+    data = fetch_pacifica_traders_from_api()
+    if data:
+        _pacifica_api_cache = {"data": data, "timestamp": now}
+    return data
+
+
 def fetch_cross_platform_wallets(hours: int = 1) -> dict:
     """Fetch wallet overlap between Drift, Jupiter, and Pacifica for the past N hours.
+
+    Uses Dune for Drift/Jupiter on-chain wallets, and Pacifica API for off-chain traders.
+    This gives accurate Pacifica representation since most Pacifica trading is off-chain.
 
     Returns counts for all possible combinations:
     - drift_only: Only on Drift
@@ -353,6 +421,23 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
     """
     logger.info(f"Fetching cross-platform wallets ({hours}h)...")
 
+    empty_result = {
+        "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
+        "drift_jupiter": 0, "drift_pacifica": 0, "jupiter_pacifica": 0,
+        "all_three": 0, "multi_platform": 0,
+    }
+
+    # Step 1: Get Pacifica wallets from API (most accurate for off-chain CLOB)
+    pacifica_api = get_pacifica_api_data()
+    if pacifica_api:
+        # Use 24h wallets for any time window (API only has 1d/7d granularity)
+        pacifica_wallets = pacifica_api.get("wallets_24h", set())
+        logger.info(f"Pacifica API: {len(pacifica_wallets)} wallets (24h)")
+    else:
+        pacifica_wallets = set()
+        logger.warning("Pacifica API unavailable for wallet overlap")
+
+    # Step 2: Get Drift and Jupiter wallets from Dune
     start, end = get_time_range(hours)
     keeper_list = "', '".join(DRIFT_KEEPERS)
 
@@ -366,76 +451,65 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
           AND elem NOT IN ('{keeper_list}') AND elem NOT LIKE 'Sysvar%'
           AND elem != 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH'
           AND elem != '11111111111111111111111111111111'
+          AND LENGTH(elem) = 44
     ),
     jupiter_wallets AS (
         SELECT DISTINCT signer as wallet
         FROM solana.transactions
         WHERE CONTAINS(account_keys, 'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu')
           AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
-    ),
-    pacifica_wallets AS (
-        SELECT DISTINCT signer as wallet
-        FROM solana.transactions
-        WHERE CONTAINS(account_keys, 'PCFA5iYgmqK6MqPhWNKg7Yv7auX7VZ4Cx7T1eJyrAMH')
-          AND block_time >= {format_timestamp(start)} AND block_time < {format_timestamp(end)}
-    ),
-    combined AS (
-        SELECT
-            COALESCE(d.wallet, j.wallet, p.wallet) as wallet,
-            CASE WHEN d.wallet IS NOT NULL THEN 1 ELSE 0 END as on_drift,
-            CASE WHEN j.wallet IS NOT NULL THEN 1 ELSE 0 END as on_jupiter,
-            CASE WHEN p.wallet IS NOT NULL THEN 1 ELSE 0 END as on_pacifica
-        FROM drift_wallets d
-        FULL OUTER JOIN jupiter_wallets j ON d.wallet = j.wallet
-        FULL OUTER JOIN pacifica_wallets p ON COALESCE(d.wallet, j.wallet) = p.wallet
+          AND LENGTH(signer) = 44
     )
-    SELECT
-        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 0 AND on_pacifica = 0 THEN 1 END) as drift_only,
-        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 1 AND on_pacifica = 0 THEN 1 END) as jupiter_only,
-        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 0 AND on_pacifica = 1 THEN 1 END) as pacifica_only,
-        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 1 AND on_pacifica = 0 THEN 1 END) as drift_jupiter,
-        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 0 AND on_pacifica = 1 THEN 1 END) as drift_pacifica,
-        COUNT(CASE WHEN on_drift = 0 AND on_jupiter = 1 AND on_pacifica = 1 THEN 1 END) as jupiter_pacifica,
-        COUNT(CASE WHEN on_drift = 1 AND on_jupiter = 1 AND on_pacifica = 1 THEN 1 END) as all_three
-    FROM combined
+    SELECT 'drift' as platform, wallet FROM drift_wallets
+    UNION ALL
+    SELECT 'jupiter' as platform, wallet FROM jupiter_wallets
     """
 
     rows, error = run_dune_query_safe(sql, timeout=300)
     if error:
-        logger.error(f"Failed: {error}")
-        return {
-            "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
-            "drift_jupiter": 0, "drift_pacifica": 0, "jupiter_pacifica": 0,
-            "all_three": 0, "error": error,
-            # Legacy fields for backward compatibility
-            "multi_platform": 0,
-        }
-    if rows:
-        row = rows[0]
-        data = {
-            "drift_only": row.get("drift_only", 0),
-            "jupiter_only": row.get("jupiter_only", 0),
-            "pacifica_only": row.get("pacifica_only", 0),
-            "drift_jupiter": row.get("drift_jupiter", 0),
-            "drift_pacifica": row.get("drift_pacifica", 0),
-            "jupiter_pacifica": row.get("jupiter_pacifica", 0),
-            "all_three": row.get("all_three", 0),
-            # Legacy field: count of wallets on 2+ platforms
-            "multi_platform": (
-                row.get("drift_jupiter", 0) + row.get("drift_pacifica", 0) +
-                row.get("jupiter_pacifica", 0) + row.get("all_three", 0)
-            ),
-        }
-        total = sum(v for k, v in data.items() if k != "multi_platform")
-        logger.info(f"{total} total wallets ({data['all_three']} on all 3, {data['multi_platform']} multi-platform)")
-        return data
+        logger.error(f"Dune wallet query failed: {error}")
+        return {**empty_result, "error": error}
 
-    logger.warning("No data")
-    return {
-        "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
-        "drift_jupiter": 0, "drift_pacifica": 0, "jupiter_pacifica": 0,
-        "all_three": 0, "multi_platform": 0,
+    # Build wallet sets from Dune results
+    drift_wallets = set()
+    jupiter_wallets = set()
+
+    for row in (rows or []):
+        platform = row.get("platform")
+        wallet = row.get("wallet")
+        if wallet:
+            if platform == "drift":
+                drift_wallets.add(wallet)
+            elif platform == "jupiter":
+                jupiter_wallets.add(wallet)
+
+    logger.info(f"Dune: {len(drift_wallets)} Drift wallets, {len(jupiter_wallets)} Jupiter wallets")
+
+    # Step 3: Calculate all overlap combinations
+    drift_only = drift_wallets - jupiter_wallets - pacifica_wallets
+    jupiter_only = jupiter_wallets - drift_wallets - pacifica_wallets
+    pacifica_only = pacifica_wallets - drift_wallets - jupiter_wallets
+
+    drift_jupiter = (drift_wallets & jupiter_wallets) - pacifica_wallets
+    drift_pacifica = (drift_wallets & pacifica_wallets) - jupiter_wallets
+    jupiter_pacifica = (jupiter_wallets & pacifica_wallets) - drift_wallets
+
+    all_three = drift_wallets & jupiter_wallets & pacifica_wallets
+
+    data = {
+        "drift_only": len(drift_only),
+        "jupiter_only": len(jupiter_only),
+        "pacifica_only": len(pacifica_only),
+        "drift_jupiter": len(drift_jupiter),
+        "drift_pacifica": len(drift_pacifica),
+        "jupiter_pacifica": len(jupiter_pacifica),
+        "all_three": len(all_three),
+        "multi_platform": len(drift_jupiter) + len(drift_pacifica) + len(jupiter_pacifica) + len(all_three),
     }
+
+    total = sum(v for k, v in data.items() if k != "multi_platform")
+    logger.info(f"{total} total wallets ({data['all_three']} on all 3, {data['multi_platform']} multi-platform)")
+    return data
 
 
 def fetch_drift_markets_from_api() -> dict:
@@ -609,59 +683,29 @@ def fetch_jupiter_accurate_traders(hours: int = 1) -> int:
     return 0
 
 
-def fetch_pacifica_traders_from_api() -> dict:
-    """Fetch Pacifica trader counts from their leaderboard API.
-
-    Returns dict with trader counts for different time windows:
-    - traders_24h: active in last 24 hours (volume_1d > 0)
-    - traders_7d: active in last 7 days
-    - traders_30d: active in last 30 days
-    - traders_all: total all-time traders
-
-    This is more accurate than on-chain queries since Pacifica uses
-    off-chain order matching.
-    """
-    logger.info("Fetching Pacifica traders from leaderboard API...")
-    try:
-        req = Request(
-            "https://app.pacifica.fi/api/v1/leaderboard",
-            headers={"User-Agent": "SolanaPerpsBot/1.0"}
-        )
-        with urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode())
-
-        if not data.get("success") or "data" not in data:
-            logger.warning("Pacifica API returned unexpected format")
-            return None
-
-        traders = data["data"]
-        result = {
-            "traders_24h": sum(1 for t in traders if float(t.get("volume_1d", 0)) > 0),
-            "traders_7d": sum(1 for t in traders if float(t.get("volume_7d", 0)) > 0),
-            "traders_30d": sum(1 for t in traders if float(t.get("volume_30d", 0)) > 0),
-            "traders_all": len(traders),
-        }
-        logger.info(f"Pacifica API: {result['traders_24h']:,} traders (24h), {result['traders_all']:,} total")
-        return result
-    except Exception as e:
-        logger.warning(f"Pacifica leaderboard API failed: {e}")
-        return None
-
-
 def fetch_pacifica_traders(hours: int = 1) -> int:
-    """Fetch unique Pacifica trader count - tries API first, falls back to Dune.
+    """Fetch unique Pacifica trader count from API.
 
-    For 24h window, uses leaderboard API which is more accurate.
-    For other windows, falls back to on-chain Dune query (may undercount).
+    Uses leaderboard API for all time windows since Pacifica is an off-chain CLOB.
+    The API provides 1d/7d volume data, so we estimate shorter windows proportionally.
     """
-    # For 24h, try the leaderboard API first (more accurate)
-    if hours == 24:
-        api_data = fetch_pacifica_traders_from_api()
-        if api_data and api_data.get("traders_24h"):
-            return api_data["traders_24h"]
+    api_data = get_pacifica_api_data()
 
-    # Fall back to on-chain Dune query
-    logger.info(f"Fetching Pacifica traders from Dune ({hours}h)...")
+    if api_data:
+        if hours >= 24:
+            return api_data.get("traders_24h", 0)
+        elif hours >= 8:
+            # Estimate 8h as ~40% of 24h (based on typical trading patterns)
+            return int(api_data.get("traders_24h", 0) * 0.4)
+        elif hours >= 4:
+            # Estimate 4h as ~25% of 24h
+            return int(api_data.get("traders_24h", 0) * 0.25)
+        else:
+            # Estimate 1h as ~10% of 24h
+            return int(api_data.get("traders_24h", 0) * 0.10)
+
+    # Fall back to on-chain Dune query (will undercount significantly)
+    logger.warning(f"Pacifica API unavailable, falling back to on-chain query ({hours}h)")
 
     start, end = get_time_range(hours)
     sql = f"""
@@ -677,8 +721,7 @@ def fetch_pacifica_traders(hours: int = 1) -> int:
         return 0
     if rows:
         traders = rows[0].get("unique_traders", 0)
-        txns = rows[0].get("total_txns", 0)
-        logger.info(f"{traders} Pacifica traders ({txns:,} txns in {hours}h) [on-chain only]")
+        logger.info(f"{traders} Pacifica traders ({hours}h) [on-chain fallback - undercounts]")
         return traders
 
     logger.warning("No Pacifica data")
