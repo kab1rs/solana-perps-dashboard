@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-01-13T11:39:28.669335Z",
+  "updated_at": "2026-01-13T11:54:32.508194Z",
   "protocols": [
     {
       "protocol": "Drift Trade",
@@ -8,7 +8,7 @@
       "change_1d": 195.28,
       "change_7d": -7.78,
       "transactions": 0,
-      "traders": 2996,
+      "traders": 2990,
       "fees": 78856.19
     },
     {
@@ -27,8 +27,8 @@
       "volume_7d": 2473599780,
       "change_1d": 60.51,
       "change_7d": -30.33,
-      "transactions": 831,
-      "traders": 3581,
+      "transactions": 845,
+      "traders": 3585,
       "fees": 211828.3944
     },
     {
@@ -48,7 +48,7 @@
       "change_1d": -40.52,
       "change_7d": -46.72,
       "transactions": 0,
-      "traders": 45,
+      "traders": 0,
       "fees": 1042.8325
     },
     {
@@ -57,7 +57,7 @@
       "volume_7d": 5874547136,
       "change_1d": 46.52,
       "change_7d": 28.6,
-      "transactions": 947,
+      "transactions": 942,
       "traders": 6898,
       "fees": 461875.5805
     }
@@ -916,16 +916,16 @@
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 925,
-      "BTC": 203,
-      "ETH": 65,
+      "SOL": 926,
+      "BTC": 206,
+      "ETH": 54,
       "USDC": 3
     },
     "volumes": {
-      "SOL": 273050814.9665552,
-      "BTC": 59923584.25752509,
-      "ETH": 19187354.56521739,
-      "USDC": 885570.2107023412
+      "SOL": 274955275.04121107,
+      "BTC": 61167156.21867115,
+      "ETH": 16034108.911690496,
+      "USDC": 890783.8284272498
     }
   },
   "total_open_interest": 270099468.6083244,
@@ -1085,41 +1085,41 @@
   "time_windows": {
     "1h": {
       "pacifica_traders": 689,
-      "flashtrade_traders": 29,
-      "jupiter_traders": 319,
-      "adrena_traders": 5,
-      "wallet_overlap": {
-        "drift_only": 873,
-        "jupiter_only": 315,
-        "pacifica_only": 6896,
-        "drift_jupiter": 1,
-        "drift_pacifica": 0,
-        "jupiter_pacifica": 2,
-        "all_three": 0,
-        "multi_platform": 3
-      },
-      "drift_traders": 457,
+      "flashtrade_traders": 24,
+      "adrena_traders": 4,
+      "jupiter_traders": 329,
+      "drift_traders": 469,
       "liquidations": {
         "count": 0,
         "txns": 0
+      },
+      "wallet_overlap": {
+        "drift_only": 911,
+        "jupiter_only": 322,
+        "pacifica_only": 6895,
+        "drift_jupiter": 2,
+        "drift_pacifica": 0,
+        "jupiter_pacifica": 3,
+        "all_three": 0,
+        "multi_platform": 5
       }
     },
     "4h": {
       "pacifica_traders": 1724,
-      "flashtrade_traders": 92,
-      "adrena_traders": 13,
+      "flashtrade_traders": 90,
+      "jupiter_traders": 1113,
       "wallet_overlap": {
-        "drift_only": 1713,
-        "jupiter_only": 895,
-        "pacifica_only": 6994,
-        "drift_jupiter": 1,
+        "drift_only": 1822,
+        "jupiter_only": 944,
+        "pacifica_only": 7000,
+        "drift_jupiter": 2,
         "drift_pacifica": 0,
-        "jupiter_pacifica": 6,
+        "jupiter_pacifica": 8,
         "all_three": 0,
-        "multi_platform": 7
+        "multi_platform": 10
       },
-      "jupiter_traders": 1077,
-      "drift_traders": 1051,
+      "adrena_traders": 11,
+      "drift_traders": 1037,
       "liquidations": {
         "count": 860,
         "txns": 860
@@ -1127,20 +1127,20 @@
     },
     "8h": {
       "pacifica_traders": 2759,
-      "drift_traders": 1568,
-      "adrena_traders": 15,
+      "jupiter_traders": 1734,
+      "flashtrade_traders": 143,
       "wallet_overlap": {
-        "drift_only": 2390,
-        "jupiter_only": 1359,
-        "pacifica_only": 7230,
-        "drift_jupiter": 3,
+        "drift_only": 2489,
+        "jupiter_only": 1398,
+        "pacifica_only": 7235,
+        "drift_jupiter": 4,
         "drift_pacifica": 1,
-        "jupiter_pacifica": 9,
+        "jupiter_pacifica": 10,
         "all_three": 0,
-        "multi_platform": 13
+        "multi_platform": 15
       },
-      "jupiter_traders": 1705,
-      "flashtrade_traders": 136,
+      "adrena_traders": 15,
+      "drift_traders": 1584,
       "liquidations": {
         "count": 1115,
         "txns": 1115
@@ -1148,20 +1148,20 @@
     },
     "24h": {
       "pacifica_traders": 6898,
-      "flashtrade_traders": 368,
+      "jupiter_traders": 3585,
       "wallet_overlap": {
-        "drift_only": 2981,
-        "jupiter_only": 1707,
-        "pacifica_only": 7496,
-        "drift_jupiter": 4,
+        "drift_only": 3071,
+        "jupiter_only": 1739,
+        "pacifica_only": 7500,
+        "drift_jupiter": 5,
         "drift_pacifica": 1,
-        "jupiter_pacifica": 13,
+        "jupiter_pacifica": 14,
         "all_three": 0,
-        "multi_platform": 18
+        "multi_platform": 20
       },
-      "drift_traders": 2996,
-      "adrena_traders": 45,
-      "jupiter_traders": 3581,
+      "flashtrade_traders": 368,
+      "adrena_traders": 0,
+      "drift_traders": 2990,
       "liquidations": {
         "count": 0,
         "txns": 0,
@@ -1169,20 +1169,20 @@
       }
     }
   },
-  "drift_traders_1h": 457,
-  "jupiter_traders_1h": 319,
+  "drift_traders_1h": 469,
+  "jupiter_traders_1h": 329,
   "liquidations_1h": {
     "count": 0,
     "txns": 0
   },
   "wallet_overlap": {
-    "drift_only": 873,
-    "jupiter_only": 315,
-    "pacifica_only": 6896,
-    "drift_jupiter": 1,
+    "drift_only": 911,
+    "jupiter_only": 322,
+    "pacifica_only": 6895,
+    "drift_jupiter": 2,
     "drift_pacifica": 0,
-    "jupiter_pacifica": 2,
+    "jupiter_pacifica": 3,
     "all_three": 0,
-    "multi_platform": 3
+    "multi_platform": 5
   }
 }
