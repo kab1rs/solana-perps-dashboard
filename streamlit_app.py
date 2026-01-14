@@ -22,34 +22,123 @@ st.set_page_config(
     layout="wide",
 )
 
-# Custom CSS for better styling
+# Custom CSS - Solana color scheme
 st.markdown("""
 <style>
-    .metric-card {
-        background-color: #1e1e1e;
-        padding: 1rem;
-        border-radius: 0.5rem;
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+    /* Solana dark theme - purple tinted background */
+    .stApp { background-color: #0e0e1a !important; }
+    [data-testid="stHeader"] { background-color: #0e0e1a !important; }
+    [data-testid="stSidebar"] { background-color: #12121f !important; border-right: 1px solid #2d2d44 !important; }
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] { color: #9ca3af !important; }
+
+    /* Typography - IBM Plex Mono */
+    html, body, [class*="css"] {
+        font-family: 'IBM Plex Mono', 'SF Mono', monospace !important;
     }
-    .positive { color: #00ff88; }
-    .negative { color: #ff4444; }
+
+    /* Headings - balanced Solana colors */
+    h1 { color: #9945FF !important; font-size: 1.8rem !important; font-weight: 600 !important; }
+    h2 { color: #c4b5fd !important; font-size: 1.3rem !important; font-weight: 500 !important; margin-top: 1.5rem !important; }
+    h3 { color: #e5e7eb !important; font-size: 1rem !important; font-weight: 500 !important; }
+
+    /* Metrics styling - white values, colored deltas */
+    [data-testid="stMetricValue"] {
+        color: #f0f0f0 !important;
+        font-size: 1.6rem !important;
+        font-weight: 600 !important;
+    }
+    [data-testid="stMetricDelta"][data-testid-delta="positive"] { color: #14F195 !important; }
+    [data-testid="stMetricDelta"][data-testid-delta="negative"] { color: #f85149 !important; }
+    [data-testid="stMetricDelta"] { font-size: 0.85rem !important; }
+    [data-testid="stMetricLabel"] { color: #9ca3af !important; font-size: 0.85rem !important; }
+
+    /* Table styling */
+    .stDataFrame {
+        background-color: #12121f !important;
+        border: 1px solid #2d2d44 !important;
+        border-radius: 8px !important;
+    }
+    .stDataFrame thead th {
+        background-color: #1a1a2e !important;
+        color: #9ca3af !important;
+        font-weight: 500 !important;
+        border-bottom: 1px solid #2d2d44 !important;
+    }
+    .stDataFrame tbody td {
+        color: #e5e7eb !important;
+        border-bottom: 1px solid #2d2d44 !important;
+    }
+    .stDataFrame tbody tr:hover td {
+        background-color: #1a1a2e !important;
+    }
+
+    /* Dividers - subtle purple */
+    hr { border-color: #2d2d44 !important; opacity: 0.5 !important; margin: 1.5rem 0 !important; }
+
+    /* Tabs styling - purple accent */
+    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 0 !important; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent !important;
+        color: #9ca3af !important;
+        border-radius: 4px 4px 0 0 !important;
+        padding: 0.5rem 1rem !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #1a1a2e !important;
+        color: #c4b5fd !important;
+        border-bottom: 2px solid #9945FF !important;
+    }
+
+    /* Radio buttons (time selector) - purple accent */
+    .stRadio > div { gap: 0.5rem !important; }
+    .stRadio label {
+        background-color: #1a1a2e !important;
+        border: 1px solid #2d2d44 !important;
+        border-radius: 4px !important;
+        padding: 0.3rem 0.8rem !important;
+        color: #9ca3af !important;
+    }
+    .stRadio label[data-checked="true"] {
+        background-color: #2d2d44 !important;
+        color: #e5e7eb !important;
+        border-color: #9945FF !important;
+    }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #12121f !important;
+        border: 1px solid #2d2d44 !important;
+        border-radius: 4px !important;
+        color: #9ca3af !important;
+    }
+
+    /* Info/warning boxes */
+    .stAlert { background-color: #1a1a2e !important; border: 1px solid #2d2d44 !important; }
+
+    /* Positive/negative colors - Solana green/red */
+    .positive { color: #14F195 !important; }
+    .negative { color: #f85149 !important; }
+
+    /* Caption text */
+    .stCaption, small { color: #6b7280 !important; }
+
+    /* Reduce padding */
+    .block-container { padding: 1rem 2rem !important; max-width: 1400px !important; }
+
+    /* Plotly chart backgrounds */
+    .js-plotly-plot .plotly .bg { fill: #12121f !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar navigation
+# Sidebar navigation - simplified
 with st.sidebar:
-    st.title("Navigation")
+    st.markdown("### Solana Perps")
     st.markdown("""
-- [Overview](#solana-perps-overview)
-- [Cross-Chain](#cross-chain-comparison)
-- [Protocol Breakdown](#solana-protocol-breakdown)
-- [Best Venue](#best-venue-by-asset)
-- [Funding Rates](#funding-rate-overview)
-- [Market Deep Dive](#market-deep-dive)
-- [Cross-Platform](#cross-platform-traders)
-- [P&L Leaderboard](#p-l-leaderboard)
-- [Quick Insights](#quick-insights)
+[Overview](#overview) · [Markets](#markets) · [P&L](#p-l-leaderboard) · [Traders](#traders)
     """)
-    st.divider()
+    st.markdown("---")
 
     # Data freshness indicator in sidebar
     def get_cache_age_display(cache_data):
@@ -114,10 +203,19 @@ def format_funding(rate):
 def format_volume(value):
     """Format large numbers with B/M suffix."""
     if value >= 1e9:
-        return f"${value/1e9:.1f}B"
+        return f"${value/1e9:.2f}B"
     elif value >= 1e6:
-        return f"${value/1e6:.0f}M"
+        return f"${value/1e6:.1f}M"
+    elif value >= 1e3:
+        return f"${value/1e3:.0f}K"
     return f"${value:,.0f}"
+
+
+def format_wallet(address: str) -> str:
+    """Truncate wallet to 6...4 format."""
+    if address and len(address) > 10:
+        return f"{address[:6]}...{address[-4:]}"
+    return address or ""
 
 
 def get_time_window_data(cache: dict, window: str) -> dict:
@@ -151,26 +249,10 @@ if cache is None:
     st.error("No cached data available. Please wait for the first data update.")
     st.stop()
 
-# Header
-st.title("Solana Perps Insights")
-
-# Show data freshness status prominently
+# Header - clean and minimal
+st.title("Solana Perps")
 age_text, age_status, age_minutes = get_cache_age_display(cache)
-status_colors = {"green": "#00ff88", "yellow": "#ffaa00", "red": "#ff4444", "gray": "#888888"}
-status_icon = {"green": "🟢", "yellow": "🟡", "red": "🔴", "gray": "⚪"}
-
-col_header1, col_header2 = st.columns([3, 1])
-with col_header1:
-    st.caption(f"Data refreshes every 15 minutes")
-with col_header2:
-    st.markdown(
-        f"<span style='color: {status_colors[age_status]}'>{status_icon[age_status]} Updated: {age_text}</span>",
-        unsafe_allow_html=True
-    )
-
-# Show warning banner if data is stale
-if age_minutes and age_minutes > 30:
-    st.warning(f"Data is {int(age_minutes)} minutes old. Cache may be stale or refresh failed.")
+st.caption(f"Updated {age_text} · Data refreshes every 15 min")
 
 # Time window selector
 time_window = st.radio(
@@ -191,25 +273,17 @@ total_fees = protocol_df["fees"].sum()
 total_txns = protocol_df["transactions"].sum()
 total_oi = cache.get("total_open_interest", 0)
 
-# Top metrics row
-st.header("Solana Perps Overview")
-
-# Determine column count based on available data
-show_transactions = total_txns > 0
-num_cols = 5 if show_transactions else 4
-
-cols = st.columns(num_cols)
+# Overview metrics - compact row
+st.header("Overview")
+cols = st.columns(4)
 with cols[0]:
-    st.metric("24h Volume", format_volume(total_volume), help="Source: DeFiLlama. Sum of all Solana perps protocols.")
+    st.metric("24h Volume", format_volume(total_volume))
 with cols[1]:
-    st.metric("Drift Open Interest", format_volume(total_oi), help="Source: Drift API. Jupiter OI not yet available.")
+    st.metric("Open Interest", format_volume(total_oi))
 with cols[2]:
-    st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter + Pacifica. Note: Pacifica uses off-chain matching, so count shows active on-chain users (deposits/settlements) which may undercount actual traders.")
+    st.metric("Traders", f"{total_traders:,}")
 with cols[3]:
-    st.metric("Fees Generated", f"${total_fees:,.0f}", help="Estimated from volume × protocol fee rates.")
-if show_transactions:
-    with cols[4]:
-        st.metric("Transactions", f"{total_txns:,}", help="Source: Solana RPC. Program signature counts.")
+    st.metric("Fees", format_volume(total_fees))
 
 st.divider()
 
@@ -246,7 +320,7 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
                     y=trend_df["volume"],
                     mode="lines+markers",
                     name="24h Volume",
-                    line=dict(color="#8B5CF6", width=2),
+                    line=dict(color="#9945FF", width=2),  # Solana purple
                     marker=dict(size=4),
                 ))
                 fig_vol.update_layout(
@@ -266,7 +340,7 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
                     y=trend_df["open_interest"],
                     mode="lines+markers",
                     name="Open Interest",
-                    line=dict(color="#10B981", width=2),
+                    line=dict(color="#c4b5fd", width=2),  # Light purple
                     marker=dict(size=4),
                 ))
                 fig_oi.update_layout(
@@ -285,10 +359,10 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
                 y=trend_df["traders"],
                 mode="lines+markers",
                 name="Traders",
-                line=dict(color="#F59E0B", width=2),
+                line=dict(color="#14F195", width=2),  # Solana green accent
                 marker=dict(size=4),
                 fill="tozeroy",
-                fillcolor="rgba(245, 158, 11, 0.1)",
+                fillcolor="rgba(20, 241, 149, 0.1)",  # Green fill
             ))
             fig_traders.update_layout(
                 title="Active Traders Trend",
@@ -310,379 +384,110 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
 
 st.divider()
 
-# Cross-Chain Comparison
-st.header("Cross-Chain Comparison")
-st.caption("How Solana perps compare to other chains")
+# Market Share - consolidated Cross-Chain + Protocol view
+st.header("Market Share")
 
 global_derivatives = cache.get("global_derivatives", [])
 
 if global_derivatives:
-    # Calculate global total
     global_total = sum(p["volume_24h"] for p in global_derivatives)
-    solana_total = total_volume
+    solana_share = (total_volume / global_total * 100) if global_total > 0 else 0
 
-    # Find Solana protocol rankings
+    # Find Solana rankings
     solana_protocols = []
     for i, p in enumerate(global_derivatives):
         if "Solana" in p.get("chains", []):
-            solana_protocols.append({
-                "name": p["name"],
-                "rank": i + 1,
-                "volume": p["volume_24h"],
-                "share": p["volume_24h"] / global_total * 100 if global_total > 0 else 0,
-            })
+            solana_protocols.append({"name": p["name"], "rank": i + 1})
 
-    # Show Solana ranking summary at top
-    if solana_protocols:
-        cols = st.columns(len(solana_protocols) + 1)
-        with cols[0]:
-            st.metric(
-                "Solana Global Rank",
-                f"#{solana_protocols[0]['rank']}",
-                help="Highest-ranked Solana protocol globally"
-            )
-        for i, sp in enumerate(solana_protocols):
-            with cols[i + 1]:
-                st.metric(
-                    sp["name"],
-                    f"#{sp['rank']}",
-                    f"{sp['share']:.1f}% share",
-                    help=f"Volume: {format_volume(sp['volume'])}"
-                )
+    # Quick stats row
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Global Rank", f"#{solana_protocols[0]['rank']}" if solana_protocols else "—")
+    with col2:
+        st.metric("Global Share", f"{solana_share:.1f}%")
+    with col3:
+        st.metric("Protocols", f"{len(solana_protocols)}")
 
-    col1, col2 = st.columns([2, 1])
+    # Two tables side by side
+    col1, col2 = st.columns(2)
 
     with col1:
-        # Create comparison table with rank column
+        st.subheader("Global Rankings")
         comparison_data = []
-        for i, p in enumerate(global_derivatives[:15]):
-            chains = ", ".join(p.get("chains", [])[:2])
-            is_solana = "Solana" in p.get("chains", [])
+        for i, p in enumerate(global_derivatives[:12]):
+            is_sol = "Solana" in p.get("chains", [])
             comparison_data.append({
-                "Rank": f"#{i + 1}",
+                "#": i + 1,
                 "Protocol": p["name"],
-                "Chain": chains,
-                "Volume 24h": format_volume(p["volume_24h"]),
-                "Market Share": f"{p['volume_24h']/global_total*100:.1f}%",
-                "24h": format_change(p.get("change_1d", 0)),
-                "7d": format_change(p.get("change_7d", 0)),
+                "Volume": format_volume(p["volume_24h"]),
+                "Share": f"{p['volume_24h']/global_total*100:.1f}%",
+                "Chain": "SOL" if is_sol else p.get("chains", [""])[0][:3].upper(),
             })
-
-        comp_df = pd.DataFrame(comparison_data)
-
-        # Style the dataframe to highlight Solana rows
-        def highlight_solana(row):
-            is_solana = any(sp["name"] == row["Protocol"] for sp in solana_protocols)
-            if is_solana:
-                return ["background-color: rgba(139, 92, 246, 0.2)"] * len(row)
-            return [""] * len(row)
-
-        styled_df = comp_df.style.apply(highlight_solana, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(comparison_data), hide_index=True, use_container_width=True)
 
     with col2:
-        # Bar chart for clearer comparison (better than pie for rankings)
-        with st.spinner("Loading chart..."):
-            top_10 = global_derivatives[:10]
-            colors = ["#8B5CF6" if "Solana" in p.get("chains", []) else "#4B5563" for p in top_10]
-
-            fig = go.Figure(data=[
-                go.Bar(
-                    x=[p["name"][:10] for p in top_10],
-                    y=[p["volume_24h"] for p in top_10],
-                    marker_color=colors,
-                    text=[format_volume(p["volume_24h"]) for p in top_10],
-                    textposition="outside",
-                )
-            ])
-            fig.update_layout(
-                title="Top 10 Perps Protocols",
-                yaxis_title="24h Volume",
-                height=400,
-                margin=dict(t=50, b=80),
-                xaxis_tickangle=-45,
-            )
-            fig.add_annotation(
-                text="Purple = Solana",
-                xref="paper", yref="paper",
-                x=1, y=1,
-                showarrow=False,
-                font=dict(size=10, color="#8B5CF6"),
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-    # Summary box
-    solana_share = (solana_total / global_total * 100) if global_total > 0 else 0
-    st.info(f"**Solana perps:** {format_volume(solana_total)} total volume ({solana_share:.1f}% global share) across {len(solana_protocols)} protocols")
+        st.subheader("Solana Breakdown")
+        display_df = protocol_df.copy()
+        display_df["Share"] = (display_df["volume_24h"] / total_volume * 100).round(1).astype(str) + "%"
+        display_df["24h"] = display_df["change_1d"].apply(format_change)
+        display_df["Volume"] = display_df["volume_24h"].apply(format_volume)
+        display_df["Traders"] = display_df["traders"].apply(lambda x: f"{x:,}")
+        display_df = display_df.rename(columns={"protocol": "Protocol"})
+        st.dataframe(
+            display_df[["Protocol", "Volume", "Share", "24h", "Traders"]],
+            hide_index=True,
+            use_container_width=True,
+        )
 
 st.divider()
 
-# Solana Protocol Comparison with Chart
-st.header("Solana Protocol Breakdown")
-
-col1, col2 = st.columns([1, 1])
-
-with col1:
-    display_df = protocol_df.copy()
-    display_df["Market Share"] = (display_df["volume_24h"] / total_volume * 100).round(1).astype(str) + "%"
-    display_df["24h Change"] = display_df["change_1d"].apply(format_change)
-    display_df["7d Change"] = display_df["change_7d"].apply(format_change)
-    display_df["Volume 24h"] = display_df["volume_24h"].apply(lambda x: f"${x:,.0f}")
-    display_df["Fees"] = display_df["fees"].apply(lambda x: f"${x:,.0f}")
-    # Add asterisk to Pacifica traders to indicate it's an estimate
-    def format_traders(row):
-        count = row["traders"]
-        if row["protocol"] == "Pacifica" and count > 0:
-            return f"{count:,}*"
-        return f"{count:,}"
-    display_df["Traders"] = display_df.apply(format_traders, axis=1)
-    display_df = display_df.rename(columns={"protocol": "Protocol"})
-
-    st.dataframe(
-        display_df[["Protocol", "Volume 24h", "24h Change", "7d Change", "Market Share", "Traders", "Fees"]],
-        width="stretch",
-        hide_index=True,
-    )
-    # Add footnote for Pacifica if present
-    if "Pacifica" in display_df["Protocol"].values:
-        st.caption("*Pacifica uses off-chain matching. Trader count shows on-chain users only and may differ from actual traders.")
-
-with col2:
-    # Solana protocols pie chart
-    with st.spinner("Loading chart..."):
-        fig = px.pie(
-            protocol_df,
-            values="volume_24h",
-            names="protocol",
-            title="Solana Perps Market Share",
-            hole=0.4,
-            color_discrete_sequence=px.colors.qualitative.Set2,
-        )
-        fig.update_layout(
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=-0.2),
-            margin=dict(t=50, b=50, l=20, r=20),
-            height=350,
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-st.divider()
-
-# Best Venue by Asset
-st.header("Best Venue by Asset")
-st.caption("Compare where to trade each asset across Solana perp DEXes")
+# Markets - Protocol comparison with funding rates
+st.header("Markets")
 
 drift_markets = cache.get("drift_markets", {})
 jupiter_markets = cache.get("jupiter_markets", {})
-
-# Dynamically derive common assets from available markets
-drift_asset_names = {m.replace("-PERP", "") for m in drift_markets.keys() if m.endswith("-PERP")}
-jupiter_asset_names = set(jupiter_markets.get("volumes", {}).keys())
-common_assets = sorted(drift_asset_names & jupiter_asset_names)
-
-# Fallback: if no common assets found, use top assets by combined volume
-if not common_assets:
-    combined = {}
-    for asset in drift_asset_names | jupiter_asset_names:
-        drift_vol = drift_markets.get(f"{asset}-PERP", {}).get("volume", 0)
-        jup_vol = jupiter_markets.get("volumes", {}).get(asset, 0)
-        combined[asset] = drift_vol + jup_vol
-    common_assets = sorted(combined.keys(), key=lambda x: combined[x], reverse=True)[:8]
-
-# Limit to top 8 assets for display
-common_assets = common_assets[:8] if len(common_assets) > 8 else common_assets
-
-venue_data = []
-
-for asset in common_assets:
-    drift_key = f"{asset}-PERP"
-    drift_info = drift_markets.get(drift_key, {})
-
-    jupiter_vol = jupiter_markets.get("volumes", {}).get(asset, 0)
-    drift_vol = drift_info.get("volume", 0)
-    drift_funding = drift_info.get("funding_rate", 0)
-    drift_oi = drift_info.get("open_interest", 0)
-
-    best_volume = "Jupiter" if jupiter_vol > drift_vol else "Drift"
-
-    venue_data.append({
-        "Asset": asset,
-        "Drift Volume": f"${drift_vol:,.0f}",
-        "Jupiter Volume": f"${jupiter_vol:,.0f}",
-        "Best Volume": best_volume,
-        "Drift Funding": format_funding(drift_funding),
-        "Drift OI": f"${drift_oi * drift_info.get('last_price', 0):,.0f}",
-    })
-
-venue_df = pd.DataFrame(venue_data)
-st.dataframe(venue_df, width="stretch", hide_index=True)
-
-st.divider()
-
-# Funding Rate Heatmap
-st.header("Funding Rate Overview")
-
-# Define extreme funding threshold (0.1% = 87.6% annualized)
-EXTREME_FUNDING_THRESHOLD = 0.001  # 0.1% per funding period
-
-def is_valid_funding_market(info: dict) -> bool:
-    """Filter for valid funding rate markets: min OI and reasonable funding."""
-    oi_usd = info.get("open_interest", 0) * info.get("last_price", 0)
-    funding = abs(info.get("funding_rate", 0))
-    return oi_usd >= 10000 and funding < 0.05  # $10k OI min, <5% funding
-
-def get_annualized_funding(rate: float) -> float:
-    """Calculate annualized funding rate (assuming 1h funding periods)."""
-    return rate * 24 * 365 * 100  # Convert to percentage
-
-# Check for extreme funding rates and show alert
-if drift_markets:
-    extreme_markets = []
-    for market, info in drift_markets.items():
-        if info.get("volume", 0) > 10000 and is_valid_funding_market(info):
-            funding = info.get("funding_rate", 0)
-            if abs(funding) >= EXTREME_FUNDING_THRESHOLD:
-                annualized = get_annualized_funding(funding)
-                extreme_markets.append({
-                    "market": market,
-                    "funding": funding,
-                    "annualized": annualized,
-                    "direction": "longs" if funding > 0 else "shorts"
-                })
-
-    if extreme_markets:
-        # Sort by absolute funding rate
-        extreme_markets.sort(key=lambda x: abs(x["funding"]), reverse=True)
-        alert_msg = "**Extreme Funding Rates Detected:**\n"
-        for em in extreme_markets[:3]:  # Show top 3
-            direction_icon = "🔴" if em["direction"] == "longs" else "🟢"
-            alert_msg += f"- {direction_icon} **{em['market']}**: {em['funding']*100:.4f}% ({em['annualized']:.1f}% APR) - {em['direction']} pay\n"
-        st.warning(alert_msg)
-
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    if drift_markets:
-        with st.spinner("Loading chart..."):
-            # Get markets sorted by absolute funding rate (most extreme first)
-            sorted_markets = sorted(
-                [(k, v) for k, v in drift_markets.items()
-                 if v.get("volume", 0) > 10000 and is_valid_funding_market(v)],
-                key=lambda x: abs(x[1].get("funding_rate", 0)),
-                reverse=True
-            )[:12]
-
-            funding_data = []
-            for market, info in sorted_markets:
-                funding = info.get("funding_rate", 0) * 100  # Convert to percentage
-                annualized = get_annualized_funding(info.get("funding_rate", 0))
-                is_extreme = abs(info.get("funding_rate", 0)) >= EXTREME_FUNDING_THRESHOLD
-                funding_data.append({
-                    "Market": market.replace("-PERP", ""),
-                    "Funding %": funding,
-                    "Annualized": annualized,
-                    "Direction": "Longs Pay" if funding > 0 else "Shorts Pay" if funding < 0 else "Neutral",
-                    "Extreme": is_extreme,
-                })
-
-            funding_df = pd.DataFrame(funding_data)
-
-            # Create bar chart with extreme highlighting
-            def get_funding_color(row):
-                if row["Extreme"]:
-                    return "#ff0000" if row["Funding %"] > 0 else "#00ff00"  # Brighter for extreme
-                return "#ff4444" if row["Funding %"] > 0 else "#00ff88"
-
-            colors = [get_funding_color(row) for _, row in funding_df.iterrows()]
-
-            fig = go.Figure(data=[
-                go.Bar(
-                    x=funding_df["Market"],
-                    y=funding_df["Funding %"],
-                    marker_color=colors,
-                    marker_line_width=[3 if e else 0 for e in funding_df["Extreme"]],
-                    marker_line_color="white",
-                    text=[f"{f:.4f}%" for f in funding_df["Funding %"]],
-                    textposition="outside",
-                    hovertemplate="<b>%{x}</b><br>Funding: %{y:.4f}%<br>Annualized: %{customdata:.1f}%<extra></extra>",
-                    customdata=funding_df["Annualized"],
-                )
-            ])
-            fig.update_layout(
-                title="Funding Rates (Top Markets)",
-                xaxis_title="Market",
-                yaxis_title="Funding Rate %",
-                height=350,
-                margin=dict(t=50, b=50),
-            )
-            fig.add_hline(y=0, line_dash="dash", line_color="gray")
-            # Add threshold lines for extreme funding
-            fig.add_hline(y=0.1, line_dash="dot", line_color="orange", opacity=0.5)
-            fig.add_hline(y=-0.1, line_dash="dot", line_color="orange", opacity=0.5)
-            st.plotly_chart(fig, use_container_width=True)
-            st.caption("White border = extreme funding (>0.1%). Orange dotted lines = threshold. Hover for annualized rates.")
-
-with col2:
-    st.subheader("Funding Extremes")
-
-    if drift_markets:
-        # Filter for valid markets (min OI, reasonable funding)
-        valid_markets = [(k, v) for k, v in drift_markets.items()
-                         if v.get("volume", 0) > 10000 and is_valid_funding_market(v)]
-        sorted_by_funding = sorted(valid_markets, key=lambda x: x[1].get("funding_rate", 0))
-
-        if sorted_by_funding:
-            lowest = sorted_by_funding[0]
-            lowest_rate = lowest[1].get('funding_rate', 0)
-            lowest_apr = get_annualized_funding(lowest_rate)
-            st.markdown(f"**Shorts Pay Most:**")
-            st.markdown(f"🟢 {lowest[0]}: {format_funding(lowest_rate)}")
-            st.caption(f"({lowest_apr:.1f}% APR)")
-
-            highest = sorted_by_funding[-1]
-            highest_rate = highest[1].get('funding_rate', 0)
-            highest_apr = get_annualized_funding(highest_rate)
-            st.markdown(f"**Longs Pay Most:**")
-            st.markdown(f"🔴 {highest[0]}: {format_funding(highest_rate)}")
-            st.caption(f"({highest_apr:.1f}% APR)")
-
-st.divider()
-
-# Market Deep Dive
-st.header("Market Deep Dive")
-
-col1, col2, col3 = st.columns(3)
-
 window_data = get_time_window_data(cache, time_window)
+
+# Helper for annualized funding
+def get_annualized_funding(rate: float) -> float:
+    return rate * 24 * 365 * 100
+
+# Three protocol columns
+col1, col2, col3 = st.columns(3)
 
 with col1:
     drift_traders = window_data.get("drift_traders", 0)
-    st.subheader(f"Drift ({drift_traders:,} traders/{time_window})")
+    st.subheader(f"Drift ({drift_traders:,} traders)")
 
     if drift_markets:
         drift_data = []
         total_vol = sum(m["volume"] for m in drift_markets.values())
-
-        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:12]
+        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:10]
 
         for market, info in sorted_markets:
             share = (info["volume"] / total_vol * 100) if total_vol > 0 else 0
             funding = info.get("funding_rate", 0)
             oi_usd = info.get("open_interest", 0) * info.get("last_price", 0)
-
             drift_data.append({
-                "Market": market,
-                "Volume 24h": f"${info['volume']:,.0f}",
+                "Market": market.replace("-PERP", ""),
+                "Volume": format_volume(info["volume"]),
                 "Funding": format_funding(funding),
-                "OI": f"${oi_usd:,.0f}",
-                "Share": f"{share:.1f}%",
+                "OI": format_volume(oi_usd),
             })
 
-        st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(drift_data), hide_index=True, use_container_width=True)
+
+        # Funding extremes inline
+        valid_markets = [(k, v) for k, v in drift_markets.items() if v.get("volume", 0) > 10000]
+        if valid_markets:
+            sorted_by_funding = sorted(valid_markets, key=lambda x: x[1].get("funding_rate", 0))
+            lowest = sorted_by_funding[0]
+            highest = sorted_by_funding[-1]
+            st.caption(f"Funding: {lowest[0].replace('-PERP', '')} {format_funding(lowest[1].get('funding_rate', 0))} → {highest[0].replace('-PERP', '')} {format_funding(highest[1].get('funding_rate', 0))}")
 
 with col2:
     jupiter_traders = window_data.get("jupiter_traders", 0)
-    st.subheader(f"Jupiter ({jupiter_traders:,} traders/{time_window})")
+    st.subheader(f"Jupiter ({jupiter_traders:,} traders)")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -694,24 +499,22 @@ with col2:
         for market in sorted(jupiter_trades.keys(), key=lambda x: jupiter_trades[x], reverse=True):
             trades = jupiter_trades[market]
             vol = jupiter_volumes.get(market, 0)
-            share = (trades / total_trades * 100) if total_trades > 0 else 0
             avg_size = vol / trades if trades > 0 else 0
-
             jupiter_data.append({
                 "Market": market,
+                "Volume": format_volume(vol),
                 "Trades": f"{trades:,}",
-                "Volume": f"${vol:,.0f}",
-                "Avg Trade": f"${avg_size:,.0f}",
-                "Share": f"{share:.1f}%",
+                "Avg": format_volume(avg_size),
             })
 
-        st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(jupiter_data), hide_index=True, use_container_width=True)
+    else:
+        st.info("No Jupiter market data")
 
 with col3:
     pacifica_traders = window_data.get("pacifica_traders", 0)
-    st.subheader(f"Pacifica ({pacifica_traders:,} traders/{time_window})")
+    st.subheader(f"Pacifica ({pacifica_traders:,} traders)")
 
-    # Get Pacifica volume from protocols list
     pacifica_protocol = next(
         (p for p in cache.get("protocols", []) if p.get("protocol") == "Pacifica"),
         None
@@ -719,44 +522,29 @@ with col3:
 
     if pacifica_protocol:
         pacifica_vol = pacifica_protocol.get("volume_24h", 0)
-        pacifica_vol_7d = pacifica_protocol.get("volume_7d", 0)
-        pacifica_fees = pacifica_protocol.get("fees", 0)
         change_1d = pacifica_protocol.get("change_1d", 0)
-
-        # Summary metrics
         st.metric("24h Volume", format_volume(pacifica_vol), f"{change_1d:+.1f}%")
 
-        # Additional stats
         pacifica_stats = [
-            {"Metric": "7d Volume", "Value": format_volume(pacifica_vol_7d)},
-            {"Metric": "24h Fees", "Value": f"${pacifica_fees:,.0f}"},
-            {"Metric": f"Traders ({time_window})", "Value": f"{pacifica_traders:,}"},
+            {"Metric": "7d Volume", "Value": format_volume(pacifica_protocol.get("volume_7d", 0))},
+            {"Metric": "Fees (24h)", "Value": format_volume(pacifica_protocol.get("fees", 0))},
+            {"Metric": "Traders", "Value": f"{pacifica_traders:,}"},
         ]
-
-        # Add 24h traders if different from selected window
-        if time_window != "24h":
-            traders_24h = cache.get("time_windows", {}).get("24h", {}).get("pacifica_traders", 0)
-            pacifica_stats.append({"Metric": "Traders (24h)", "Value": f"{traders_24h:,}"})
-
-        st.dataframe(pd.DataFrame(pacifica_stats), width="stretch", hide_index=True)
-
-        st.caption("Market-level breakdown unavailable (off-chain CLOB)")
+        st.dataframe(pd.DataFrame(pacifica_stats), hide_index=True, use_container_width=True)
+        st.caption("Off-chain CLOB - no per-market data")
     else:
-        st.info("No Pacifica data available")
+        st.info("No Pacifica data")
 
 st.divider()
 
-# Cross-Platform Wallet Analysis
-st.header("Cross-Platform Traders")
-st.caption(f"Wallet overlap between Drift, Jupiter, and Pacifica ({time_window} window)")
+# Traders Section - Wallet overlap and activity
+st.header("Traders")
 
 wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
 if wallet_data.get("error"):
     st.warning(f"Wallet data unavailable for {time_window} window")
-    st.caption(wallet_data.get("error", "Query failed - data may be temporarily unavailable"))
 else:
-    # Extract all overlap categories
     drift_only = wallet_data.get("drift_only", 0)
     jupiter_only = wallet_data.get("jupiter_only", 0)
     pacifica_only = wallet_data.get("pacifica_only", 0)
@@ -765,7 +553,6 @@ else:
     jupiter_pacifica = wallet_data.get("jupiter_pacifica", 0)
     all_three = wallet_data.get("all_three", 0)
 
-    # Calculate totals per platform
     drift_total = drift_only + drift_jupiter + drift_pacifica + all_three
     jupiter_total = jupiter_only + drift_jupiter + jupiter_pacifica + all_three
     pacifica_total = pacifica_only + drift_pacifica + jupiter_pacifica + all_three
@@ -773,102 +560,57 @@ else:
     total_unique = drift_only + jupiter_only + pacifica_only + drift_jupiter + drift_pacifica + jupiter_pacifica + all_three
 
     if total_unique > 0:
-        # Top metrics row
-        col1, col2, col3, col4, col5 = st.columns(5)
-
+        # Metrics row
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric(
-                "All 3 Platforms",
-                f"{all_three:,}",
-                help="Wallets active on Drift, Jupiter, AND Pacifica"
-            )
-
+            st.metric("Total Unique", f"{total_unique:,}")
         with col2:
-            st.metric(
-                "Multi-Platform",
-                f"{multi_platform:,}",
-                help="Wallets active on 2+ platforms"
-            )
-
+            st.metric("Multi-Platform", f"{multi_platform:,}")
         with col3:
-            st.metric(
-                "Drift Only",
-                f"{drift_only:,}",
-                help="Wallets active ONLY on Drift"
-            )
-
+            overlap_pct = (multi_platform / total_unique * 100)
+            st.metric("Overlap %", f"{overlap_pct:.1f}%")
         with col4:
-            st.metric(
-                "Jupiter Only",
-                f"{jupiter_only:,}",
-                help="Wallets active ONLY on Jupiter"
-            )
+            st.metric("All 3 Platforms", f"{all_three:,}")
 
-        with col5:
-            st.metric(
-                "Pacifica Only",
-                f"{pacifica_only:,}",
-                help="Wallets active ONLY on Pacifica"
-            )
-
-        # Visualization row
-        col1, col2 = st.columns([1, 1])
+        # Horizontal bar chart (replaces pie chart)
+        col1, col2 = st.columns([2, 1])
 
         with col1:
-            with st.spinner("Loading chart..."):
-                # Pie chart showing distribution
-                pie_values = [drift_only, jupiter_only, pacifica_only, drift_jupiter, drift_pacifica, jupiter_pacifica, all_three]
-                pie_names = ["Drift Only", "Jupiter Only", "Pacifica Only", "Drift+Jupiter", "Drift+Pacifica", "Jupiter+Pacifica", "All Three"]
-                pie_colors = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#6366F1", "#14B8A6", "#EC4899"]
-
-                # Filter out zero values for cleaner chart
-                filtered = [(v, n, c) for v, n, c in zip(pie_values, pie_names, pie_colors) if v > 0]
-                if filtered:
-                    values, names, colors = zip(*filtered)
-                    fig = px.pie(
-                        values=values,
-                        names=names,
-                        title="Trader Distribution",
-                        color_discrete_sequence=colors,
-                        hole=0.4,
-                    )
-                    fig.update_layout(height=350, margin=dict(t=50, b=20, l=20, r=20))
-                    st.plotly_chart(fig, use_container_width=True)
+            # Horizontal bar for platform totals
+            fig = go.Figure(data=[
+                go.Bar(
+                    y=["Pacifica", "Jupiter", "Drift"],
+                    x=[pacifica_total, jupiter_total, drift_total],
+                    orientation='h',
+                    marker_color=["#9945FF", "#c4b5fd", "#14F195"],  # Purple primary, green accent
+                    text=[f"{pacifica_total:,}", f"{jupiter_total:,}", f"{drift_total:,}"],
+                    textposition="outside",
+                )
+            ])
+            fig.update_layout(
+                title=f"Traders per Platform ({time_window})",
+                xaxis_title="Unique Wallets",
+                height=200,
+                margin=dict(t=40, b=30, l=80, r=60),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#c9d1d9'),
+            )
+            fig.update_xaxes(gridcolor='#1e2330', zerolinecolor='#1e2330')
+            st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            with st.spinner("Loading chart..."):
-                # Bar chart showing totals per platform
-                fig = go.Figure(data=[
-                    go.Bar(
-                        x=["Drift", "Jupiter", "Pacifica"],
-                        y=[drift_total, jupiter_total, pacifica_total],
-                        marker_color=["#3B82F6", "#10B981", "#F59E0B"],
-                        text=[f"{drift_total:,}", f"{jupiter_total:,}", f"{pacifica_total:,}"],
-                        textposition="outside",
-                    )
-                ])
-                fig.update_layout(
-                    title=f"Total Traders per Platform ({time_window})",
-                    yaxis_title="Unique Wallets",
-                    height=350,
-                    margin=dict(t=50, b=20),
-                )
-                st.plotly_chart(fig, use_container_width=True)
-
-        # Overlap details expander
-        with st.expander("Overlap Details"):
-            overlap_details = [
-                {"Combination": "Drift + Jupiter (not Pacifica)", "Count": drift_jupiter},
-                {"Combination": "Drift + Pacifica (not Jupiter)", "Count": drift_pacifica},
-                {"Combination": "Jupiter + Pacifica (not Drift)", "Count": jupiter_pacifica},
-                {"Combination": "All Three Platforms", "Count": all_three},
+            # Overlap breakdown table
+            overlap_data = [
+                {"Category": "Drift only", "Count": f"{drift_only:,}"},
+                {"Category": "Jupiter only", "Count": f"{jupiter_only:,}"},
+                {"Category": "Pacifica only", "Count": f"{pacifica_only:,}"},
+                {"Category": "Drift+Jupiter", "Count": f"{drift_jupiter:,}"},
+                {"Category": "Drift+Pacifica", "Count": f"{drift_pacifica:,}"},
+                {"Category": "Jup+Pacifica", "Count": f"{jupiter_pacifica:,}"},
+                {"Category": "All three", "Count": f"{all_three:,}"},
             ]
-            st.dataframe(pd.DataFrame(overlap_details), hide_index=True)
-
-            overlap_pct = (multi_platform / total_unique * 100) if total_unique > 0 else 0
-            st.caption(f"**{overlap_pct:.1f}%** of traders use 2+ platforms ({multi_platform:,} of {total_unique:,} unique wallets)")
-    else:
-        st.info("No wallet data available for the current period")
+            st.dataframe(pd.DataFrame(overlap_data), hide_index=True, use_container_width=True, height=250)
 
 st.divider()
 
@@ -984,78 +726,6 @@ with pnl_col2:
     if total_jupiter:
         st.caption(f"Jupiter: {total_jupiter:,} traders aggregated across {len({'SOL', 'BTC', 'ETH'})} markets")
 
-st.divider()
-
-# Unique Insights Section
-st.header("Quick Insights")
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.subheader("Market Concentration")
-    if drift_markets:
-        total_vol = sum(m["volume"] for m in drift_markets.values())
-        sorted_by_vol = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)
-
-        top3_vol = sum(m["volume"] for _, m in sorted_by_vol[:3])
-        top3_pct = (top3_vol / total_vol * 100) if total_vol > 0 else 0
-
-        st.metric("Top 3 Markets", f"{top3_pct:.1f}%", "of total volume")
-        st.write(f"SOL-PERP: {(sorted_by_vol[0][1]['volume'] / total_vol * 100):.1f}%")
-        st.write(f"Active markets: {len([m for m in drift_markets.values() if m['volume'] > 1000])}")
-
-with col2:
-    st.subheader("OI Leaders")
-    if drift_markets:
-        oi_data = [(k, v.get("open_interest", 0) * v.get("last_price", 0))
-                   for k, v in drift_markets.items()]
-        sorted_by_oi = sorted(oi_data, key=lambda x: x[1], reverse=True)[:3]
-
-        for i, (market, oi) in enumerate(sorted_by_oi, 1):
-            st.write(f"**#{i}** {market}: ${oi:,.0f}")
-
-with col3:
-    st.subheader(f"Active Traders ({time_window})")
-    insights_window = get_time_window_data(cache, time_window)
-    drift_count = insights_window.get("drift_traders", 0)
-    jupiter_count = insights_window.get("jupiter_traders", 0)
-    pacifica_count = insights_window.get("pacifica_traders", 0)
-    flashtrade_count = insights_window.get("flashtrade_traders", 0)
-    adrena_count = insights_window.get("adrena_traders", 0)
-    total_traders = drift_count + jupiter_count + pacifica_count + flashtrade_count + adrena_count
-    if total_traders > 0:
-        # Show as compact table for all 5 protocols
-        trader_data = [
-            {"Protocol": "Drift", "Traders": f"{drift_count:,}"},
-            {"Protocol": "Jupiter", "Traders": f"{jupiter_count:,}"},
-            {"Protocol": "Pacifica", "Traders": f"{pacifica_count:,}"},
-            {"Protocol": "FlashTrade", "Traders": f"{flashtrade_count:,}"},
-            {"Protocol": "Adrena", "Traders": f"{adrena_count:,}"},
-        ]
-        st.dataframe(pd.DataFrame(trader_data), hide_index=True, height=212)
-    else:
-        st.write("No trader data available")
-
-with col4:
-    st.subheader(f"Liquidations ({time_window})")
-    liquidations = insights_window.get("liquidations", {})
-    if liquidations.get("error"):
-        st.warning(f"Liquidations unavailable for {time_window}")
-        if "timeout" in liquidations.get("error", "").lower() or "skipped" in liquidations.get("error", "").lower():
-            st.caption("Liquidation queries time out beyond 8h. Try a shorter window.")
-        else:
-            st.caption(liquidations.get("error", "Unknown error"))
-    elif liquidations.get("count", 0) > 0:
-        st.metric("Events", f"{liquidations['count']:,}")
-        st.write(f"Txns: {liquidations.get('txns', 0):,}")
-    else:
-        st.info("No liquidations")
-    st.caption("Source: Drift")
-
 # Footer
 st.divider()
-st.caption("""
-**Data Sources:** DeFiLlama (volume), Drift REST API (markets, funding, OI), Dune Analytics (traders, Jupiter markets)
-
-**Unique Insights:** Cross-chain comparison, funding rates, OI concentration - data aggregated from multiple sources.
-""")
+st.caption("Data: DeFiLlama · Drift API · Dune Analytics · Pacifica API · Jupiter API")
