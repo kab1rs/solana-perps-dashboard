@@ -22,6 +22,7 @@ import json
 import logging
 import os
 import sys
+import threading
 import time
 from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
@@ -64,6 +65,50 @@ DUNE_API_KEY = os.environ.get("DUNE_API_KEY")
 if not DUNE_API_KEY:
     raise ValueError("DUNE_API_KEY environment variable is required")
 DUNE_API_URL = "https://api.dune.com/api/v1"
+
+
+class DuneCircuitBreaker:
+    """Circuit breaker for Dune API to fail fast on repeated failures.
+
+    When Dune is down or slow, this prevents cascading failures by
+    short-circuiting requests after a threshold of consecutive failures.
+    """
+
+    def __init__(self, failure_threshold: int = 3, reset_timeout: int = 300):
+        self.failure_threshold = failure_threshold
+        self.reset_timeout = reset_timeout  # seconds before auto-reset
+        self.failures = 0
+        self.last_failure_time = 0
+        self.is_open = False
+
+    def record_success(self):
+        """Reset failure count on successful query."""
+        self.failures = 0
+        self.is_open = False
+
+    def record_failure(self):
+        """Track failure and potentially open the circuit."""
+        self.failures += 1
+        self.last_failure_time = time.time()
+        if self.failures >= self.failure_threshold:
+            self.is_open = True
+            logger.warning(f"Dune circuit breaker OPEN after {self.failures} consecutive failures")
+
+    def can_execute(self) -> bool:
+        """Check if requests should be allowed through."""
+        if not self.is_open:
+            return True
+        # Check if reset timeout has passed (allow retry)
+        if time.time() - self.last_failure_time > self.reset_timeout:
+            logger.info("Dune circuit breaker reset (timeout elapsed)")
+            self.is_open = False
+            self.failures = 0
+            return True
+        return False
+
+
+# Global circuit breaker instance for Dune API
+_dune_circuit_breaker = DuneCircuitBreaker()
 
 # Drift Data API (provides per-market volume data directly)
 DRIFT_DATA_API = "https://data.api.drift.trade/contracts"
@@ -174,7 +219,15 @@ def rpc_call(method: str, params: list, max_retries: int = 3, use_fallback: bool
 
 
 def run_dune_query(sql: str, timeout: int = 180, max_retries: int = 3) -> dict:
-    """Execute SQL on Dune Analytics and return results with retry logic."""
+    """Execute SQL on Dune Analytics and return results with retry logic.
+
+    Uses circuit breaker to fail fast when Dune is experiencing issues.
+    """
+    # Check circuit breaker first - fail fast if Dune is down
+    if not _dune_circuit_breaker.can_execute():
+        logger.warning("Dune circuit breaker is OPEN, skipping query")
+        return {"error": "Circuit breaker open - Dune API unavailable"}
+
     url = f"{DUNE_API_URL}/sql/execute"
     payload = {"sql": sql, "performance": "medium"}
 
@@ -198,9 +251,11 @@ def run_dune_query(sql: str, timeout: int = 180, max_retries: int = 3) -> dict:
                 logger.warning(f"Dune query start failed, retrying in {wait_time}s: {e}")
                 time.sleep(wait_time)
             else:
+                _dune_circuit_breaker.record_failure()
                 return {"error": str(e)}
 
     if not execution_id:
+        _dune_circuit_breaker.record_failure()
         return {"error": "Failed to start query"}
 
     # Poll for results
@@ -218,14 +273,18 @@ def run_dune_query(sql: str, timeout: int = 180, max_retries: int = 3) -> dict:
                     results_url = f"{DUNE_API_URL}/execution/{execution_id}/results"
                     req = Request(results_url, headers={"X-DUNE-API-KEY": DUNE_API_KEY})
                     with urlopen(req, timeout=30) as response:
+                        _dune_circuit_breaker.record_success()
                         return json.loads(response.read().decode("utf-8"))
                 elif "FAILED" in state:
+                    _dune_circuit_breaker.record_failure()
                     return {"error": status.get("error", {}).get("message", str(status))}
         except Exception as e:
+            _dune_circuit_breaker.record_failure()
             return {"error": str(e)}
 
         time.sleep(5)
 
+    _dune_circuit_breaker.record_failure()
     return {"error": "Query timeout"}
 
 
@@ -383,25 +442,38 @@ def fetch_pacifica_traders_from_api() -> dict:
 
 
 # Cache for Pacifica API data (to avoid multiple calls per update cycle)
+# Thread-safe with lock since update_cache.py uses ThreadPoolExecutor
+_pacifica_cache_lock = threading.Lock()
 _pacifica_api_cache = {"data": None, "timestamp": None}
 
 
 def get_pacifica_api_data() -> dict:
-    """Get Pacifica API data with caching (refreshes every 5 minutes)."""
+    """Get Pacifica API data with caching (refreshes every 5 minutes).
+
+    Thread-safe implementation to handle concurrent access from ThreadPoolExecutor.
+    """
     global _pacifica_api_cache
     now = time.time()
 
-    # Return cached data if fresh (< 5 minutes old)
-    if _pacifica_api_cache["data"] and _pacifica_api_cache["timestamp"]:
-        age = now - _pacifica_api_cache["timestamp"]
-        if age < 300:  # 5 minutes
-            return _pacifica_api_cache["data"]
+    # Check cache under lock
+    with _pacifica_cache_lock:
+        if _pacifica_api_cache["data"] and _pacifica_api_cache["timestamp"]:
+            age = now - _pacifica_api_cache["timestamp"]
+            if age < 300:  # 5 minutes
+                return _pacifica_api_cache["data"]
+        # Get stale data as fallback in case fetch fails
+        stale_data = _pacifica_api_cache.get("data")
 
-    # Fetch fresh data
+    # Fetch fresh data (outside lock to avoid blocking other threads)
     data = fetch_pacifica_traders_from_api()
-    if data:
-        _pacifica_api_cache = {"data": data, "timestamp": now}
-    return data
+
+    # Update cache under lock
+    with _pacifica_cache_lock:
+        if data:
+            _pacifica_api_cache = {"data": data, "timestamp": now}
+            return data
+        # Return stale data if fetch failed
+        return stale_data
 
 
 # --- Wallet Snapshot Functions for Incremental Caching ---
