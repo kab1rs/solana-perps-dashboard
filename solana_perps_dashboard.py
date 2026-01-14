@@ -476,6 +476,143 @@ def get_pacifica_api_data() -> dict:
         return stale_data
 
 
+# --- P&L Leaderboard Functions ---
+
+def fetch_pacifica_pnl_leaderboard(limit: int = 100) -> dict:
+    """Fetch top traders by P&L from Pacifica API.
+
+    Returns dict with top_winners and top_losers lists.
+    Pacifica provides pre-computed P&L for 1d, 7d, 30d, and all-time.
+    """
+    logger.info("Fetching Pacifica P&L leaderboard...")
+    try:
+        req = Request(
+            "https://app.pacifica.fi/api/v1/leaderboard",
+            headers={"User-Agent": "SolanaPerpsBot/1.0"}
+        )
+        with urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode())
+
+        if not data.get("success") or "data" not in data:
+            logger.warning("Pacifica API returned unexpected format")
+            return {"top_winners": [], "top_losers": []}
+
+        traders = data["data"]
+
+        # Extract P&L fields and create leaderboard entries
+        pnl_data = []
+        for t in traders:
+            pnl_24h = float(t.get("pnl_1d", 0))
+            pnl_7d = float(t.get("pnl_7d", 0))
+            volume_24h = float(t.get("volume_1d", 0))
+
+            # Only include traders with activity
+            if volume_24h > 0 or abs(pnl_24h) > 0:
+                pnl_data.append({
+                    "address": t.get("address", ""),
+                    "pnl_24h": pnl_24h,
+                    "pnl_7d": pnl_7d,
+                    "pnl_30d": float(t.get("pnl_30d", 0)),
+                    "pnl_all_time": float(t.get("pnl_all_time", 0)),
+                    "volume_24h": volume_24h,
+                    "volume_7d": float(t.get("volume_7d", 0)),
+                    "equity": float(t.get("equity_current", 0)),
+                })
+
+        # Sort by 24h P&L for winners (highest first) and losers (lowest first)
+        sorted_by_pnl = sorted(pnl_data, key=lambda x: x["pnl_24h"], reverse=True)
+
+        top_winners = [t for t in sorted_by_pnl if t["pnl_24h"] > 0][:limit]
+        top_losers = [t for t in sorted_by_pnl if t["pnl_24h"] < 0][-limit:][::-1]  # Most negative first
+
+        logger.info(f"Pacifica P&L: {len(top_winners)} winners, {len(top_losers)} losers (top {limit})")
+        return {
+            "top_winners": top_winners,
+            "top_losers": top_losers,
+            "total_traders": len(pnl_data),
+        }
+
+    except Exception as e:
+        logger.warning(f"Pacifica P&L leaderboard failed: {e}")
+        return {"top_winners": [], "top_losers": []}
+
+
+# Jupiter markets for P&L aggregation
+JUPITER_PNL_MARKETS = {
+    "SOL": "So11111111111111111111111111111111111111112",
+    "BTC": "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh",
+    "ETH": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+}
+
+
+def fetch_jupiter_pnl_leaderboard(limit: int = 50) -> dict:
+    """Fetch top traders by P&L from Jupiter Perps API.
+
+    Returns dict with top_winners and top_losers lists.
+    Jupiter provides weekly top traders with total P&L.
+    Note: API returns values in micro-units (divide by 10^6).
+    """
+    logger.info("Fetching Jupiter P&L leaderboard...")
+    try:
+        all_traders = {}  # Aggregate across markets by wallet
+        current_year = datetime.now().year
+
+        for market_name, market_address in JUPITER_PNL_MARKETS.items():
+            try:
+                url = f"https://perps-api.jup.ag/v1/top-traders?marketMint={market_address}&week=current&year={current_year}"
+                req = Request(url, headers={"User-Agent": "SolanaPerpsBot/1.0"})
+                with urlopen(req, timeout=30) as resp:
+                    data = json.loads(resp.read().decode())
+
+                # Extract top traders by PnL from response
+                traders = data.get("topTradersByPnl", [])
+                if not traders:
+                    continue
+
+                for trader in traders:
+                    owner = trader.get("owner", "")
+                    if not owner:
+                        continue
+
+                    # Convert from micro-units (values are strings)
+                    pnl = float(trader.get("totalPnlUsd", "0")) / 1e6
+                    volume = float(trader.get("totalVolumeUsd", "0")) / 1e6
+
+                    if owner in all_traders:
+                        all_traders[owner]["pnl_weekly"] += pnl
+                        all_traders[owner]["volume_weekly"] += volume
+                        all_traders[owner]["markets"].append(market_name)
+                    else:
+                        all_traders[owner] = {
+                            "address": owner,
+                            "pnl_weekly": pnl,
+                            "volume_weekly": volume,
+                            "markets": [market_name],
+                        }
+
+            except Exception as e:
+                logger.warning(f"Jupiter {market_name} P&L fetch failed: {e}")
+                continue
+
+        # Convert to list and sort by P&L
+        traders_list = list(all_traders.values())
+        sorted_by_pnl = sorted(traders_list, key=lambda x: x["pnl_weekly"], reverse=True)
+
+        top_winners = [t for t in sorted_by_pnl if t["pnl_weekly"] > 0][:limit]
+        top_losers = [t for t in sorted_by_pnl if t["pnl_weekly"] < 0][-limit:][::-1]
+
+        logger.info(f"Jupiter P&L: {len(top_winners)} winners, {len(top_losers)} losers across {len(JUPITER_PNL_MARKETS)} markets")
+        return {
+            "top_winners": top_winners,
+            "top_losers": top_losers,
+            "total_traders": len(traders_list),
+        }
+
+    except Exception as e:
+        logger.warning(f"Jupiter P&L leaderboard failed: {e}")
+        return {"top_winners": [], "top_losers": []}
+
+
 # --- Wallet Snapshot Functions for Incremental Caching ---
 
 WALLET_SNAPSHOTS_DIR = "data/wallet_snapshots"

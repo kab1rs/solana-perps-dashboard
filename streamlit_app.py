@@ -46,6 +46,7 @@ with st.sidebar:
 - [Funding Rates](#funding-rate-overview)
 - [Market Deep Dive](#market-deep-dive)
 - [Cross-Platform](#cross-platform-traders)
+- [P&L Leaderboard](#p-l-leaderboard)
 - [Quick Insights](#quick-insights)
     """)
     st.divider()
@@ -868,6 +869,120 @@ else:
             st.caption(f"**{overlap_pct:.1f}%** of traders use 2+ platforms ({multi_platform:,} of {total_unique:,} unique wallets)")
     else:
         st.info("No wallet data available for the current period")
+
+st.divider()
+
+# P&L Leaderboard Section
+st.header("P&L Leaderboard")
+st.caption("Top traders by profit/loss on Solana perps (Pacifica: 24h, Jupiter: weekly)")
+
+pnl_data = cache.get("pnl_leaderboard", {})
+pacifica_pnl = pnl_data.get("pacifica", {})
+jupiter_pnl = pnl_data.get("jupiter", {})
+
+# Tabs for Winners and Losers
+tab1, tab2 = st.tabs(["Top Winners", "Top Losers"])
+
+with tab1:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Pacifica (24h P&L)")
+        winners = pacifica_pnl.get("top_winners", [])[:20]
+        if winners:
+            winners_data = []
+            for i, t in enumerate(winners, 1):
+                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
+                pnl_24h = t.get("pnl_24h", 0)
+                pnl_7d = t.get("pnl_7d", 0)
+                vol = t.get("volume_24h", 0)
+                winners_data.append({
+                    "#": i,
+                    "Wallet": addr,
+                    "P&L (24h)": f"${pnl_24h:+,.0f}",
+                    "P&L (7d)": f"${pnl_7d:+,.0f}",
+                    "Volume": f"${vol:,.0f}",
+                })
+            st.dataframe(pd.DataFrame(winners_data), hide_index=True, height=400)
+        else:
+            st.info("No Pacifica P&L data available")
+
+    with col2:
+        st.subheader("Jupiter (Weekly P&L)")
+        winners = jupiter_pnl.get("top_winners", [])[:20]
+        if winners:
+            winners_data = []
+            for i, t in enumerate(winners, 1):
+                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
+                pnl = t.get("pnl_weekly", 0)
+                vol = t.get("volume_weekly", 0)
+                markets = ", ".join(t.get("markets", []))
+                winners_data.append({
+                    "#": i,
+                    "Wallet": addr,
+                    "P&L (Week)": f"${pnl:+,.0f}",
+                    "Volume": f"${vol:,.0f}",
+                    "Markets": markets,
+                })
+            st.dataframe(pd.DataFrame(winners_data), hide_index=True, height=400)
+        else:
+            st.info("No Jupiter P&L data available")
+
+with tab2:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Pacifica (24h P&L)")
+        losers = pacifica_pnl.get("top_losers", [])[:20]
+        if losers:
+            losers_data = []
+            for i, t in enumerate(losers, 1):
+                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
+                pnl_24h = t.get("pnl_24h", 0)
+                pnl_7d = t.get("pnl_7d", 0)
+                vol = t.get("volume_24h", 0)
+                losers_data.append({
+                    "#": i,
+                    "Wallet": addr,
+                    "P&L (24h)": f"${pnl_24h:+,.0f}",
+                    "P&L (7d)": f"${pnl_7d:+,.0f}",
+                    "Volume": f"${vol:,.0f}",
+                })
+            st.dataframe(pd.DataFrame(losers_data), hide_index=True, height=400)
+        else:
+            st.info("No Pacifica P&L data available")
+
+    with col2:
+        st.subheader("Jupiter (Weekly P&L)")
+        losers = jupiter_pnl.get("top_losers", [])[:20]
+        if losers:
+            losers_data = []
+            for i, t in enumerate(losers, 1):
+                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
+                pnl = t.get("pnl_weekly", 0)
+                vol = t.get("volume_weekly", 0)
+                markets = ", ".join(t.get("markets", []))
+                losers_data.append({
+                    "#": i,
+                    "Wallet": addr,
+                    "P&L (Week)": f"${pnl:+,.0f}",
+                    "Volume": f"${vol:,.0f}",
+                    "Markets": markets,
+                })
+            st.dataframe(pd.DataFrame(losers_data), hide_index=True, height=400)
+        else:
+            st.info("No Jupiter P&L data available")
+
+# P&L summary metrics
+pnl_col1, pnl_col2 = st.columns(2)
+with pnl_col1:
+    total_pacifica = pacifica_pnl.get("total_traders", 0)
+    if total_pacifica:
+        st.caption(f"Pacifica: {total_pacifica:,} traders with P&L data")
+with pnl_col2:
+    total_jupiter = jupiter_pnl.get("total_traders", 0)
+    if total_jupiter:
+        st.caption(f"Jupiter: {total_jupiter:,} traders aggregated across {len({'SOL', 'BTC', 'ETH'})} markets")
 
 st.divider()
 

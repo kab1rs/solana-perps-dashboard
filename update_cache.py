@@ -213,6 +213,8 @@ from solana_perps_dashboard import (
     fetch_jupiter_market_breakdown,
     fetch_signature_count,
     distribute_volume_by_trades,
+    fetch_pacifica_pnl_leaderboard,
+    fetch_jupiter_pnl_leaderboard,
     PROTOCOL_METADATA,
 )
 
@@ -424,6 +426,25 @@ def update_cache():
     except Exception as e:
         logger.error(f"Jupiter markets failed: {e}")
         cache["jupiter_markets"] = {}
+
+    # Fetch P&L leaderboard data from Pacifica and Jupiter
+    logger.info("Fetching P&L leaderboard data...")
+    cache["pnl_leaderboard"] = {}
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_to_protocol = {
+            executor.submit(fetch_pacifica_pnl_leaderboard, 50): "pacifica",
+            executor.submit(fetch_jupiter_pnl_leaderboard, 50): "jupiter",
+        }
+        for future in as_completed(future_to_protocol):
+            protocol = future_to_protocol[future]
+            try:
+                cache["pnl_leaderboard"][protocol] = future.result()
+                winners = len(cache["pnl_leaderboard"][protocol].get("top_winners", []))
+                losers = len(cache["pnl_leaderboard"][protocol].get("top_losers", []))
+                logger.info(f"P&L {protocol}: {winners} winners, {losers} losers")
+            except Exception as e:
+                logger.error(f"P&L leaderboard {protocol} failed: {e}")
+                cache["pnl_leaderboard"][protocol] = {"top_winners": [], "top_losers": []}
 
     # Save to file (with validation and fallback)
     logger.info("=" * 60)
