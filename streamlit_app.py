@@ -249,10 +249,11 @@ if cache is None:
     st.error("No cached data available. Please wait for the first data update.")
     st.stop()
 
-# Header - clean and minimal
+# Header - clean and minimal with freshness indicator
 st.title("Solana Perps")
 age_text, age_status, age_minutes = get_cache_age_display(cache)
-st.caption(f"Updated {age_text} · Data refreshes every 15 min")
+freshness_icon = "🟢" if age_status == "green" else "🟡" if age_status == "yellow" else "🔴"
+st.caption(f"{freshness_icon} Updated {age_text} · Data refreshes every 15 min")
 
 # Time window selector
 time_window = st.radio(
@@ -273,24 +274,38 @@ total_fees = protocol_df["fees"].sum()
 total_txns = protocol_df["transactions"].sum()
 total_oi = cache.get("total_open_interest", 0)
 
-# Overview metrics - compact row
+# Get previous values from history for trend indicators
+history = load_history()
+vol_delta, oi_delta, traders_delta, fees_delta = None, None, None, None
+if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
+    prev_snapshot = history["snapshots"][-2]  # Second to last snapshot
+    prev_vol = prev_snapshot.get("total_volume_24h", 0)
+    prev_oi = prev_snapshot.get("total_open_interest", 0)
+    prev_traders = prev_snapshot.get("total_traders_24h", 0)
+    if prev_vol > 0:
+        vol_delta = f"{((total_volume - prev_vol) / prev_vol * 100):+.1f}%"
+    if prev_oi > 0:
+        oi_delta = f"{((total_oi - prev_oi) / prev_oi * 100):+.1f}%"
+    if prev_traders > 0:
+        traders_delta = f"{((total_traders - prev_traders) / prev_traders * 100):+.1f}%"
+
+# Overview metrics - compact row with trend indicators
 st.header("Overview")
 cols = st.columns(4)
 with cols[0]:
-    st.metric("24h Volume", format_volume(total_volume))
+    st.metric("24h Volume", format_volume(total_volume), delta=vol_delta)
 with cols[1]:
-    st.metric("Open Interest", format_volume(total_oi))
+    st.metric("Open Interest", format_volume(total_oi), delta=oi_delta)
 with cols[2]:
-    st.metric("Traders", f"{total_traders:,}")
+    st.metric("Traders", f"{total_traders:,}", delta=traders_delta)
 with cols[3]:
     st.metric("Fees", format_volume(total_fees))
 
 st.divider()
 
-# Historical Trends Section
-history = load_history()
+# Historical Trends Section - Combined multi-line chart
 if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
-    with st.expander("Historical Trends (7 days)", expanded=False):
+    with st.expander("Historical Trends (7 days)", expanded=True):
         snapshots = history["snapshots"]
 
         # Parse timestamps and build dataframe
@@ -310,67 +325,65 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
         if trend_data:
             trend_df = pd.DataFrame(trend_data)
 
-            col1, col2 = st.columns(2)
+            # Combined chart with dual y-axes
+            from plotly.subplots import make_subplots
+            fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-            with col1:
-                # Volume trend
-                fig_vol = go.Figure()
-                fig_vol.add_trace(go.Scatter(
+            # Volume (primary y-axis)
+            fig.add_trace(
+                go.Scatter(
                     x=trend_df["timestamp"],
                     y=trend_df["volume"],
                     mode="lines+markers",
-                    name="24h Volume",
-                    line=dict(color="#9945FF", width=2),  # Solana purple
+                    name="Volume",
+                    line=dict(color="#9945FF", width=2),
                     marker=dict(size=4),
-                ))
-                fig_vol.update_layout(
-                    title="Volume Trend",
-                    yaxis_title="24h Volume (USD)",
-                    height=250,
-                    margin=dict(t=40, b=40, l=60, r=20),
-                    yaxis_tickformat="$,.0s",
-                )
-                st.plotly_chart(fig_vol, use_container_width=True)
+                ),
+                secondary_y=False,
+            )
 
-            with col2:
-                # Open Interest trend
-                fig_oi = go.Figure()
-                fig_oi.add_trace(go.Scatter(
+            # Open Interest (primary y-axis)
+            fig.add_trace(
+                go.Scatter(
                     x=trend_df["timestamp"],
                     y=trend_df["open_interest"],
                     mode="lines+markers",
                     name="Open Interest",
-                    line=dict(color="#c4b5fd", width=2),  # Light purple
+                    line=dict(color="#c4b5fd", width=2),
                     marker=dict(size=4),
-                ))
-                fig_oi.update_layout(
-                    title="Open Interest Trend",
-                    yaxis_title="Open Interest (USD)",
-                    height=250,
-                    margin=dict(t=40, b=40, l=60, r=20),
-                    yaxis_tickformat="$,.0s",
-                )
-                st.plotly_chart(fig_oi, use_container_width=True)
-
-            # Traders trend (full width)
-            fig_traders = go.Figure()
-            fig_traders.add_trace(go.Scatter(
-                x=trend_df["timestamp"],
-                y=trend_df["traders"],
-                mode="lines+markers",
-                name="Traders",
-                line=dict(color="#14F195", width=2),  # Solana green accent
-                marker=dict(size=4),
-                fill="tozeroy",
-                fillcolor="rgba(20, 241, 149, 0.1)",  # Green fill
-            ))
-            fig_traders.update_layout(
-                title="Active Traders Trend",
-                yaxis_title="24h Traders",
-                height=200,
-                margin=dict(t=40, b=40, l=60, r=20),
+                ),
+                secondary_y=False,
             )
-            st.plotly_chart(fig_traders, use_container_width=True)
+
+            # Traders (secondary y-axis)
+            fig.add_trace(
+                go.Scatter(
+                    x=trend_df["timestamp"],
+                    y=trend_df["traders"],
+                    mode="lines+markers",
+                    name="Traders",
+                    line=dict(color="#14F195", width=2),
+                    marker=dict(size=4),
+                    fill="tozeroy",
+                    fillcolor="rgba(20, 241, 149, 0.05)",
+                ),
+                secondary_y=True,
+            )
+
+            fig.update_layout(
+                title="7-Day Trends",
+                height=300,
+                margin=dict(t=40, b=40, l=60, r=60),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#c9d1d9'),
+            )
+            fig.update_xaxes(gridcolor='#1e2330', zerolinecolor='#1e2330')
+            fig.update_yaxes(title_text="USD", tickformat="$,.0s", gridcolor='#1e2330', secondary_y=False)
+            fig.update_yaxes(title_text="Traders", gridcolor='#1e2330', secondary_y=True)
+
+            st.plotly_chart(fig, use_container_width=True)
 
             # Show change summary
             if len(trend_df) >= 2:
@@ -380,7 +393,7 @@ if history and history.get("snapshots") and len(history["snapshots"]) >= 2:
                 oi_change = ((latest["open_interest"] - oldest["open_interest"]) / oldest["open_interest"] * 100) if oldest["open_interest"] > 0 else 0
                 trader_change = ((latest["traders"] - oldest["traders"]) / oldest["traders"] * 100) if oldest["traders"] > 0 else 0
 
-                st.caption(f"Changes over {len(trend_df)} snapshots: Volume {vol_change:+.1f}% | OI {oi_change:+.1f}% | Traders {trader_change:+.1f}%")
+                st.caption(f"7-day change: Volume {vol_change:+.1f}% · OI {oi_change:+.1f}% · Traders {trader_change:+.1f}%")
 
 st.divider()
 
@@ -614,117 +627,104 @@ else:
 
 st.divider()
 
-# P&L Leaderboard Section
+# P&L Leaderboard Section - Unified table with wallet links
 st.header("P&L Leaderboard")
-st.caption("Top traders by profit/loss on Solana perps (Pacifica: 24h, Jupiter: weekly)")
 
 pnl_data = cache.get("pnl_leaderboard", {})
 pacifica_pnl = pnl_data.get("pacifica", {})
 jupiter_pnl = pnl_data.get("jupiter", {})
 
-# Tabs for Winners and Losers
-tab1, tab2 = st.tabs(["Top Winners", "Top Losers"])
+# Toggle for Winners/Losers
+pnl_view = st.radio("View", ["Top Winners", "Top Losers"], horizontal=True, label_visibility="collapsed")
 
-with tab1:
-    col1, col2 = st.columns(2)
+# Build unified table from both protocols
+unified_data = []
 
-    with col1:
-        st.subheader("Pacifica (24h P&L)")
-        winners = pacifica_pnl.get("top_winners", [])[:20]
-        if winners:
-            winners_data = []
-            for i, t in enumerate(winners, 1):
-                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
-                pnl_24h = t.get("pnl_24h", 0)
-                pnl_7d = t.get("pnl_7d", 0)
-                vol = t.get("volume_24h", 0)
-                winners_data.append({
-                    "#": i,
-                    "Wallet": addr,
-                    "P&L (24h)": f"${pnl_24h:+,.0f}",
-                    "P&L (7d)": f"${pnl_7d:+,.0f}",
-                    "Volume": f"${vol:,.0f}",
-                })
-            st.dataframe(pd.DataFrame(winners_data), hide_index=True, height=400)
-        else:
-            st.info("No Pacifica P&L data available")
+if pnl_view == "Top Winners":
+    # Add Pacifica winners
+    for t in pacifica_pnl.get("top_winners", [])[:25]:
+        addr = t.get("address", "")
+        pnl = t.get("pnl_24h", 0)
+        vol = t.get("volume_24h", 0)
+        unified_data.append({
+            "pnl_sort": pnl,
+            "Wallet": f"[{addr[:6]}...{addr[-4:]}](https://solana.fm/address/{addr})" if addr else "",
+            "Protocol": "Pacifica",
+            "P&L": f"${pnl:+,.0f}",
+            "Period": "24h",
+            "Volume": format_volume(vol),
+        })
 
-    with col2:
-        st.subheader("Jupiter (Weekly P&L)")
-        winners = jupiter_pnl.get("top_winners", [])[:20]
-        if winners:
-            winners_data = []
-            for i, t in enumerate(winners, 1):
-                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
-                pnl = t.get("pnl_weekly", 0)
-                vol = t.get("volume_weekly", 0)
-                markets = ", ".join(t.get("markets", []))
-                winners_data.append({
-                    "#": i,
-                    "Wallet": addr,
-                    "P&L (Week)": f"${pnl:+,.0f}",
-                    "Volume": f"${vol:,.0f}",
-                    "Markets": markets,
-                })
-            st.dataframe(pd.DataFrame(winners_data), hide_index=True, height=400)
-        else:
-            st.info("No Jupiter P&L data available")
+    # Add Jupiter winners
+    for t in jupiter_pnl.get("top_winners", [])[:25]:
+        addr = t.get("address", "")
+        pnl = t.get("pnl_weekly", 0)
+        vol = t.get("volume_weekly", 0)
+        unified_data.append({
+            "pnl_sort": pnl,
+            "Wallet": f"[{addr[:6]}...{addr[-4:]}](https://solana.fm/address/{addr})" if addr else "",
+            "Protocol": "Jupiter",
+            "P&L": f"${pnl:+,.0f}",
+            "Period": "Weekly",
+            "Volume": format_volume(vol),
+        })
+else:
+    # Add Pacifica losers
+    for t in pacifica_pnl.get("top_losers", [])[:25]:
+        addr = t.get("address", "")
+        pnl = t.get("pnl_24h", 0)
+        vol = t.get("volume_24h", 0)
+        unified_data.append({
+            "pnl_sort": pnl,
+            "Wallet": f"[{addr[:6]}...{addr[-4:]}](https://solana.fm/address/{addr})" if addr else "",
+            "Protocol": "Pacifica",
+            "P&L": f"${pnl:+,.0f}",
+            "Period": "24h",
+            "Volume": format_volume(vol),
+        })
 
-with tab2:
-    col1, col2 = st.columns(2)
+    # Add Jupiter losers
+    for t in jupiter_pnl.get("top_losers", [])[:25]:
+        addr = t.get("address", "")
+        pnl = t.get("pnl_weekly", 0)
+        vol = t.get("volume_weekly", 0)
+        unified_data.append({
+            "pnl_sort": pnl,
+            "Wallet": f"[{addr[:6]}...{addr[-4:]}](https://solana.fm/address/{addr})" if addr else "",
+            "Protocol": "Jupiter",
+            "P&L": f"${pnl:+,.0f}",
+            "Period": "Weekly",
+            "Volume": format_volume(vol),
+        })
 
-    with col1:
-        st.subheader("Pacifica (24h P&L)")
-        losers = pacifica_pnl.get("top_losers", [])[:20]
-        if losers:
-            losers_data = []
-            for i, t in enumerate(losers, 1):
-                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
-                pnl_24h = t.get("pnl_24h", 0)
-                pnl_7d = t.get("pnl_7d", 0)
-                vol = t.get("volume_24h", 0)
-                losers_data.append({
-                    "#": i,
-                    "Wallet": addr,
-                    "P&L (24h)": f"${pnl_24h:+,.0f}",
-                    "P&L (7d)": f"${pnl_7d:+,.0f}",
-                    "Volume": f"${vol:,.0f}",
-                })
-            st.dataframe(pd.DataFrame(losers_data), hide_index=True, height=400)
-        else:
-            st.info("No Pacifica P&L data available")
+if unified_data:
+    # Sort by P&L (descending for winners, ascending for losers)
+    unified_data.sort(key=lambda x: x["pnl_sort"], reverse=(pnl_view == "Top Winners"))
 
-    with col2:
-        st.subheader("Jupiter (Weekly P&L)")
-        losers = jupiter_pnl.get("top_losers", [])[:20]
-        if losers:
-            losers_data = []
-            for i, t in enumerate(losers, 1):
-                addr = t.get("address", "")[:8] + "..." if t.get("address") else ""
-                pnl = t.get("pnl_weekly", 0)
-                vol = t.get("volume_weekly", 0)
-                markets = ", ".join(t.get("markets", []))
-                losers_data.append({
-                    "#": i,
-                    "Wallet": addr,
-                    "P&L (Week)": f"${pnl:+,.0f}",
-                    "Volume": f"${vol:,.0f}",
-                    "Markets": markets,
-                })
-            st.dataframe(pd.DataFrame(losers_data), hide_index=True, height=400)
-        else:
-            st.info("No Jupiter P&L data available")
+    # Create dataframe and display with markdown links
+    df = pd.DataFrame(unified_data)
+    df = df.drop(columns=["pnl_sort"])  # Remove sort column
+    df.insert(0, "#", range(1, len(df) + 1))
 
-# P&L summary metrics
-pnl_col1, pnl_col2 = st.columns(2)
-with pnl_col1:
+    st.dataframe(
+        df,
+        hide_index=True,
+        use_container_width=True,
+        height=500,
+        column_config={
+            "Wallet": st.column_config.LinkColumn("Wallet", display_text=r"\[(.+)\]"),
+            "#": st.column_config.NumberColumn("#", width="small"),
+            "Protocol": st.column_config.TextColumn("Protocol", width="small"),
+            "Period": st.column_config.TextColumn("Period", width="small"),
+        }
+    )
+
+    # Summary
     total_pacifica = pacifica_pnl.get("total_traders", 0)
-    if total_pacifica:
-        st.caption(f"Pacifica: {total_pacifica:,} traders with P&L data")
-with pnl_col2:
     total_jupiter = jupiter_pnl.get("total_traders", 0)
-    if total_jupiter:
-        st.caption(f"Jupiter: {total_jupiter:,} traders aggregated across {len({'SOL', 'BTC', 'ETH'})} markets")
+    st.caption(f"Pacifica: 24h P&L ({total_pacifica:,} traders) · Jupiter: Weekly P&L ({total_jupiter:,} traders)")
+else:
+    st.info("No P&L data available")
 
 # Footer
 st.divider()
