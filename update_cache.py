@@ -217,6 +217,54 @@ from solana_perps_dashboard import (
 )
 
 
+def fetch_time_window_data(hours: int) -> dict:
+    """Fetch all data for a single time window.
+
+    Runs all queries for the window in parallel and returns the results.
+    This function is designed to be called from a ThreadPoolExecutor.
+    """
+    window_key = f"{hours}h"
+    logger.info(f"Fetching {window_key} window data...")
+    result = {}
+
+    # Build list of queries to run for this window
+    queries = {
+        "drift_traders": lambda h=hours: fetch_drift_accurate_traders(hours=h),
+        "jupiter_traders": lambda h=hours: fetch_jupiter_accurate_traders(hours=h),
+        "pacifica_traders": lambda h=hours: fetch_pacifica_traders(hours=h),
+        "flashtrade_traders": lambda h=hours: fetch_flashtrade_traders(hours=h),
+        "adrena_traders": lambda h=hours: fetch_adrena_traders(hours=h),
+    }
+    if hours <= 8:
+        queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
+    if hours <= 24:
+        queries["wallet_overlap"] = lambda h=hours: fetch_cross_platform_wallets(hours=h)
+
+    # Run queries in parallel within this window
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_name = {executor.submit(fn): name for name, fn in queries.items()}
+        for future in as_completed(future_to_name):
+            name = future_to_name[future]
+            try:
+                result[name] = future.result()
+            except Exception as e:
+                logger.error(f"{name} ({window_key}) failed: {e}")
+                if name in ("drift_traders", "jupiter_traders", "pacifica_traders", "flashtrade_traders", "adrena_traders"):
+                    result[name] = 0
+                    result[f"{name}_error"] = str(e)
+                elif name == "liquidations":
+                    result[name] = {"count": 0, "txns": 0, "error": str(e)}
+                elif name == "wallet_overlap":
+                    result[name] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
+
+    # Set defaults for skipped queries
+    if hours > 8:
+        result["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
+
+    logger.info(f"Completed {window_key} window data")
+    return result
+
+
 def update_cache():
     """Fetch all data and save to cache file."""
     logger.info(f"Updating cache at {datetime.utcnow().isoformat()}Z")
@@ -272,45 +320,31 @@ def update_cache():
                 elif name == "drift_markets":
                     cache["drift_markets"] = {}
 
-    # Fetch time-windowed Dune queries in parallel per window
-    for hours in TIME_WINDOWS:
-        window_key = f"{hours}h"
-        logger.info(f"Fetching {window_key} window data (parallel)...")
-        cache["time_windows"][window_key] = {}
-
-        # Build list of queries to run for this window
-        queries = {
-            "drift_traders": lambda h=hours: fetch_drift_accurate_traders(hours=h),
-            "jupiter_traders": lambda h=hours: fetch_jupiter_accurate_traders(hours=h),
-            "pacifica_traders": lambda h=hours: fetch_pacifica_traders(hours=h),
-            "flashtrade_traders": lambda h=hours: fetch_flashtrade_traders(hours=h),
-            "adrena_traders": lambda h=hours: fetch_adrena_traders(hours=h),
+    # Fetch ALL time windows in parallel (major performance improvement)
+    # Previously: windows ran sequentially (~10 min total)
+    # Now: all windows run concurrently (~3 min total)
+    logger.info(f"Fetching all {len(TIME_WINDOWS)} time windows in parallel...")
+    with ThreadPoolExecutor(max_workers=len(TIME_WINDOWS)) as executor:
+        future_to_hours = {
+            executor.submit(fetch_time_window_data, hours): hours
+            for hours in TIME_WINDOWS
         }
-        if hours <= 8:
-            queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
-        if hours <= 24:
-            queries["wallet_overlap"] = lambda h=hours: fetch_cross_platform_wallets(hours=h)
-
-        # Run queries in parallel
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            future_to_name = {executor.submit(fn): name for name, fn in queries.items()}
-            for future in as_completed(future_to_name):
-                name = future_to_name[future]
-                try:
-                    cache["time_windows"][window_key][name] = future.result()
-                except Exception as e:
-                    logger.error(f"{name} ({window_key}) failed: {e}")
-                    if name in ("drift_traders", "jupiter_traders", "pacifica_traders", "flashtrade_traders", "adrena_traders"):
-                        cache["time_windows"][window_key][name] = 0
-                        cache["time_windows"][window_key][f"{name}_error"] = str(e)
-                    elif name == "liquidations":
-                        cache["time_windows"][window_key][name] = {"count": 0, "txns": 0, "error": str(e)}
-                    elif name == "wallet_overlap":
-                        cache["time_windows"][window_key][name] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
-
-        # Set defaults for skipped queries
-        if hours > 8:
-            cache["time_windows"][window_key]["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
+        for future in as_completed(future_to_hours):
+            hours = future_to_hours[future]
+            window_key = f"{hours}h"
+            try:
+                cache["time_windows"][window_key] = future.result()
+            except Exception as e:
+                logger.error(f"Time window {window_key} failed completely: {e}")
+                cache["time_windows"][window_key] = {
+                    "drift_traders": 0,
+                    "jupiter_traders": 0,
+                    "pacifica_traders": 0,
+                    "flashtrade_traders": 0,
+                    "adrena_traders": 0,
+                    "liquidations": {"count": 0, "txns": 0, "error": str(e)},
+                    "wallet_overlap": {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)},
+                }
 
     # Set legacy keys from 1h window for backward compatibility
     if "1h" in cache["time_windows"]:
