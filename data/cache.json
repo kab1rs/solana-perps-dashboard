@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-01-16T19:31:47.923861Z",
+  "updated_at": "2026-01-16T19:53:13.422772Z",
   "protocols": [
     {
       "protocol": "Drift Trade",
@@ -7,8 +7,8 @@
       "volume_7d": 781196209,
       "change_1d": -13.61,
       "change_7d": -17.06,
-      "transactions": 953,
-      "traders": 2984,
+      "transactions": 0,
+      "traders": 2978,
       "fees": 59598.973
     },
     {
@@ -27,8 +27,8 @@
       "volume_7d": 2325312988,
       "change_1d": -37.52,
       "change_7d": -46.29,
-      "transactions": 0,
-      "traders": 3355,
+      "transactions": 55,
+      "traders": 3343,
       "fees": 145462.254
     },
     {
@@ -37,7 +37,7 @@
       "volume_7d": 131707387,
       "change_1d": -38.8,
       "change_7d": -26.64,
-      "transactions": 991,
+      "transactions": 0,
       "traders": 0,
       "fees": 7491.39
     },
@@ -48,7 +48,7 @@
       "change_1d": -11.12,
       "change_7d": 72,
       "transactions": 0,
-      "traders": 0,
+      "traders": 45,
       "fees": 3319.818
     },
     {
@@ -57,8 +57,8 @@
       "volume_7d": 5976769636,
       "change_1d": -13.26,
       "change_7d": -13.38,
-      "transactions": 0,
-      "traders": 6725,
+      "transactions": 941,
+      "traders": 6707,
       "fees": 413142.6065
     }
   ],
@@ -916,16 +916,18 @@
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 4742,
-      "BTC": 186,
-      "ETH": 130,
-      "USDC": 7
+      "SOL": 5846,
+      "BTC": 157,
+      "ETH": 115,
+      "USDC": 8,
+      "OTHER": 1
     },
     "volumes": {
-      "SOL": 226976639.83810464,
-      "BTC": 8902921.765054295,
-      "ETH": 6222472.2013820335,
-      "USDC": 335056.19545903255
+      "SOL": 231318300.65937653,
+      "BTC": 6212277.318426636,
+      "ETH": 4550394.2141341595,
+      "USDC": 316549.1627223764,
+      "OTHER": 39568.64534029705
     }
   },
   "total_open_interest": 273929329.2631293,
@@ -1090,113 +1092,1116 @@
     }
   ],
   "time_windows": {
-    "24h": {
-      "pacifica_traders": 6725,
-      "jupiter_traders": 3355,
-      "wallet_overlap": {
-        "drift_only": 4871,
-        "jupiter_only": 2612,
-        "pacifica_only": 7886,
-        "drift_jupiter": 17,
-        "drift_pacifica": 5,
-        "jupiter_pacifica": 13,
-        "all_three": 0,
-        "multi_platform": 35
-      },
-      "drift_traders": 2984,
-      "flashtrade_traders": 0,
-      "adrena_traders": 0,
-      "liquidations": {
-        "count": 0,
-        "txns": 0,
-        "error": "Skipped (query timeout)"
-      }
-    },
-    "4h": {
-      "pacifica_traders": 1681,
-      "flashtrade_traders": 125,
-      "drift_traders": 1162,
-      "wallet_overlap": {
-        "drift_only": 1406,
-        "jupiter_only": 888,
-        "pacifica_only": 6862,
-        "drift_jupiter": 4,
-        "drift_pacifica": 1,
-        "jupiter_pacifica": 4,
-        "all_three": 0,
-        "multi_platform": 9
-      },
-      "jupiter_traders": 0,
-      "adrena_traders": 0,
-      "liquidations": {
-        "count": 0,
-        "txns": 0,
-        "error": "Query timeout"
-      }
-    },
     "8h": {
-      "pacifica_traders": 2690,
-      "jupiter_traders": 2147,
-      "flashtrade_traders": 196,
+      "pacifica_traders": 2682,
+      "flashtrade_traders": 200,
+      "jupiter_traders": 2198,
       "wallet_overlap": {
-        "drift_only": 2675,
-        "jupiter_only": 1617,
-        "pacifica_only": 7280,
+        "drift_only": 2674,
+        "jupiter_only": 1607,
+        "pacifica_only": 7303,
         "drift_jupiter": 4,
         "drift_pacifica": 3,
         "jupiter_pacifica": 7,
         "all_three": 0,
         "multi_platform": 14
       },
-      "adrena_traders": 0,
+      "adrena_traders": 23,
+      "drift_traders": 1659,
+      "liquidations": {
+        "count": 44747,
+        "txns": 44747
+      }
+    },
+    "24h": {
+      "pacifica_traders": 6707,
+      "jupiter_traders": 3343,
+      "wallet_overlap": {
+        "drift_only": 4866,
+        "jupiter_only": 2593,
+        "pacifica_only": 7898,
+        "drift_jupiter": 18,
+        "drift_pacifica": 5,
+        "jupiter_pacifica": 13,
+        "all_three": 0,
+        "multi_platform": 36
+      },
+      "adrena_traders": 45,
+      "drift_traders": 2978,
+      "flashtrade_traders": 0,
       "liquidations": {
         "count": 0,
         "txns": 0,
-        "error": "Query timeout"
-      },
-      "drift_traders": 0
+        "error": "Skipped (query timeout)"
+      }
     },
     "1h": {
-      "pacifica_traders": 672,
-      "flashtrade_traders": 45,
-      "adrena_traders": 4,
-      "drift_traders": 490,
-      "jupiter_traders": 0,
+      "pacifica_traders": 670,
+      "flashtrade_traders": 48,
+      "jupiter_traders": 580,
+      "adrena_traders": 6,
+      "drift_traders": 498,
       "liquidations": {
-        "count": 0,
-        "txns": 0,
-        "error": "Query timeout"
+        "count": 6351,
+        "txns": 6351
       },
       "wallet_overlap": {
-        "drift_only": 990,
-        "jupiter_only": 537,
-        "pacifica_only": 6722,
-        "drift_jupiter": 3,
+        "drift_only": 992,
+        "jupiter_only": 577,
+        "pacifica_only": 6705,
+        "drift_jupiter": 1,
         "drift_pacifica": 0,
-        "jupiter_pacifica": 3,
+        "jupiter_pacifica": 2,
         "all_three": 0,
-        "multi_platform": 6
+        "multi_platform": 3
       }
+    },
+    "4h": {
+      "pacifica_traders": 1676,
+      "jupiter_traders": 1560,
+      "adrena_traders": 17,
+      "wallet_overlap": {
+        "drift_only": 1414,
+        "jupiter_only": 857,
+        "pacifica_only": 6893,
+        "drift_jupiter": 4,
+        "drift_pacifica": 1,
+        "jupiter_pacifica": 4,
+        "all_three": 0,
+        "multi_platform": 9
+      },
+      "flashtrade_traders": 124,
+      "liquidations": {
+        "count": 40374,
+        "txns": 40374
+      },
+      "drift_traders": 1108
     }
   },
-  "drift_traders_1h": 490,
-  "jupiter_traders_1h": 0,
+  "drift_traders_1h": 498,
+  "jupiter_traders_1h": 580,
   "liquidations_1h": {
-    "count": 0,
-    "txns": 0,
-    "error": "Query timeout"
+    "count": 6351,
+    "txns": 6351
   },
   "wallet_overlap": {
-    "drift_only": 990,
-    "jupiter_only": 537,
-    "pacifica_only": 6722,
-    "drift_jupiter": 3,
+    "drift_only": 992,
+    "jupiter_only": 577,
+    "pacifica_only": 6705,
+    "drift_jupiter": 1,
     "drift_pacifica": 0,
-    "jupiter_pacifica": 3,
+    "jupiter_pacifica": 2,
     "all_three": 0,
-    "multi_platform": 6
+    "multi_platform": 3
   },
   "pnl_leaderboard": {
+    "pacifica": {
+      "top_winners": [
+        {
+          "address": "BEE3zNUPmEU9CL8CAxZxMozn8H57zkrs4hNJE3ZEPi8s",
+          "pnl_24h": 11181.605915,
+          "pnl_7d": 5365.569099,
+          "pnl_30d": 4977.292341,
+          "pnl_all_time": -187030.95659,
+          "volume_24h": 549654.677595,
+          "volume_7d": 4446759.234249,
+          "equity": 223550.880979
+        },
+        {
+          "address": "5drhG4pRy6XwK1w6Not1ZzLkQ5bQT8suE4Tdj3iB8CUa",
+          "pnl_24h": 8525.815936,
+          "pnl_7d": -1299.927189,
+          "pnl_30d": -8118.771636,
+          "pnl_all_time": -11626.232982,
+          "volume_24h": 189008.3982,
+          "volume_7d": 1179450.29725,
+          "equity": 10001.238364
+        },
+        {
+          "address": "8NtQSkWPPpQut8nLZeKWetrEoAqjZaoiKb9Bh3SZhRg6",
+          "pnl_24h": 6422.505962,
+          "pnl_7d": -9148.578425,
+          "pnl_30d": 4582.728847,
+          "pnl_all_time": -85680.650358,
+          "volume_24h": 0.0,
+          "volume_7d": 157061.98794,
+          "equity": 104319.349642
+        },
+        {
+          "address": "GDoEJ87ezVKgFXQ9N4RpPuUVrPKfhitLQpgkHczJUPVL",
+          "pnl_24h": 5945.063345,
+          "pnl_7d": -6805.41131,
+          "pnl_30d": -4227.60031,
+          "pnl_all_time": -4227.60031,
+          "volume_24h": 0.0,
+          "volume_7d": 181342.40481,
+          "equity": 95772.39969
+        },
+        {
+          "address": "Eu12Nqn4v2atnTqNb8MwYnC4kxDpv7dVgnhxPcru1bGt",
+          "pnl_24h": 5934.954341,
+          "pnl_7d": 35052.983937,
+          "pnl_30d": 30568.993581,
+          "pnl_all_time": 36503.442155,
+          "volume_24h": 2336950.208535,
+          "volume_7d": 21212354.247209,
+          "equity": 836496.013829
+        },
+        {
+          "address": "4TYEjn9PSpxoBNBXufeuNDRbytzvyyZtEUgXYSk8kYLZ",
+          "pnl_24h": 4973.594364,
+          "pnl_7d": 1568.638044,
+          "pnl_30d": 265812.299636,
+          "pnl_all_time": 615525.149788,
+          "volume_24h": 1448499.066228,
+          "volume_7d": 22837387.968371,
+          "equity": 448531.348354
+        },
+        {
+          "address": "DiRHaAc41Cn7Ws5UA2yZNV1uvwcQN6n5zscLybRFXqjv",
+          "pnl_24h": 4581.303217,
+          "pnl_7d": 4581.303217,
+          "pnl_30d": 4581.303217,
+          "pnl_all_time": -57671.573754,
+          "volume_24h": 512051.3476,
+          "volume_7d": 512051.3476,
+          "equity": 34321.314617
+        },
+        {
+          "address": "9659Gi9dLz7fi4pHueu2WkJLfyyCQKWLfigYiKoLKtpH",
+          "pnl_24h": 4354.344397,
+          "pnl_7d": 8663.142257,
+          "pnl_30d": 11440.525257,
+          "pnl_all_time": -73700.230186,
+          "volume_24h": 3414.0731,
+          "volume_7d": 1284882.48002,
+          "equity": 100894.270914
+        },
+        {
+          "address": "F6fqSxAJXLUxLhgQUi9hjWSoL16oEcV9MVKyB6GUffDG",
+          "pnl_24h": 4277.430333,
+          "pnl_7d": 9121.061522,
+          "pnl_30d": -14334.162054,
+          "pnl_all_time": -94187.987892,
+          "volume_24h": 9105.8056,
+          "volume_7d": 1316083.36062,
+          "equity": 104860.512108
+        },
+        {
+          "address": "G5GWsm3f9C2rztJNMAXZtEPqqrGED1dbAu8PS6V25MJB",
+          "pnl_24h": 4113.051483,
+          "pnl_7d": 35239.71881,
+          "pnl_30d": 61119.884136,
+          "pnl_all_time": 241576.566411,
+          "volume_24h": 2125579.798334,
+          "volume_7d": 21163811.080321,
+          "equity": 352575.736411
+        },
+        {
+          "address": "49R9MFU7JopaCFXtpTwbaX8rkNW9wX6ddi7VtLUtMYJ1",
+          "pnl_24h": 4054.204773,
+          "pnl_7d": -4099.651717,
+          "pnl_30d": -9678.359912,
+          "pnl_all_time": -29342.536323,
+          "volume_24h": 0.0,
+          "volume_7d": 24392.6761,
+          "equity": 101054.128254
+        },
+        {
+          "address": "ELAhcF7qSRkoA8zoUgpTn4koPS6eb7vwFQs73SAz2TLA",
+          "pnl_24h": 3950.213037,
+          "pnl_7d": 3950.213037,
+          "pnl_30d": 3950.213037,
+          "pnl_all_time": -103955.579913,
+          "volume_24h": 514694.12555,
+          "volume_7d": 514694.12555,
+          "equity": 34423.538156
+        },
+        {
+          "address": "4X1i2FRVBH6gU3psoLW6AirJSCeRi8eKsBHTyrizL1gJ",
+          "pnl_24h": 3912.563756,
+          "pnl_7d": -11782.72617,
+          "pnl_30d": -11168.263523,
+          "pnl_all_time": 304.953987,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 96388.904159
+        },
+        {
+          "address": "G1rTKbU9TwsvzL66Pevc3CwZH1sGyEJP9fyEcnVGZWUd",
+          "pnl_24h": 3883.799355,
+          "pnl_7d": 4715.933586,
+          "pnl_30d": 16005.11361,
+          "pnl_all_time": 47808.034321,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 97804.578322
+        },
+        {
+          "address": "DbB3TxHkGEA5jLY7DCbxbQWRNVrteUbHBhYwAgwL5TJh",
+          "pnl_24h": 3651.306036,
+          "pnl_7d": -1371.867297,
+          "pnl_30d": -1368.66695,
+          "pnl_all_time": -43636.154956,
+          "volume_24h": 0.0,
+          "volume_7d": 142859.60338,
+          "equity": 99113.178096
+        },
+        {
+          "address": "ACJKQ3AAsSb59BkcHRa4EVLYHCNPRiVrTQr9odBXrzZ4",
+          "pnl_24h": 3557.391378,
+          "pnl_7d": -2093.019287,
+          "pnl_30d": -18503.924108,
+          "pnl_all_time": -35802.925084,
+          "volume_24h": 2508512.414621,
+          "volume_7d": 4418620.818585,
+          "equity": 84694.676632
+        },
+        {
+          "address": "EtMxXHBuQo9dNcjyTgiN7X7erbcWHtdTWXN2H5uxufsQ",
+          "pnl_24h": 3408.812745,
+          "pnl_7d": 1427.194136,
+          "pnl_30d": -20752.583891,
+          "pnl_all_time": -501465.041034,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 27801.048258
+        },
+        {
+          "address": "LmTE1dAMBMsJ8r11W85oZcLz9yDwPzQZ634VMqyA6om",
+          "pnl_24h": 3381.097304,
+          "pnl_7d": 6777.28984,
+          "pnl_30d": -123028.620787,
+          "pnl_all_time": 1583084.719035,
+          "volume_24h": 962963.57314,
+          "volume_7d": 16201529.03066,
+          "equity": 1483083.719035
+        },
+        {
+          "address": "442Rh3xN4P5pk3bWjdqcDpPLNgkwPVtK38L8cRXjQfEQ",
+          "pnl_24h": 3279.244765,
+          "pnl_7d": -6278.242794,
+          "pnl_30d": 1546.47792,
+          "pnl_all_time": -29554.342593,
+          "volume_24h": 46408.6884,
+          "volume_7d": 162226.3674,
+          "equity": 40729.525123
+        },
+        {
+          "address": "Ph9yECGodDAjiiSU9bpbJ8dds3ndWP1ngKo8h1K2QYv",
+          "pnl_24h": 3069.792885,
+          "pnl_7d": 2828.621809,
+          "pnl_30d": -34221.022231,
+          "pnl_all_time": 6939.883349,
+          "volume_24h": 43982.197271,
+          "volume_7d": 830368.882171,
+          "equity": 77041.987691
+        },
+        {
+          "address": "CWTcijnUasfh4ThPGtiBNqbxLtpRYctgaexBkXcSh7Hb",
+          "pnl_24h": 2839.41789,
+          "pnl_7d": 2839.41789,
+          "pnl_30d": 2839.41789,
+          "pnl_all_time": 2839.41789,
+          "volume_24h": 395180.0,
+          "volume_7d": 395180.0,
+          "equity": 102839.127891
+        },
+        {
+          "address": "A6W5iDnsjkE5UbUnmfNi2dJHJHEo27VszXTwyah5tCT4",
+          "pnl_24h": 2806.931317,
+          "pnl_7d": -13722.288316,
+          "pnl_30d": -1983.425131,
+          "pnl_all_time": -1983.425131,
+          "volume_24h": 109402.406,
+          "volume_7d": 217035.79822,
+          "equity": 53016.574869
+        },
+        {
+          "address": "9kh76MrC5VMoLUxc382Pp5qBuBTcxTYeV5R1DDHTBAPh",
+          "pnl_24h": 2757.158378,
+          "pnl_7d": -20764.151661,
+          "pnl_30d": -10780.765514,
+          "pnl_all_time": -10617.260653,
+          "volume_24h": 498969.55307,
+          "volume_7d": 1971725.96269,
+          "equity": 28112.50858
+        },
+        {
+          "address": "93g46jr8vpvjabSkkw7AKkV6DjFkfcMY2USdqcED1vzu",
+          "pnl_24h": 2687.835927,
+          "pnl_7d": -25778.25307,
+          "pnl_30d": -75478.524024,
+          "pnl_all_time": -80999.144711,
+          "volume_24h": 19.103,
+          "volume_7d": 85933.71554,
+          "equity": 92890.284631
+        },
+        {
+          "address": "6ZjWoJKeD88JqREHhYAWSZVLQfVcMSbx6eVdajXt9Xbv",
+          "pnl_24h": 2555.990401,
+          "pnl_7d": -70981.978841,
+          "pnl_30d": -62479.825625,
+          "pnl_all_time": -62479.825625,
+          "volume_24h": 0.0,
+          "volume_7d": 293715.68422,
+          "equity": 131312.642367
+        },
+        {
+          "address": "BcDgu34n4JtSraG429avhokt2EedbprDFWB3BuD6etLy",
+          "pnl_24h": 2439.288615,
+          "pnl_7d": 875.342285,
+          "pnl_30d": 1249.777679,
+          "pnl_all_time": 30858.167713,
+          "volume_24h": 0.0,
+          "volume_7d": 102927.74002,
+          "equity": 80858.167713
+        },
+        {
+          "address": "zXccE6F7i2jaDz7sjDdQjXnE2j5PiPvmk3boqAKihGF",
+          "pnl_24h": 2401.505896,
+          "pnl_7d": -806.987934,
+          "pnl_30d": 247.440197,
+          "pnl_all_time": -23835.6845,
+          "volume_24h": 277.637001,
+          "volume_7d": 730.618002,
+          "equity": 41953.066038
+        },
+        {
+          "address": "YjCD9Gek6MVY9t3MLEGYYdZLeaF6MZrpgZraayWsv9E",
+          "pnl_24h": 2378.690228,
+          "pnl_7d": -1393.806908,
+          "pnl_30d": -71199.987449,
+          "pnl_all_time": 1681432.14176,
+          "volume_24h": 1293810.61007,
+          "volume_7d": 18871328.69171,
+          "equity": 1546671.744589
+        },
+        {
+          "address": "DpoijDKDHUGakhqaJipLahEFN8d9XP12yv48Yx13tB3c",
+          "pnl_24h": 2254.173733,
+          "pnl_7d": 2130.074844,
+          "pnl_30d": 9355.055258,
+          "pnl_all_time": 14335.615164,
+          "volume_24h": 3.3055,
+          "volume_7d": 1120.8593,
+          "equity": 36334.615164
+        },
+        {
+          "address": "97Nq39YDZq77pfPY97RLA8ScBbPapQEwkDUjYNZiuMUd",
+          "pnl_24h": 2186.354935,
+          "pnl_7d": 58800.746005,
+          "pnl_30d": 35366.270101,
+          "pnl_all_time": -5831.027092,
+          "volume_24h": 44045.77099,
+          "volume_7d": 188689.48513,
+          "equity": 107532.393786
+        },
+        {
+          "address": "HgHdeVbDJyd5nvcfd4odxtUoKdHeKsEzAjQFsyp48uX6",
+          "pnl_24h": 2184.65691,
+          "pnl_7d": -1235.140285,
+          "pnl_30d": -1197.680173,
+          "pnl_all_time": -10925.189419,
+          "volume_24h": 0.0,
+          "volume_7d": 68150.42658,
+          "equity": 59066.812181
+        },
+        {
+          "address": "FAL42ZqgpkUvTQHxbwR2HcUaAmfWDrCgkCVoPosaVZfP",
+          "pnl_24h": 2141.927473,
+          "pnl_7d": 2506.000219,
+          "pnl_30d": 3220.158424,
+          "pnl_all_time": 3220.158424,
+          "volume_24h": 706713.9225,
+          "volume_7d": 4153907.74825,
+          "equity": 13220.158424
+        },
+        {
+          "address": "HE39drn9hYzJvKZsDCMCGj77qrhDREW3yCCnKnDiv7ix",
+          "pnl_24h": 2110.441478,
+          "pnl_7d": 6016.230155,
+          "pnl_30d": -8974.196445,
+          "pnl_all_time": -89387.182326,
+          "volume_24h": 2131814.14104,
+          "volume_7d": 16123843.19419,
+          "equity": 42146.521899
+        },
+        {
+          "address": "Hr5WFpPR9xUwD5WVWYKoLYbNKUaTAx2mn3B147KDgMAc",
+          "pnl_24h": 2035.525027,
+          "pnl_7d": 12922.239757,
+          "pnl_30d": 15030.933612,
+          "pnl_all_time": 15030.933612,
+          "volume_24h": 0.0,
+          "volume_7d": 301628.5182,
+          "equity": 115030.933612
+        },
+        {
+          "address": "B1Xob8YpDcTYKaWWhPu9kQxpw8eq3Eryg2ikCr8Jt26D",
+          "pnl_24h": 1731.559608,
+          "pnl_7d": 1932.819746,
+          "pnl_30d": 1910.599399,
+          "pnl_all_time": -1394.992851,
+          "volume_24h": 256231.1728,
+          "volume_7d": 1578669.2126,
+          "equity": 12845.202291
+        },
+        {
+          "address": "8M4HEuxW7qRJKTJkbiwqUmMMZzWT2dmnQQBEHTqYZPy3",
+          "pnl_24h": 1704.09211,
+          "pnl_7d": 8700.690253,
+          "pnl_30d": -1206.379402,
+          "pnl_all_time": -15120.513943,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 40793.520259
+        },
+        {
+          "address": "6ihYAA1rpjVfdfBwjC27zwc7Ygc5JLtbN8QGZKtSvWG3",
+          "pnl_24h": 1596.921923,
+          "pnl_7d": -92.228395,
+          "pnl_30d": 473.888659,
+          "pnl_all_time": 4537.76463,
+          "volume_24h": 0.0,
+          "volume_7d": 85772.39994,
+          "equity": 68879.439404
+        },
+        {
+          "address": "CM63hkhRfCuRRbU3Ku2tyRqLpEXVwXLbcwf8QiTt6bgV",
+          "pnl_24h": 1506.569042,
+          "pnl_7d": 1538.5063,
+          "pnl_30d": -11638.689517,
+          "pnl_all_time": -180293.361143,
+          "volume_24h": 132573.451,
+          "volume_7d": 258753.6446,
+          "equity": 23595.781966
+        },
+        {
+          "address": "5q3g19Ct3pRypgtNSU7Eoib2NNGxCMEySez5TRrYVpZR",
+          "pnl_24h": 1484.728097,
+          "pnl_7d": -26693.392989,
+          "pnl_30d": -16053.413092,
+          "pnl_all_time": -17653.121288,
+          "volume_24h": 2e-06,
+          "volume_7d": 487164.855762,
+          "equity": 9118.478208
+        },
+        {
+          "address": "HA3DWfn1E6nVU4zhRybN4hQvd6MaRrHzmWDE6WpqA2km",
+          "pnl_24h": 1475.464351,
+          "pnl_7d": 5639.265297,
+          "pnl_30d": 8902.595263,
+          "pnl_all_time": -10112.00105,
+          "volume_24h": 731.7432,
+          "volume_7d": 1085459.8785,
+          "equity": 14882.019694
+        },
+        {
+          "address": "DZJWEENCmE15wUoTW3YDjKXCgRDwPXvRo9asPR71uYgo",
+          "pnl_24h": 1472.579025,
+          "pnl_7d": 5357.635115,
+          "pnl_30d": 9829.351416,
+          "pnl_all_time": 4230.250398,
+          "volume_24h": 217771.097726,
+          "volume_7d": 2101648.452022,
+          "equity": 22651.851331
+        },
+        {
+          "address": "5an5BEH8dR8J8nThQPJbX4reR7JwdtHhffrCiKrWcgEo",
+          "pnl_24h": 1444.547233,
+          "pnl_7d": 27098.41835,
+          "pnl_30d": 17861.719887,
+          "pnl_all_time": 56953.100334,
+          "volume_24h": 675890.313717,
+          "volume_7d": 13027241.789193,
+          "equity": 304248.788835
+        },
+        {
+          "address": "GUGkEnGUkDLNz9GxAHbfnBf4YfNnv5XN9zay2ZjcpgLa",
+          "pnl_24h": 1434.380352,
+          "pnl_7d": -21870.623045,
+          "pnl_30d": -18263.086132,
+          "pnl_all_time": -18263.086132,
+          "volume_24h": 0.0,
+          "volume_7d": 571901.92935,
+          "equity": 9256.478804
+        },
+        {
+          "address": "DCmDxhZ6Tz8k46th3aEQrMHPGmRXeKrrakBitMm4V9mz",
+          "pnl_24h": 1351.782452,
+          "pnl_7d": 11305.234001,
+          "pnl_30d": 18508.048558,
+          "pnl_all_time": 22767.21105,
+          "volume_24h": 4284628.46139,
+          "volume_7d": 35290427.73162,
+          "equity": 57767.21105
+        },
+        {
+          "address": "7RGfPRVtWfB2DywdCEt6oz9Xk9Hyjjh8vUsTbcnizTJd",
+          "pnl_24h": 1320.177852,
+          "pnl_7d": -5759.9455,
+          "pnl_30d": -34334.521228,
+          "pnl_all_time": 69344.493699,
+          "volume_24h": 1282307.07555,
+          "volume_7d": 11366652.07866,
+          "equity": 370185.233699
+        },
+        {
+          "address": "D4ob7tWUkFrcfsGqW4z8qBs4QzAcPKPXSZdFvkuG3pDc",
+          "pnl_24h": 1298.329144,
+          "pnl_7d": -52.120871,
+          "pnl_30d": 7485.263554,
+          "pnl_all_time": 226.145738,
+          "volume_24h": 7593.7304,
+          "volume_7d": 1940490.851379,
+          "equity": 18654.447732
+        },
+        {
+          "address": "GTU92nBC8LMyt9W4Qqc319BFR1vpkNNPAbt4QCnX7kZ6",
+          "pnl_24h": 1263.332568,
+          "pnl_7d": 40642.615206,
+          "pnl_30d": 117734.578069,
+          "pnl_all_time": 121863.080534,
+          "volume_24h": 16355252.620877,
+          "volume_7d": 162974616.136514,
+          "equity": 524642.080534
+        },
+        {
+          "address": "E8j5xSbGXEWtj7BQobPtiMAfh7CpqR8t1tXX7qtAWCiZ",
+          "pnl_24h": 1251.571023,
+          "pnl_7d": 7170.865453,
+          "pnl_30d": 21364.264667,
+          "pnl_all_time": 145619.286877,
+          "volume_24h": 30144224.192668,
+          "volume_7d": 239603376.853244,
+          "equity": 75818.786877
+        },
+        {
+          "address": "8wxZY37A6Qwf3zqWU4gfeoYY9N3Y1UWs7Kmsd8H3h9xm",
+          "pnl_24h": 1251.38553,
+          "pnl_7d": 1773.861025,
+          "pnl_30d": 9568.393557,
+          "pnl_all_time": 52455.375124,
+          "volume_24h": 918788.286,
+          "volume_7d": 6524628.175719,
+          "equity": 57055.375124
+        },
+        {
+          "address": "7xzq6sBtnZ72A2rAUBC7PAaKnudGVUD6vAeeHM96oHSR",
+          "pnl_24h": 1198.603309,
+          "pnl_7d": 1715.606402,
+          "pnl_30d": -424.08694,
+          "pnl_all_time": -424.08694,
+          "volume_24h": 0.0,
+          "volume_7d": 352724.165015,
+          "equity": 5034.587274
+        }
+      ],
+      "top_losers": [
+        {
+          "address": "P3BSKpoDFx7i9ioLchg7XZXGWATz1McaNy9t7oDo7LF",
+          "pnl_24h": -9725.175385,
+          "pnl_7d": 233.468631,
+          "pnl_30d": -16618.06982,
+          "pnl_all_time": -109630.06982,
+          "volume_24h": 0.0,
+          "volume_7d": 89982.03738,
+          "equity": 53364.361046
+        },
+        {
+          "address": "43b1en1NZXemnmFizoidYgr6NcKDbuBxtuQ9dqC6wpMe",
+          "pnl_24h": -8288.821748,
+          "pnl_7d": 15217.460588,
+          "pnl_30d": 4361.493042,
+          "pnl_all_time": -32286.893901,
+          "volume_24h": -81943.762413,
+          "volume_7d": 709081.409514,
+          "equity": 69169.313218
+        },
+        {
+          "address": "F4cXqmiipCn6vqpYM75UeY26pGqahnUN5tLMqnbPGHhh",
+          "pnl_24h": -7930.508582,
+          "pnl_7d": 7077.427597,
+          "pnl_30d": 7077.427597,
+          "pnl_all_time": 7077.427597,
+          "volume_24h": 0.0,
+          "volume_7d": 146168.0,
+          "equity": 27077.427597
+        },
+        {
+          "address": "Et8KK2e84tARx8RGF8wMYw5Uzw48YpGxyqT91VkqKxCq",
+          "pnl_24h": -5763.854807,
+          "pnl_7d": -7589.010811,
+          "pnl_30d": -5014.804449,
+          "pnl_all_time": 3123.49104,
+          "volume_24h": 70798.4802,
+          "volume_7d": 1275728.90706,
+          "equity": 11702.410761
+        },
+        {
+          "address": "DaUvqv6tHCVtNtv73Fjzbzd3jQAif4bQBZX7yd72eNj",
+          "pnl_24h": -5583.849578,
+          "pnl_7d": -13992.076435,
+          "pnl_30d": -17578.321424,
+          "pnl_all_time": -91108.67428,
+          "volume_24h": 1137.7,
+          "volume_7d": 8624.01,
+          "equity": 94636.70572
+        },
+        {
+          "address": "HmBH4V6kCEUo9Ra6xCunrNFviMu2ueCg7m7CHSTvBFSr",
+          "pnl_24h": -5128.160137,
+          "pnl_7d": -445.436033,
+          "pnl_30d": 23741.946807,
+          "pnl_all_time": 17729.405814,
+          "volume_24h": 7025.633708,
+          "volume_7d": 485835.19251,
+          "equity": 112728.408157
+        },
+        {
+          "address": "DDH1YuWUmh3yJ9bT5Q6pjYpg2A73R8gJNNR7L8ronZ4i",
+          "pnl_24h": -4778.383807,
+          "pnl_7d": -4778.383775,
+          "pnl_30d": -4778.383775,
+          "pnl_all_time": 66621.792737,
+          "volume_24h": 512397.71571,
+          "volume_7d": 512397.71571,
+          "equity": 31029.298639
+        },
+        {
+          "address": "5tVFEuHYfcm9t4cy7jxdcaJvQLKAbvzUhAPcoea6KKxX",
+          "pnl_24h": -4751.297296,
+          "pnl_7d": -12906.92413,
+          "pnl_30d": 33577.508708,
+          "pnl_all_time": 8015.472687,
+          "volume_24h": 6603.1,
+          "volume_7d": 1779301.52145,
+          "equity": 142609.472687
+        },
+        {
+          "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
+          "pnl_24h": -4684.457728,
+          "pnl_7d": 10987.567208,
+          "pnl_30d": -25534.782407,
+          "pnl_all_time": -4318.22898,
+          "volume_24h": 13466.22156,
+          "volume_7d": 199385.32755,
+          "equity": 52414.898354
+        },
+        {
+          "address": "4sSMdM7XCPdKA9eAgivNcswKbyc551ZWxXpPa1neAMWu",
+          "pnl_24h": -4625.232051,
+          "pnl_7d": 1982.05232,
+          "pnl_30d": 26951.458349,
+          "pnl_all_time": -55760.201677,
+          "volume_24h": 174.3672,
+          "volume_7d": 2198772.082526,
+          "equity": 135265.610686
+        },
+        {
+          "address": "CbLa46Xj9CovR6PdDQmihJAqR1vUNvw2A42V8xtwBCRX",
+          "pnl_24h": -4186.112527,
+          "pnl_7d": -4186.112528,
+          "pnl_30d": -4186.112528,
+          "pnl_all_time": -23042.706766,
+          "volume_24h": 514887.77564,
+          "volume_7d": 514887.77564,
+          "equity": 25859.884438
+        },
+        {
+          "address": "DGZQgs3R6mMCzroKXwxKbsb566amSisqxxasxcG8pope",
+          "pnl_24h": -3883.799355,
+          "pnl_7d": -4715.933274,
+          "pnl_30d": -15966.329063,
+          "pnl_all_time": -9965.267213,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 55004.816993
+        },
+        {
+          "address": "C1aoHHNMvoThJVcoEddzYqSwzPS5yLGhmymLP3tXywvN",
+          "pnl_24h": -3873.28042,
+          "pnl_7d": 19152.721287,
+          "pnl_30d": 21600.421151,
+          "pnl_all_time": 21600.421151,
+          "volume_24h": 508077.69902,
+          "volume_7d": 1106637.80572,
+          "equity": 111614.546245
+        },
+        {
+          "address": "E5Z73Tec9RauZ12mPzbWLto4YFEDZQgf4kdXW5w98zrt",
+          "pnl_24h": -3519.981699,
+          "pnl_7d": -49714.209193,
+          "pnl_30d": -16035.672318,
+          "pnl_all_time": -39554.571623,
+          "volume_24h": 1429644.686548,
+          "volume_7d": 35050143.686264,
+          "equity": 19504.261964
+        },
+        {
+          "address": "7yPGKK8Vf8PMAJnpy7CZrYahagmbmEeEpLQUAqSpVCuS",
+          "pnl_24h": -3429.386867,
+          "pnl_7d": -95822.475862,
+          "pnl_30d": -178181.392839,
+          "pnl_all_time": -223203.713359,
+          "volume_24h": 116907.1291,
+          "volume_7d": 6483465.1602,
+          "equity": 3593.496546
+        },
+        {
+          "address": "AEEqcwDj1fwEUBbCGuePSZMx8agW71zmWRGkfQ4a9uqW",
+          "pnl_24h": -3350.974392,
+          "pnl_7d": 5758.897363,
+          "pnl_30d": -22838.534423,
+          "pnl_all_time": -87148.817189,
+          "volume_24h": 19098.75237,
+          "volume_7d": 1849031.88986,
+          "equity": 109494.682811
+        },
+        {
+          "address": "BFjbUQ9UjwBjS1mCNRHX1mmsuTkP7y1CvPSDWiFoiPVJ",
+          "pnl_24h": -2905.505108,
+          "pnl_7d": -4613.134706,
+          "pnl_30d": -4613.134706,
+          "pnl_all_time": -4613.134706,
+          "volume_24h": 918948.39028,
+          "volume_7d": 3009445.46129,
+          "equity": 95331.861298
+        },
+        {
+          "address": "2faRZHi6QwR1Q3VGgMAb4SWo31tU9FGpgAY7Vtd2TkNu",
+          "pnl_24h": -2690.566681,
+          "pnl_7d": -2810.571059,
+          "pnl_30d": -2810.571059,
+          "pnl_all_time": -2810.571059,
+          "volume_24h": 221937.80206,
+          "volume_7d": 267020.54386,
+          "equity": 0.01
+        },
+        {
+          "address": "4hBqd9xTzQc4ZfcGHJAJUXuGWfgMq2ehhZQuuoakpkwL",
+          "pnl_24h": -2592.083547,
+          "pnl_7d": -3480.666291,
+          "pnl_30d": -6488.232165,
+          "pnl_all_time": -55956.340859,
+          "volume_24h": 396454.98579,
+          "volume_7d": 1822624.25541,
+          "equity": 8674.401974
+        },
+        {
+          "address": "CWaEyMSHwEQFqg8uYFk6rrKfgiVqNFkT4YcHWgPaixw4",
+          "pnl_24h": -2541.527006,
+          "pnl_7d": -7953.662164,
+          "pnl_30d": -12470.407076,
+          "pnl_all_time": -14231.26475,
+          "volume_24h": 260283.047428,
+          "volume_7d": 2905831.107164,
+          "equity": 19990.80213
+        },
+        {
+          "address": "73AeJdJvRbVxf3QWe157FQy63toYbhdj5Ujnfjcc9SnC",
+          "pnl_24h": -2468.425998,
+          "pnl_7d": 16681.818202,
+          "pnl_30d": 32169.468246,
+          "pnl_all_time": 141006.028055,
+          "volume_24h": 19134.3231,
+          "volume_7d": 93801.2521,
+          "equity": 124161.031503
+        },
+        {
+          "address": "8XTAeCbtN73eh7G6k7aWoN88JauG29LqfvgJjy2ZWEk9",
+          "pnl_24h": -2390.904113,
+          "pnl_7d": -6779.943192,
+          "pnl_30d": -13911.619568,
+          "pnl_all_time": -13911.619568,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 41088.380432
+        },
+        {
+          "address": "98xq2ZwdtuZPir13mPGoVJztPmtxyRKrAV7Ex9hJdMJX",
+          "pnl_24h": -2363.1668,
+          "pnl_7d": -4714.993341,
+          "pnl_30d": -4714.993341,
+          "pnl_all_time": -4714.993341,
+          "volume_24h": 1187225.55785,
+          "volume_7d": 1427952.06413,
+          "equity": 5289.406659
+        },
+        {
+          "address": "2rEEo6bXeXLacwAnQwtw5YEz8CdnTGrQ2LQ2banK4mRw",
+          "pnl_24h": -2325.630054,
+          "pnl_7d": 1685.347946,
+          "pnl_30d": 1732.079987,
+          "pnl_all_time": 1732.079987,
+          "volume_24h": 6608869.103105,
+          "volume_7d": 41787480.989137,
+          "equity": 91483.298822
+        },
+        {
+          "address": "Ep1d8JdFw4FnB85XDgXGVabYutro4JzK285HQqW6TZE2",
+          "pnl_24h": -2273.375827,
+          "pnl_7d": 7105.27643,
+          "pnl_30d": 8464.768136,
+          "pnl_all_time": 8464.768136,
+          "volume_24h": 653662.67838,
+          "volume_7d": 1935260.06051,
+          "equity": 83464.768136
+        },
+        {
+          "address": "C8EB8k5fVPVzHr2hAyzFPAwvKW63umbGYFsPRFCripyK",
+          "pnl_24h": -2083.558474,
+          "pnl_7d": -13053.787394,
+          "pnl_30d": -17083.191766,
+          "pnl_all_time": -89034.596875,
+          "volume_24h": 1580.2409,
+          "volume_7d": 1595266.31355,
+          "equity": 76759.403125
+        },
+        {
+          "address": "CfiYXFoNEhnQahf9JtCFTxjdEATFwgUbQRA5o5LaHQoW",
+          "pnl_24h": -1977.476155,
+          "pnl_7d": -4290.223528,
+          "pnl_30d": -3091.022863,
+          "pnl_all_time": -4061.616443,
+          "volume_24h": 2129929.85084,
+          "volume_7d": 4077721.03538,
+          "equity": 619.283376
+        },
+        {
+          "address": "3E1rS52eHMyfC9J3FLbJLSkLWKFM5kThbYV27a6rDhk6",
+          "pnl_24h": -1904.070002,
+          "pnl_7d": -8214.880061,
+          "pnl_30d": 1161.299909,
+          "pnl_all_time": 42314.273621,
+          "volume_24h": 2e-06,
+          "volume_7d": 2e-06,
+          "equity": 28982.437269
+        },
+        {
+          "address": "G6siLFJYdNzfWiMopajpaZSc1JZJbXevpEaXXFNso6Yj",
+          "pnl_24h": -1889.357897,
+          "pnl_7d": -2390.027263,
+          "pnl_30d": -2390.027263,
+          "pnl_all_time": -2390.027263,
+          "volume_24h": 0.0,
+          "volume_7d": 77414.56433,
+          "equity": 17604.973037
+        },
+        {
+          "address": "GyyQRuRAJdxeNNn4URLv1CbNKUU9qdyenJW79kXLn4cr",
+          "pnl_24h": -1819.306596,
+          "pnl_7d": 5979.231706,
+          "pnl_30d": 6236.197632,
+          "pnl_all_time": 6236.197632,
+          "volume_24h": 3408.9022,
+          "volume_7d": 203695.06063,
+          "equity": 17454.656453
+        },
+        {
+          "address": "EisuiCEBVJi5Z8eR8hpA8Cc8Z6php5xr6TuKVPsLsvgk",
+          "pnl_24h": -1793.317361,
+          "pnl_7d": 6632.635789,
+          "pnl_30d": 20950.850221,
+          "pnl_all_time": 34652.600115,
+          "volume_24h": 55700.23588,
+          "volume_7d": 14104421.19876,
+          "equity": 58174.679082
+        },
+        {
+          "address": "AoVHrciuHrqSsSty2wK7ZgVYscmiLNrGm1NXPPgdWaPf",
+          "pnl_24h": -1753.679127,
+          "pnl_7d": -3221.167984,
+          "pnl_30d": -3221.167984,
+          "pnl_all_time": -3221.167984,
+          "volume_24h": 0.0,
+          "volume_7d": 258617.4414,
+          "equity": 7032.918098
+        },
+        {
+          "address": "6xQmCzMwMpGhouMip57hy9NGrtGKwz2kv2ZtdhjhXh1K",
+          "pnl_24h": -1656.620778,
+          "pnl_7d": 9377.054464,
+          "pnl_30d": 11646.174039,
+          "pnl_all_time": 11646.174039,
+          "volume_24h": 432412.2899,
+          "volume_7d": 1706054.428992,
+          "equity": 90759.45888
+        },
+        {
+          "address": "FGQVy5spHBtX8J1phSpHAQaCvwHRckqS4chsETX8gNqQ",
+          "pnl_24h": -1631.078215,
+          "pnl_7d": 20307.073895,
+          "pnl_30d": 18464.323853,
+          "pnl_all_time": 18464.323853,
+          "volume_24h": 41.263,
+          "volume_7d": 9591.53206,
+          "equity": 53464.323853
+        },
+        {
+          "address": "HtC4WT6JhKz8eojNigfiqSWykG74kfQmyDeM9f753aPQ",
+          "pnl_24h": -1602.60534,
+          "pnl_7d": 42973.97401,
+          "pnl_30d": 43235.196671,
+          "pnl_all_time": 236055.922906,
+          "volume_24h": 2445022.399115,
+          "volume_7d": 31886130.541608,
+          "equity": 556060.922906
+        },
+        {
+          "address": "CUdwwSW5te11PjgV1c8ZVf8p9RviN6qFxKrB6WwNAvY5",
+          "pnl_24h": -1524.613594,
+          "pnl_7d": 13141.211714,
+          "pnl_30d": 19470.250337,
+          "pnl_all_time": 28759.485314,
+          "volume_24h": 284709.34269,
+          "volume_7d": 284709.34269,
+          "equity": 49454.260337
+        },
+        {
+          "address": "PCF8xwewcLmibAPnJcvydHoJ4VKKoxkGdbcbJqRdUSx",
+          "pnl_24h": -1518.54449,
+          "pnl_7d": 21349.076034,
+          "pnl_30d": 53201.616653,
+          "pnl_all_time": 73362.903229,
+          "volume_24h": 8310454.005841,
+          "volume_7d": 102633858.509917,
+          "equity": 144362.903229
+        },
+        {
+          "address": "5ceU6o468VkM1k4JrQbJhGbux9KL6iMMpVKr6b69tRnK",
+          "pnl_24h": -1513.031127,
+          "pnl_7d": 896.324756,
+          "pnl_30d": 900.542964,
+          "pnl_all_time": 287.802137,
+          "volume_24h": 0.0,
+          "volume_7d": 35134.08,
+          "equity": 13357.555229
+        },
+        {
+          "address": "9C9LYZttpTxKp5TgQTvZxzWGRfbX2pbC9o5qaqmVYXAE",
+          "pnl_24h": -1509.061383,
+          "pnl_7d": 10402.099464,
+          "pnl_30d": 9305.087909,
+          "pnl_all_time": 4443.614116,
+          "volume_24h": 2e-06,
+          "volume_7d": 321625.550882,
+          "equity": 16443.614116
+        },
+        {
+          "address": "8JeVzEoZiFhCanw1DXsSbebPA6wYMz8Sj5viJR6uck7C",
+          "pnl_24h": -1462.51839,
+          "pnl_7d": 683.492167,
+          "pnl_30d": -2008.589584,
+          "pnl_all_time": -24568.660698,
+          "volume_24h": 44097.723752,
+          "volume_7d": 145063.830252,
+          "equity": 2192.228332
+        },
+        {
+          "address": "49e3PW6ScGb3hi42qk56WZnNqjBx5XDY56Kbtf4uP55T",
+          "pnl_24h": -1445.528484,
+          "pnl_7d": -4099.118779,
+          "pnl_30d": -2576.956275,
+          "pnl_all_time": -2576.956275,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 97423.043725
+        },
+        {
+          "address": "DQqre2oHthtWjLTGumJYL75muQFpjd2MsUcky2181uUQ",
+          "pnl_24h": -1414.178327,
+          "pnl_7d": 14622.414647,
+          "pnl_30d": 12030.179815,
+          "pnl_all_time": -18575.277532,
+          "volume_24h": 19.0936,
+          "volume_7d": 47.3638,
+          "equity": 62030.579815
+        },
+        {
+          "address": "2yVzy5zSZwUEP4iYqKFhZmkqFgHqWERU1sid6vcsyJVh",
+          "pnl_24h": -1390.914552,
+          "pnl_7d": 14503.842482,
+          "pnl_30d": 22281.364048,
+          "pnl_all_time": 22327.738608,
+          "volume_24h": 401566.59995,
+          "volume_7d": 2105164.08805,
+          "equity": 28051.56432
+        },
+        {
+          "address": "C45As2diKNQHSARr5m16JLhA5iRPEhbGYvmxaF2ZihRM",
+          "pnl_24h": -1372.146419,
+          "pnl_7d": 4277.46348,
+          "pnl_30d": 13232.744776,
+          "pnl_all_time": 16886.659755,
+          "volume_24h": 35997.5795,
+          "volume_7d": 162696.26144,
+          "equity": 66846.856366
+        },
+        {
+          "address": "HQWz5Pje7tbqJVTy7ES41P4moxQWHXhCqMYGnsQirzq9",
+          "pnl_24h": -1333.883246,
+          "pnl_7d": 2928.843755,
+          "pnl_30d": 6774.013874,
+          "pnl_all_time": -32963.614515,
+          "volume_24h": 0.0,
+          "volume_7d": 255766.37735,
+          "equity": 100536.385485
+        },
+        {
+          "address": "HN9QSTyXoUgwRWC3m4DVf1X3L3o8P8iMF72GcdGdBw4J",
+          "pnl_24h": -1329.48734,
+          "pnl_7d": 4157.153375,
+          "pnl_30d": -6184.927697,
+          "pnl_all_time": 21944.967755,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 15762.045715
+        },
+        {
+          "address": "6HKAUws4EeU541mpsFFgEPJZMCea1kXPbZbp1mGtTfvN",
+          "pnl_24h": -1312.900433,
+          "pnl_7d": -5719.248813,
+          "pnl_30d": -3970.818035,
+          "pnl_all_time": -3331.658672,
+          "volume_24h": 22.419002,
+          "volume_7d": 154.265882,
+          "equity": 13369.632627
+        },
+        {
+          "address": "Fh2itfDv6sybs6RCFAKWtuBqdo1JCTjskoWCQ9KAdXvN",
+          "pnl_24h": -1273.851402,
+          "pnl_7d": -1169.763077,
+          "pnl_30d": -2282.134733,
+          "pnl_all_time": -1938.211079,
+          "volume_24h": 21.04883,
+          "volume_7d": 31543.7541,
+          "equity": 3833.333677
+        },
+        {
+          "address": "FNibpdCKUAVtBzZ9XR26VKb8LQWnfAv5zaqWC5sJf7kS",
+          "pnl_24h": -1273.548748,
+          "pnl_7d": 12195.200779,
+          "pnl_30d": 16213.509196,
+          "pnl_all_time": -51380.392328,
+          "volume_24h": 30579.61936,
+          "volume_7d": 1334199.47617,
+          "equity": 156308.444275
+        },
+        {
+          "address": "Fpo38LdtQQPxnr7DHxBESPtC6gwr18RwVvcxgLTra8fj",
+          "pnl_24h": -1250.948894,
+          "pnl_7d": -10082.765164,
+          "pnl_30d": -25868.659235,
+          "pnl_all_time": -11739.30347,
+          "volume_24h": 300186.95064,
+          "volume_7d": 994380.51156,
+          "equity": 21013.827242
+        }
+      ],
+      "total_traders": 9507
+    },
     "jupiter": {
       "top_winners": [
         {
@@ -1616,1013 +2621,6 @@
       ],
       "top_losers": [],
       "total_traders": 132
-    },
-    "pacifica": {
-      "top_winners": [
-        {
-          "address": "BEE3zNUPmEU9CL8CAxZxMozn8H57zkrs4hNJE3ZEPi8s",
-          "pnl_24h": 13018.675584,
-          "pnl_7d": 6253.275041,
-          "pnl_30d": 5611.614068,
-          "pnl_all_time": -186396.634863,
-          "volume_24h": 550189.327771,
-          "volume_7d": 4444748.690624,
-          "equity": 224185.202706
-        },
-        {
-          "address": "5drhG4pRy6XwK1w6Not1ZzLkQ5bQT8suE4Tdj3iB8CUa",
-          "pnl_24h": 8521.771936,
-          "pnl_7d": -1299.927189,
-          "pnl_30d": -8118.771636,
-          "pnl_all_time": -11626.232982,
-          "volume_24h": 189008.3982,
-          "volume_7d": 1179450.29725,
-          "equity": 10001.238364
-        },
-        {
-          "address": "8NtQSkWPPpQut8nLZeKWetrEoAqjZaoiKb9Bh3SZhRg6",
-          "pnl_24h": 7392.279788,
-          "pnl_7d": -8075.93772,
-          "pnl_30d": 5611.685149,
-          "pnl_all_time": -84651.694056,
-          "volume_24h": 0.0,
-          "volume_7d": 157061.98794,
-          "equity": 105348.305944
-        },
-        {
-          "address": "GDoEJ87ezVKgFXQ9N4RpPuUVrPKfhitLQpgkHczJUPVL",
-          "pnl_24h": 6718.827568,
-          "pnl_7d": -5928.483425,
-          "pnl_30d": -3364.858164,
-          "pnl_all_time": -3364.858164,
-          "volume_24h": 0.0,
-          "volume_7d": 181342.40481,
-          "equity": 96635.141836
-        },
-        {
-          "address": "ACJKQ3AAsSb59BkcHRa4EVLYHCNPRiVrTQr9odBXrzZ4",
-          "pnl_24h": 5287.841966,
-          "pnl_7d": 344.955362,
-          "pnl_30d": -16386.008572,
-          "pnl_all_time": -33625.936905,
-          "volume_24h": 2508512.414621,
-          "volume_7d": 4418620.818585,
-          "equity": 86871.664811
-        },
-        {
-          "address": "Eu12Nqn4v2atnTqNb8MwYnC4kxDpv7dVgnhxPcru1bGt",
-          "pnl_24h": 5281.53878,
-          "pnl_7d": 34208.0677,
-          "pnl_30d": 30795.651794,
-          "pnl_all_time": 36471.015741,
-          "volume_24h": 2351381.291417,
-          "volume_7d": 21222242.042062,
-          "equity": 836463.587415
-        },
-        {
-          "address": "6ZjWoJKeD88JqREHhYAWSZVLQfVcMSbx6eVdajXt9Xbv",
-          "pnl_24h": 5199.971615,
-          "pnl_7d": -70117.558816,
-          "pnl_30d": -60832.568195,
-          "pnl_all_time": -60832.568195,
-          "volume_24h": 0.0,
-          "volume_7d": 293715.68422,
-          "equity": 132959.899797
-        },
-        {
-          "address": "DiRHaAc41Cn7Ws5UA2yZNV1uvwcQN6n5zscLybRFXqjv",
-          "pnl_24h": 5084.029496,
-          "pnl_7d": 5084.029496,
-          "pnl_30d": 5084.029496,
-          "pnl_all_time": -57168.847475,
-          "volume_24h": 512051.3476,
-          "volume_7d": 512051.3476,
-          "equity": 34824.040896
-        },
-        {
-          "address": "G5GWsm3f9C2rztJNMAXZtEPqqrGED1dbAu8PS6V25MJB",
-          "pnl_24h": 4728.998191,
-          "pnl_7d": 36538.075622,
-          "pnl_30d": 62452.961525,
-          "pnl_all_time": 242300.995485,
-          "volume_24h": 2175892.079619,
-          "volume_7d": 21149234.811597,
-          "equity": 353300.165485
-        },
-        {
-          "address": "ELAhcF7qSRkoA8zoUgpTn4koPS6eb7vwFQs73SAz2TLA",
-          "pnl_24h": 4456.182711,
-          "pnl_7d": 4456.182711,
-          "pnl_30d": 4456.182711,
-          "pnl_all_time": -103449.610239,
-          "volume_24h": 514694.12555,
-          "volume_7d": 514694.12555,
-          "equity": 34929.50783
-        },
-        {
-          "address": "4X1i2FRVBH6gU3psoLW6AirJSCeRi8eKsBHTyrizL1gJ",
-          "pnl_24h": 4260.179588,
-          "pnl_7d": -12116.650638,
-          "pnl_30d": -11116.963818,
-          "pnl_all_time": 172.118489,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 96256.068661
-        },
-        {
-          "address": "DbB3TxHkGEA5jLY7DCbxbQWRNVrteUbHBhYwAgwL5TJh",
-          "pnl_24h": 4119.664424,
-          "pnl_7d": -946.572827,
-          "pnl_30d": -962.427076,
-          "pnl_all_time": -43229.888094,
-          "volume_24h": 0.0,
-          "volume_7d": 142859.60338,
-          "equity": 99519.444958
-        },
-        {
-          "address": "93g46jr8vpvjabSkkw7AKkV6DjFkfcMY2USdqcED1vzu",
-          "pnl_24h": 4090.491528,
-          "pnl_7d": -25621.275991,
-          "pnl_30d": -74948.720854,
-          "pnl_all_time": -80469.341541,
-          "volume_24h": 19.103,
-          "volume_7d": 85933.71554,
-          "equity": 93420.087801
-        },
-        {
-          "address": "49R9MFU7JopaCFXtpTwbaX8rkNW9wX6ddi7VtLUtMYJ1",
-          "pnl_24h": 4082.052541,
-          "pnl_7d": -4588.055095,
-          "pnl_30d": -9644.733409,
-          "pnl_all_time": -29586.833668,
-          "volume_24h": 0.0,
-          "volume_7d": 24392.6761,
-          "equity": 100809.830909
-        },
-        {
-          "address": "9659Gi9dLz7fi4pHueu2WkJLfyyCQKWLfigYiKoLKtpH",
-          "pnl_24h": 3919.665291,
-          "pnl_7d": 7926.832804,
-          "pnl_30d": 10738.048098,
-          "pnl_all_time": -74484.207759,
-          "volume_24h": 3414.0731,
-          "volume_7d": 1284882.48002,
-          "equity": 100110.293341
-        },
-        {
-          "address": "F6fqSxAJXLUxLhgQUi9hjWSoL16oEcV9MVKyB6GUffDG",
-          "pnl_24h": 3830.236343,
-          "pnl_7d": 8353.112812,
-          "pnl_30d": -15106.228531,
-          "pnl_all_time": -94988.182442,
-          "volume_24h": 9105.8056,
-          "volume_7d": 1316083.36062,
-          "equity": 104060.317558
-        },
-        {
-          "address": "Ph9yECGodDAjiiSU9bpbJ8dds3ndWP1ngKo8h1K2QYv",
-          "pnl_24h": 3754.527085,
-          "pnl_7d": 3078.140309,
-          "pnl_30d": -33852.316371,
-          "pnl_all_time": 7369.525449,
-          "volume_24h": 43982.197271,
-          "volume_7d": 830368.882171,
-          "equity": 77471.629791
-        },
-        {
-          "address": "A6W5iDnsjkE5UbUnmfNi2dJHJHEo27VszXTwyah5tCT4",
-          "pnl_24h": 3630.563964,
-          "pnl_7d": -13577.651104,
-          "pnl_30d": -1814.862946,
-          "pnl_all_time": -1814.862946,
-          "volume_24h": 109402.406,
-          "volume_7d": 217035.79822,
-          "equity": 53185.137054
-        },
-        {
-          "address": "9kh76MrC5VMoLUxc382Pp5qBuBTcxTYeV5R1DDHTBAPh",
-          "pnl_24h": 3398.735618,
-          "pnl_7d": -20221.947821,
-          "pnl_30d": -10139.188274,
-          "pnl_all_time": -9975.683413,
-          "volume_24h": 498969.55307,
-          "volume_7d": 1971725.96269,
-          "equity": 28754.08582
-        },
-        {
-          "address": "97Nq39YDZq77pfPY97RLA8ScBbPapQEwkDUjYNZiuMUd",
-          "pnl_24h": 3086.993716,
-          "pnl_7d": 59048.221602,
-          "pnl_30d": 35863.565813,
-          "pnl_all_time": -5299.068839,
-          "volume_24h": 44045.77099,
-          "volume_7d": 188689.48513,
-          "equity": 108064.352039
-        },
-        {
-          "address": "G1rTKbU9TwsvzL66Pevc3CwZH1sGyEJP9fyEcnVGZWUd",
-          "pnl_24h": 3003.927364,
-          "pnl_7d": 4167.169482,
-          "pnl_30d": 14710.175199,
-          "pnl_all_time": 47149.585912,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 97146.129913
-        },
-        {
-          "address": "442Rh3xN4P5pk3bWjdqcDpPLNgkwPVtK38L8cRXjQfEQ",
-          "pnl_24h": 2852.472125,
-          "pnl_7d": -7304.722879,
-          "pnl_30d": 334.16393,
-          "pnl_all_time": -30031.54769,
-          "volume_24h": 46408.6884,
-          "volume_7d": 162226.3674,
-          "equity": 40252.320026
-        },
-        {
-          "address": "EtMxXHBuQo9dNcjyTgiN7X7erbcWHtdTWXN2H5uxufsQ",
-          "pnl_24h": 2791.415036,
-          "pnl_7d": 516.194136,
-          "pnl_30d": -21686.489019,
-          "pnl_all_time": -502398.946162,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 26867.14313
-        },
-        {
-          "address": "BcDgu34n4JtSraG429avhokt2EedbprDFWB3BuD6etLy",
-          "pnl_24h": 2706.484517,
-          "pnl_7d": 1100.303332,
-          "pnl_30d": 1471.945678,
-          "pnl_all_time": 31080.636734,
-          "volume_24h": 0.0,
-          "volume_7d": 102927.74002,
-          "equity": 81080.636734
-        },
-        {
-          "address": "CWTcijnUasfh4ThPGtiBNqbxLtpRYctgaexBkXcSh7Hb",
-          "pnl_24h": 2624.179522,
-          "pnl_7d": 2624.179522,
-          "pnl_30d": 2624.179522,
-          "pnl_all_time": 2624.179522,
-          "volume_24h": 395180.0,
-          "volume_7d": 395180.0,
-          "equity": 102623.889523
-        },
-        {
-          "address": "zXccE6F7i2jaDz7sjDdQjXnE2j5PiPvmk3boqAKihGF",
-          "pnl_24h": 2540.848199,
-          "pnl_7d": -1060.322471,
-          "pnl_30d": 461.455307,
-          "pnl_all_time": -23847.308916,
-          "volume_24h": 277.637001,
-          "volume_7d": 730.618002,
-          "equity": 41941.441622
-        },
-        {
-          "address": "G6gyqHzb1yM3zfCD8K12qxMkv3Q99Dzn1qYLff41n1vf",
-          "pnl_24h": 2515.888502,
-          "pnl_7d": 36562.543095,
-          "pnl_30d": -3144.025351,
-          "pnl_all_time": 14486.007846,
-          "volume_24h": 0.0,
-          "volume_7d": 1141034.07527,
-          "equity": 91364.15943
-        },
-        {
-          "address": "HgHdeVbDJyd5nvcfd4odxtUoKdHeKsEzAjQFsyp48uX6",
-          "pnl_24h": 2496.379655,
-          "pnl_7d": -964.719177,
-          "pnl_30d": -948.799305,
-          "pnl_all_time": -10676.27995,
-          "volume_24h": 0.0,
-          "volume_7d": 68150.42658,
-          "equity": 59315.72165
-        },
-        {
-          "address": "8AsJfKorQc1Wz8DABe9FZH18cgLd43bYwFST5JBJYSit",
-          "pnl_24h": 2359.96003,
-          "pnl_7d": -4373.015834,
-          "pnl_30d": -7844.815089,
-          "pnl_all_time": -7844.815089,
-          "volume_24h": 28662.4044,
-          "volume_7d": 821841.05804,
-          "equity": 50334.500209
-        },
-        {
-          "address": "LmTE1dAMBMsJ8r11W85oZcLz9yDwPzQZ634VMqyA6om",
-          "pnl_24h": 2306.063986,
-          "pnl_7d": 7603.368616,
-          "pnl_30d": -121712.558131,
-          "pnl_all_time": 1583987.156385,
-          "volume_24h": 934545.12266,
-          "volume_7d": 16263384.42235,
-          "equity": 1483986.156385
-        },
-        {
-          "address": "Dkp7y8LP6MWFXe3KtvQW2mzwaeZyiFHG1xeg8zG2asPr",
-          "pnl_24h": 2275.890996,
-          "pnl_7d": 35707.231111,
-          "pnl_30d": 30322.574234,
-          "pnl_all_time": -3094.522513,
-          "volume_24h": 76.326,
-          "volume_7d": 1084347.8879,
-          "equity": 101322.085234
-        },
-        {
-          "address": "Hr5WFpPR9xUwD5WVWYKoLYbNKUaTAx2mn3B147KDgMAc",
-          "pnl_24h": 2216.199107,
-          "pnl_7d": 13289.334614,
-          "pnl_30d": 15215.773468,
-          "pnl_all_time": 15215.773468,
-          "volume_24h": 0.0,
-          "volume_7d": 301628.5182,
-          "equity": 115215.773468
-        },
-        {
-          "address": "DpoijDKDHUGakhqaJipLahEFN8d9XP12yv48Yx13tB3c",
-          "pnl_24h": 2024.849135,
-          "pnl_7d": 1955.625121,
-          "pnl_30d": 8898.943883,
-          "pnl_all_time": 14092.734584,
-          "volume_24h": 3.3055,
-          "volume_7d": 1120.8593,
-          "equity": 36091.734584
-        },
-        {
-          "address": "HE39drn9hYzJvKZsDCMCGj77qrhDREW3yCCnKnDiv7ix",
-          "pnl_24h": 1941.619266,
-          "pnl_7d": 5823.157868,
-          "pnl_30d": -9399.133619,
-          "pnl_all_time": -89812.1195,
-          "volume_24h": 2169924.28511,
-          "volume_7d": 16123843.19419,
-          "equity": 41721.584725
-        },
-        {
-          "address": "6ihYAA1rpjVfdfBwjC27zwc7Ygc5JLtbN8QGZKtSvWG3",
-          "pnl_24h": 1772.891921,
-          "pnl_7d": 60.601535,
-          "pnl_30d": 626.974043,
-          "pnl_all_time": 4690.850013,
-          "volume_24h": 0.0,
-          "volume_7d": 85772.39994,
-          "equity": 69032.524787
-        },
-        {
-          "address": "FAL42ZqgpkUvTQHxbwR2HcUaAmfWDrCgkCVoPosaVZfP",
-          "pnl_24h": 1732.275991,
-          "pnl_7d": 2064.955774,
-          "pnl_30d": 2779.113979,
-          "pnl_all_time": 2779.113979,
-          "volume_24h": 599339.4064,
-          "volume_7d": 4046533.23215,
-          "equity": 12779.113979
-        },
-        {
-          "address": "B1Xob8YpDcTYKaWWhPu9kQxpw8eq3Eryg2ikCr8Jt26D",
-          "pnl_24h": 1731.559608,
-          "pnl_7d": 1932.819746,
-          "pnl_30d": 1910.599399,
-          "pnl_all_time": -1394.992851,
-          "volume_24h": 256231.1728,
-          "volume_7d": 1578669.2126,
-          "equity": 12845.202291
-        },
-        {
-          "address": "D4ob7tWUkFrcfsGqW4z8qBs4QzAcPKPXSZdFvkuG3pDc",
-          "pnl_24h": 1726.010731,
-          "pnl_7d": 494.083942,
-          "pnl_30d": 8031.468367,
-          "pnl_all_time": 772.350551,
-          "volume_24h": 7593.7304,
-          "volume_7d": 1940490.851379,
-          "equity": 19200.652545
-        },
-        {
-          "address": "CM63hkhRfCuRRbU3Ku2tyRqLpEXVwXLbcwf8QiTt6bgV",
-          "pnl_24h": 1702.018975,
-          "pnl_7d": 1801.338287,
-          "pnl_30d": -11416.434008,
-          "pnl_all_time": -180071.105635,
-          "volume_24h": 132573.451,
-          "volume_7d": 258753.6446,
-          "equity": 23818.037474
-        },
-        {
-          "address": "8M4HEuxW7qRJKTJkbiwqUmMMZzWT2dmnQQBEHTqYZPy3",
-          "pnl_24h": 1669.025889,
-          "pnl_7d": 8764.244228,
-          "pnl_30d": -1142.01211,
-          "pnl_all_time": -14821.608994,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 41092.425208
-        },
-        {
-          "address": "5q3g19Ct3pRypgtNSU7Eoib2NNGxCMEySez5TRrYVpZR",
-          "pnl_24h": 1474.588542,
-          "pnl_7d": -26325.618967,
-          "pnl_30d": -15957.433648,
-          "pnl_all_time": -17579.241865,
-          "volume_24h": 2e-06,
-          "volume_7d": 487164.855762,
-          "equity": 9192.357631
-        },
-        {
-          "address": "DrNBiFihydX12wJ2mTdQrsiXfPvAnU9WfrYsSH5UDCvL",
-          "pnl_24h": 1470.52453,
-          "pnl_7d": -4607.815028,
-          "pnl_30d": -3929.520804,
-          "pnl_all_time": -3929.520804,
-          "volume_24h": 21174.157503,
-          "volume_7d": 2203037.956313,
-          "equity": 24173.33711
-        },
-        {
-          "address": "GUGkEnGUkDLNz9GxAHbfnBf4YfNnv5XN9zay2ZjcpgLa",
-          "pnl_24h": 1424.584634,
-          "pnl_7d": -21550.293011,
-          "pnl_30d": -18191.71199,
-          "pnl_all_time": -18191.71199,
-          "volume_24h": 0.0,
-          "volume_7d": 571901.92935,
-          "equity": 9327.852946
-        },
-        {
-          "address": "E8j5xSbGXEWtj7BQobPtiMAfh7CpqR8t1tXX7qtAWCiZ",
-          "pnl_24h": 1419.840134,
-          "pnl_7d": 7452.771929,
-          "pnl_30d": 20687.671892,
-          "pnl_all_time": 145746.962995,
-          "volume_24h": 30414202.111119,
-          "volume_7d": 239744595.555419,
-          "equity": 75946.462995
-        },
-        {
-          "address": "YjCD9Gek6MVY9t3MLEGYYdZLeaF6MZrpgZraayWsv9E",
-          "pnl_24h": 1371.77963,
-          "pnl_7d": -810.746896,
-          "pnl_30d": -70548.738581,
-          "pnl_all_time": 1681960.463201,
-          "volume_24h": 1292096.28749,
-          "volume_7d": 18888160.8699,
-          "equity": 1547200.06603
-        },
-        {
-          "address": "6GcT3aY8VcyaC6yBKewKQqLJekdnfkTv8J44Q58zTwYD",
-          "pnl_24h": 1322.067131,
-          "pnl_7d": 1115.186429,
-          "pnl_30d": 29560.382477,
-          "pnl_all_time": -953.739518,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 128045.260482
-        },
-        {
-          "address": "JPLaNo52siAC6KDv66VP9y4eKKtNhwx6yKd8GFcjFGP",
-          "pnl_24h": 1277.132651,
-          "pnl_7d": 3527.217367,
-          "pnl_30d": 3527.217367,
-          "pnl_all_time": 3527.217367,
-          "volume_24h": 0.0,
-          "volume_7d": 223899.61606,
-          "equity": 103527.217367
-        },
-        {
-          "address": "9yYocE4RNKyZ6oXKVvD7LvaM8wfHRGqWDfnvyC7DM9ZH",
-          "pnl_24h": 1271.33453,
-          "pnl_7d": -3479.636038,
-          "pnl_30d": -3479.636038,
-          "pnl_all_time": -3479.636038,
-          "volume_24h": 48977.1461,
-          "volume_7d": 354188.8791,
-          "equity": 20818.863962
-        },
-        {
-          "address": "8wxZY37A6Qwf3zqWU4gfeoYY9N3Y1UWs7Kmsd8H3h9xm",
-          "pnl_24h": 1260.890552,
-          "pnl_7d": 1668.905965,
-          "pnl_30d": 9720.970444,
-          "pnl_all_time": 52432.414324,
-          "volume_24h": 916213.670282,
-          "volume_7d": 6521505.399231,
-          "equity": 57032.414324
-        },
-        {
-          "address": "296PcXq7TUGrjzfBEjSFs3qrhNXiTxuteJKaoPDivo5e",
-          "pnl_24h": 1235.952297,
-          "pnl_7d": 6200.285549,
-          "pnl_30d": 34601.88529,
-          "pnl_all_time": -27309.054014,
-          "volume_24h": 0.0,
-          "volume_7d": 1123305.14006,
-          "equity": 145588.445986
-        }
-      ],
-      "top_losers": [
-        {
-          "address": "43b1en1NZXemnmFizoidYgr6NcKDbuBxtuQ9dqC6wpMe",
-          "pnl_24h": -8893.824163,
-          "pnl_7d": 14333.74449,
-          "pnl_30d": 4638.124825,
-          "pnl_all_time": -33078.956571,
-          "volume_24h": -79079.833733,
-          "volume_7d": 711872.769994,
-          "equity": 68377.250548
-        },
-        {
-          "address": "P3BSKpoDFx7i9ioLchg7XZXGWATz1McaNy9t7oDo7LF",
-          "pnl_24h": -8147.037537,
-          "pnl_7d": 1278.402343,
-          "pnl_30d": -15380.602508,
-          "pnl_all_time": -108392.602508,
-          "volume_24h": 0.0,
-          "volume_7d": 89982.03738,
-          "equity": 54601.828358
-        },
-        {
-          "address": "F4cXqmiipCn6vqpYM75UeY26pGqahnUN5tLMqnbPGHhh",
-          "pnl_24h": -7441.508582,
-          "pnl_7d": 7970.827597,
-          "pnl_30d": 7970.827597,
-          "pnl_all_time": 7970.827597,
-          "volume_24h": 0.0,
-          "volume_7d": 146168.0,
-          "equity": 27970.827597
-        },
-        {
-          "address": "Et8KK2e84tARx8RGF8wMYw5Uzw48YpGxyqT91VkqKxCq",
-          "pnl_24h": -5979.207014,
-          "pnl_7d": -7365.705336,
-          "pnl_30d": -4791.498974,
-          "pnl_all_time": 3346.796515,
-          "volume_24h": 18456.6556,
-          "volume_7d": 1223387.08246,
-          "equity": 11925.716236
-        },
-        {
-          "address": "C1aoHHNMvoThJVcoEddzYqSwzPS5yLGhmymLP3tXywvN",
-          "pnl_24h": -5291.573648,
-          "pnl_7d": 18374.549601,
-          "pnl_30d": 20814.625154,
-          "pnl_all_time": 20814.625154,
-          "volume_24h": 508077.69902,
-          "volume_7d": 1106637.80572,
-          "equity": 110828.750248
-        },
-        {
-          "address": "DDH1YuWUmh3yJ9bT5Q6pjYpg2A73R8gJNNR7L8ronZ4i",
-          "pnl_24h": -5281.434426,
-          "pnl_7d": -5281.434393,
-          "pnl_30d": -5281.434393,
-          "pnl_all_time": 66118.742119,
-          "volume_24h": 512397.71571,
-          "volume_7d": 512397.71571,
-          "equity": 30526.248021
-        },
-        {
-          "address": "73AeJdJvRbVxf3QWe157FQy63toYbhdj5Ujnfjcc9SnC",
-          "pnl_24h": -5182.775137,
-          "pnl_7d": 17082.357148,
-          "pnl_30d": 31952.490801,
-          "pnl_all_time": 140587.472905,
-          "volume_24h": 19134.3231,
-          "volume_7d": 93801.2521,
-          "equity": 123742.476353
-        },
-        {
-          "address": "HmBH4V6kCEUo9Ra6xCunrNFviMu2ueCg7m7CHSTvBFSr",
-          "pnl_24h": -5008.922884,
-          "pnl_7d": -262.689853,
-          "pnl_30d": 24207.043837,
-          "pnl_all_time": 18093.905214,
-          "volume_24h": 7025.633708,
-          "volume_7d": 485835.19251,
-          "equity": 113092.907557
-        },
-        {
-          "address": "CbLa46Xj9CovR6PdDQmihJAqR1vUNvw2A42V8xtwBCRX",
-          "pnl_24h": -4692.244372,
-          "pnl_7d": -4692.244373,
-          "pnl_30d": -4692.244373,
-          "pnl_all_time": -23548.838611,
-          "volume_24h": 514887.77564,
-          "volume_7d": 514887.77564,
-          "equity": 25353.752593
-        },
-        {
-          "address": "DaUvqv6tHCVtNtv73Fjzbzd3jQAif4bQBZX7yd72eNj",
-          "pnl_24h": -4623.146233,
-          "pnl_7d": -13865.97807,
-          "pnl_30d": -17540.800162,
-          "pnl_all_time": -90779.09447,
-          "volume_24h": 1137.7,
-          "volume_7d": 8624.01,
-          "equity": 94966.28553
-        },
-        {
-          "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
-          "pnl_24h": -4101.536295,
-          "pnl_7d": 11890.571569,
-          "pnl_30d": -24568.996327,
-          "pnl_all_time": -3577.46632,
-          "volume_24h": 13466.22156,
-          "volume_7d": 199385.32755,
-          "equity": 53155.661014
-        },
-        {
-          "address": "4sSMdM7XCPdKA9eAgivNcswKbyc551ZWxXpPa1neAMWu",
-          "pnl_24h": -4057.531691,
-          "pnl_7d": 2341.645669,
-          "pnl_30d": 27123.201638,
-          "pnl_all_time": -55521.520636,
-          "volume_24h": 174.3672,
-          "volume_7d": 2198772.082526,
-          "equity": 135504.291727
-        },
-        {
-          "address": "E5Z73Tec9RauZ12mPzbWLto4YFEDZQgf4kdXW5w98zrt",
-          "pnl_24h": -3944.939069,
-          "pnl_7d": -50240.844481,
-          "pnl_30d": -16034.201111,
-          "pnl_all_time": -39554.571623,
-          "volume_24h": 1558263.754395,
-          "volume_7d": 35050143.686264,
-          "equity": 19504.261964
-        },
-        {
-          "address": "7yPGKK8Vf8PMAJnpy7CZrYahagmbmEeEpLQUAqSpVCuS",
-          "pnl_24h": -3889.696703,
-          "pnl_7d": -95822.475862,
-          "pnl_30d": -184602.22129,
-          "pnl_all_time": -223203.713359,
-          "volume_24h": 116907.1291,
-          "volume_7d": 6483465.1602,
-          "equity": 3593.496546
-        },
-        {
-          "address": "9eSnj4TniTi1JkeeASTyzXWSCEzHM8DjNf7XhD1rQ6Qu",
-          "pnl_24h": -3488.302169,
-          "pnl_7d": 4380.164793,
-          "pnl_30d": 15958.411547,
-          "pnl_all_time": 15958.411547,
-          "volume_24h": 77666.95282,
-          "volume_7d": 984594.75656,
-          "equity": 71043.891547
-        },
-        {
-          "address": "5tVFEuHYfcm9t4cy7jxdcaJvQLKAbvzUhAPcoea6KKxX",
-          "pnl_24h": -3149.069517,
-          "pnl_7d": -12126.097469,
-          "pnl_30d": 34259.412474,
-          "pnl_all_time": 8812.348827,
-          "volume_24h": 6603.1,
-          "volume_7d": 1779301.52145,
-          "equity": 143406.348827
-        },
-        {
-          "address": "DGZQgs3R6mMCzroKXwxKbsb566amSisqxxasxcG8pope",
-          "pnl_24h": -3003.927364,
-          "pnl_7d": -4167.16917,
-          "pnl_30d": -14671.390652,
-          "pnl_all_time": -9306.818804,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 55663.265402
-        },
-        {
-          "address": "2faRZHi6QwR1Q3VGgMAb4SWo31tU9FGpgAY7Vtd2TkNu",
-          "pnl_24h": -2945.217361,
-          "pnl_7d": -2810.571059,
-          "pnl_30d": -2810.571059,
-          "pnl_all_time": -2810.571059,
-          "volume_24h": 221937.80206,
-          "volume_7d": 267020.54386,
-          "equity": 0.01
-        },
-        {
-          "address": "2rEEo6bXeXLacwAnQwtw5YEz8CdnTGrQ2LQ2banK4mRw",
-          "pnl_24h": -2825.016613,
-          "pnl_7d": 1133.156082,
-          "pnl_30d": 1180.076042,
-          "pnl_all_time": 1180.076042,
-          "volume_24h": 6638983.314776,
-          "volume_7d": 41705195.239704,
-          "equity": 90931.294877
-        },
-        {
-          "address": "98xq2ZwdtuZPir13mPGoVJztPmtxyRKrAV7Ex9hJdMJX",
-          "pnl_24h": -2690.875665,
-          "pnl_7d": -4714.993341,
-          "pnl_30d": -4714.993341,
-          "pnl_all_time": -4714.993341,
-          "volume_24h": 1234949.55785,
-          "volume_7d": 1427952.06413,
-          "equity": 5289.406659
-        },
-        {
-          "address": "CWaEyMSHwEQFqg8uYFk6rrKfgiVqNFkT4YcHWgPaixw4",
-          "pnl_24h": -2527.468605,
-          "pnl_7d": -7955.969125,
-          "pnl_30d": -12414.36755,
-          "pnl_all_time": -14184.831376,
-          "volume_24h": 259331.246928,
-          "volume_7d": 2904835.153664,
-          "equity": 20037.235504
-        },
-        {
-          "address": "9C9LYZttpTxKp5TgQTvZxzWGRfbX2pbC9o5qaqmVYXAE",
-          "pnl_24h": -2296.592883,
-          "pnl_7d": 10104.643442,
-          "pnl_30d": 9007.631887,
-          "pnl_all_time": 4146.158095,
-          "volume_24h": 2e-06,
-          "volume_7d": 321625.550882,
-          "equity": 16146.158095
-        },
-        {
-          "address": "4hBqd9xTzQc4ZfcGHJAJUXuGWfgMq2ehhZQuuoakpkwL",
-          "pnl_24h": -2198.910787,
-          "pnl_7d": -3116.029444,
-          "pnl_30d": -6273.374947,
-          "pnl_all_time": -55643.879259,
-          "volume_24h": 396454.98579,
-          "volume_7d": 1822624.25541,
-          "equity": 8986.863574
-        },
-        {
-          "address": "Ep1d8JdFw4FnB85XDgXGVabYutro4JzK285HQqW6TZE2",
-          "pnl_24h": -2164.292086,
-          "pnl_7d": 7100.979819,
-          "pnl_30d": 8481.653468,
-          "pnl_all_time": 8481.653468,
-          "volume_24h": 671569.84189,
-          "volume_7d": 1935260.06051,
-          "equity": 83481.653468
-        },
-        {
-          "address": "DQqre2oHthtWjLTGumJYL75muQFpjd2MsUcky2181uUQ",
-          "pnl_24h": -2152.229101,
-          "pnl_7d": 14574.151079,
-          "pnl_30d": 11751.423578,
-          "pnl_all_time": -18854.033769,
-          "volume_24h": 19.0936,
-          "volume_7d": 47.3638,
-          "equity": 61751.823578
-        },
-        {
-          "address": "PCF8xwewcLmibAPnJcvydHoJ4VKKoxkGdbcbJqRdUSx",
-          "pnl_24h": -2028.722061,
-          "pnl_7d": 21091.916098,
-          "pnl_30d": 50475.631626,
-          "pnl_all_time": 72964.266163,
-          "volume_24h": 8257680.150947,
-          "volume_7d": 102576015.020694,
-          "equity": 143964.266163
-        },
-        {
-          "address": "EisuiCEBVJi5Z8eR8hpA8Cc8Z6php5xr6TuKVPsLsvgk",
-          "pnl_24h": -2003.050693,
-          "pnl_7d": 6516.035496,
-          "pnl_30d": 20917.706005,
-          "pnl_all_time": 34588.68541,
-          "volume_24h": 64903.0851,
-          "volume_7d": 14109856.79876,
-          "equity": 58110.764377
-        },
-        {
-          "address": "CUdwwSW5te11PjgV1c8ZVf8p9RviN6qFxKrB6WwNAvY5",
-          "pnl_24h": -1944.67829,
-          "pnl_7d": 13351.997975,
-          "pnl_30d": 19470.250337,
-          "pnl_all_time": 28759.485314,
-          "volume_24h": 284709.34269,
-          "volume_7d": 284709.34269,
-          "equity": 49454.260337
-        },
-        {
-          "address": "BFjbUQ9UjwBjS1mCNRHX1mmsuTkP7y1CvPSDWiFoiPVJ",
-          "pnl_24h": -1917.877469,
-          "pnl_7d": -4224.19481,
-          "pnl_30d": -4224.19481,
-          "pnl_all_time": -4224.19481,
-          "volume_24h": 918948.39028,
-          "volume_7d": 3009445.46129,
-          "equity": 95720.801194
-        },
-        {
-          "address": "3E1rS52eHMyfC9J3FLbJLSkLWKFM5kThbYV27a6rDhk6",
-          "pnl_24h": -1911.397089,
-          "pnl_7d": -8369.411989,
-          "pnl_30d": 831.160684,
-          "pnl_all_time": 41900.070169,
-          "volume_24h": 2e-06,
-          "volume_7d": 2e-06,
-          "equity": 28568.233817
-        },
-        {
-          "address": "CfiYXFoNEhnQahf9JtCFTxjdEATFwgUbQRA5o5LaHQoW",
-          "pnl_24h": -1911.011869,
-          "pnl_7d": -4260.682683,
-          "pnl_30d": -3061.482018,
-          "pnl_all_time": -4032.075598,
-          "volume_24h": 2129929.85084,
-          "volume_7d": 4077721.03538,
-          "equity": 648.824221
-        },
-        {
-          "address": "FGQVy5spHBtX8J1phSpHAQaCvwHRckqS4chsETX8gNqQ",
-          "pnl_24h": -1900.273364,
-          "pnl_7d": 20051.247597,
-          "pnl_30d": 18115.496683,
-          "pnl_all_time": 18115.496683,
-          "volume_24h": 41.263,
-          "volume_7d": 9591.53206,
-          "equity": 53115.496683
-        },
-        {
-          "address": "FNibpdCKUAVtBzZ9XR26VKb8LQWnfAv5zaqWC5sJf7kS",
-          "pnl_24h": -1870.508551,
-          "pnl_7d": 11864.689556,
-          "pnl_30d": 15965.849196,
-          "pnl_all_time": -51606.400402,
-          "volume_24h": 30579.61936,
-          "volume_7d": 1334199.47617,
-          "equity": 156082.436201
-        },
-        {
-          "address": "AEEqcwDj1fwEUBbCGuePSZMx8agW71zmWRGkfQ4a9uqW",
-          "pnl_24h": -1866.074798,
-          "pnl_7d": 6952.205202,
-          "pnl_30d": -21420.648753,
-          "pnl_all_time": -86362.993049,
-          "volume_24h": 19098.75237,
-          "volume_7d": 1849031.88986,
-          "equity": 110280.506951
-        },
-        {
-          "address": "8XTAeCbtN73eh7G6k7aWoN88JauG29LqfvgJjy2ZWEk9",
-          "pnl_24h": -1831.490231,
-          "pnl_7d": -6381.521344,
-          "pnl_30d": -13422.437739,
-          "pnl_all_time": -13422.437739,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 41577.562261
-        },
-        {
-          "address": "AoVHrciuHrqSsSty2wK7ZgVYscmiLNrGm1NXPPgdWaPf",
-          "pnl_24h": -1762.139201,
-          "pnl_7d": -3132.982278,
-          "pnl_30d": -3132.982278,
-          "pnl_all_time": -3132.982278,
-          "volume_24h": 0.0,
-          "volume_7d": 258617.4414,
-          "equity": 7121.103804
-        },
-        {
-          "address": "G6siLFJYdNzfWiMopajpaZSc1JZJbXevpEaXXFNso6Yj",
-          "pnl_24h": -1737.070893,
-          "pnl_7d": -2162.926093,
-          "pnl_30d": -2162.926093,
-          "pnl_all_time": -2162.926093,
-          "volume_24h": 0.0,
-          "volume_7d": 77414.56433,
-          "equity": 17832.074207
-        },
-        {
-          "address": "5q7JHxUPkysfmVusL6bG2ntnbuQVzRa9wp9CQWxSzpZV",
-          "pnl_24h": -1706.040428,
-          "pnl_7d": 11551.079115,
-          "pnl_30d": 22848.330716,
-          "pnl_all_time": -37545.801832,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 51420.342266
-        },
-        {
-          "address": "5ceU6o468VkM1k4JrQbJhGbux9KL6iMMpVKr6b69tRnK",
-          "pnl_24h": -1695.152534,
-          "pnl_7d": 680.32151,
-          "pnl_30d": 684.539718,
-          "pnl_all_time": 71.798891,
-          "volume_24h": 0.0,
-          "volume_7d": 35134.08,
-          "equity": 13141.551983
-        },
-        {
-          "address": "GyyQRuRAJdxeNNn4URLv1CbNKUU9qdyenJW79kXLn4cr",
-          "pnl_24h": -1676.836596,
-          "pnl_7d": 6202.581706,
-          "pnl_30d": 6459.547632,
-          "pnl_all_time": 6459.547632,
-          "volume_24h": 3408.9022,
-          "volume_7d": 203695.06063,
-          "equity": 17678.006453
-        },
-        {
-          "address": "6xQmCzMwMpGhouMip57hy9NGrtGKwz2kv2ZtdhjhXh1K",
-          "pnl_24h": -1654.88825,
-          "pnl_7d": 10022.487697,
-          "pnl_30d": 11942.057038,
-          "pnl_all_time": 11942.057038,
-          "volume_24h": 432412.2899,
-          "volume_7d": 1706054.428992,
-          "equity": 91055.341879
-        },
-        {
-          "address": "8JeVzEoZiFhCanw1DXsSbebPA6wYMz8Sj5viJR6uck7C",
-          "pnl_24h": -1599.63555,
-          "pnl_7d": 701.121519,
-          "pnl_30d": -2005.015984,
-          "pnl_all_time": -24565.087098,
-          "volume_24h": 44097.723752,
-          "volume_7d": 145063.830252,
-          "equity": 2195.801932
-        },
-        {
-          "address": "C45As2diKNQHSARr5m16JLhA5iRPEhbGYvmxaF2ZihRM",
-          "pnl_24h": -1475.847627,
-          "pnl_7d": 4370.692301,
-          "pnl_30d": 13267.990433,
-          "pnl_all_time": 16891.730082,
-          "volume_24h": 35997.5795,
-          "volume_7d": 162696.26144,
-          "equity": 66851.926693
-        },
-        {
-          "address": "Fh2itfDv6sybs6RCFAKWtuBqdo1JCTjskoWCQ9KAdXvN",
-          "pnl_24h": -1427.182618,
-          "pnl_7d": -1351.620009,
-          "pnl_30d": -2463.991665,
-          "pnl_all_time": -2120.068011,
-          "volume_24h": 21.04883,
-          "volume_7d": 31543.7541,
-          "equity": 3651.476745
-        },
-        {
-          "address": "5RmsTTwkXQgKcTv5BK6CZEjHQMBVLVQVt8po3h5cQabB",
-          "pnl_24h": -1408.580101,
-          "pnl_7d": -9929.615772,
-          "pnl_30d": -60704.550333,
-          "pnl_all_time": -49812.505783,
-          "volume_24h": 1579.99595,
-          "volume_7d": 1226502.559,
-          "equity": 81282.994217
-        },
-        {
-          "address": "6JHhZLcDozPQYTgsLdrvBJXKeNbtkcDEDsUFsFRnhAFa",
-          "pnl_24h": -1330.505039,
-          "pnl_7d": -1259.812398,
-          "pnl_30d": -1259.812398,
-          "pnl_all_time": -1259.812398,
-          "volume_24h": 393592.093807,
-          "volume_7d": 583715.534507,
-          "equity": 8739.887602
-        },
-        {
-          "address": "HN9QSTyXoUgwRWC3m4DVf1X3L3o8P8iMF72GcdGdBw4J",
-          "pnl_24h": -1320.40796,
-          "pnl_7d": 4081.953939,
-          "pnl_30d": -5693.606071,
-          "pnl_all_time": 21878.813044,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 15695.891004
-        },
-        {
-          "address": "Eq75bbGczNSWmA8Gbwf4triKyT88JR5265dYwU2QNwfB",
-          "pnl_24h": -1284.86602,
-          "pnl_7d": 3382.171375,
-          "pnl_30d": 3382.171375,
-          "pnl_all_time": 3382.171375,
-          "volume_24h": 48977.1631,
-          "volume_7d": 354188.8961,
-          "equity": 19081.171375
-        },
-        {
-          "address": "Fpo38LdtQQPxnr7DHxBESPtC6gwr18RwVvcxgLTra8fj",
-          "pnl_24h": -1279.478983,
-          "pnl_7d": -10338.822054,
-          "pnl_30d": -25980.731543,
-          "pnl_all_time": -11851.375778,
-          "volume_24h": 300186.95064,
-          "volume_7d": 994380.51156,
-          "equity": 20901.754934
-        },
-        {
-          "address": "2yVzy5zSZwUEP4iYqKFhZmkqFgHqWERU1sid6vcsyJVh",
-          "pnl_24h": -1254.229217,
-          "pnl_7d": 14401.446417,
-          "pnl_30d": 22331.436712,
-          "pnl_all_time": 22377.811273,
-          "volume_24h": 401566.59995,
-          "volume_7d": 2105164.08805,
-          "equity": 28101.636985
-        }
-      ],
-      "total_traders": 9518
     }
   }
 }
