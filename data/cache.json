@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-01-18T20:41:41.569554Z",
+  "updated_at": "2026-01-18T20:55:48.077224Z",
   "protocols": [
     {
       "protocol": "Drift Trade",
@@ -7,8 +7,8 @@
       "volume_7d": 750686330,
       "change_1d": -63.46,
       "change_7d": -7.25,
-      "transactions": 0,
-      "traders": 0,
+      "transactions": 980,
+      "traders": 2866,
       "fees": 16532.8255
     },
     {
@@ -27,8 +27,8 @@
       "volume_7d": 2178553281,
       "change_1d": -46.28,
       "change_7d": 63.74,
-      "transactions": 436,
-      "traders": 2629,
+      "transactions": 0,
+      "traders": 2647,
       "fees": 75355.10639999999
     },
     {
@@ -37,8 +37,8 @@
       "volume_7d": 125371434,
       "change_1d": -52.8,
       "change_7d": 59.42,
-      "transactions": 993,
-      "traders": 235,
+      "transactions": 992,
+      "traders": 237,
       "fees": 4099.75
     },
     {
@@ -58,7 +58,7 @@
       "change_1d": -39.96,
       "change_7d": 7.41,
       "transactions": 0,
-      "traders": 6389,
+      "traders": 6390,
       "fees": 243611.865
     }
   ],
@@ -916,14 +916,14 @@
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 3756,
-      "BTC": 398,
-      "ETH": 111
+      "SOL": 3513,
+      "BTC": 380,
+      "ETH": 99
     },
     "volumes": {
-      "SOL": 110603274.57538101,
-      "BTC": 11719942.300586166,
-      "ETH": 3268627.124032825
+      "SOL": 110522081.15531062,
+      "BTC": 11955135.450901803,
+      "ETH": 3114627.3937875754
     }
   },
   "total_open_interest": 279374886.4471752,
@@ -1092,35 +1092,57 @@
     }
   ],
   "time_windows": {
-    "1h": {
-      "pacifica_traders": 638,
-      "jupiter_traders": 322,
-      "flashtrade_traders": 34,
-      "adrena_traders": 7,
+    "4h": {
+      "pacifica_traders": 1597,
+      "jupiter_traders": 876,
+      "flashtrade_traders": 72,
       "wallet_overlap": {
-        "drift_only": 845,
-        "jupiter_only": 322,
-        "pacifica_only": 6389,
-        "drift_jupiter": 0,
+        "drift_only": 1784,
+        "jupiter_only": 823,
+        "pacifica_only": 6498,
+        "drift_jupiter": 1,
         "drift_pacifica": 0,
-        "jupiter_pacifica": 0,
+        "jupiter_pacifica": 5,
         "all_three": 0,
-        "multi_platform": 0
+        "multi_platform": 6
       },
+      "adrena_traders": 14,
+      "drift_traders": 918,
       "liquidations": {
-        "count": 1582,
-        "txns": 1582
+        "count": 6730,
+        "txns": 6730
+      }
+    },
+    "24h": {
+      "pacifica_traders": 6390,
+      "jupiter_traders": 2647,
+      "wallet_overlap": {
+        "drift_only": 5098,
+        "jupiter_only": 2222,
+        "pacifica_only": 7218,
+        "drift_jupiter": 16,
+        "drift_pacifica": 8,
+        "jupiter_pacifica": 17,
+        "all_three": 0,
+        "multi_platform": 41
       },
-      "drift_traders": 434
+      "flashtrade_traders": 237,
+      "adrena_traders": 48,
+      "drift_traders": 2866,
+      "liquidations": {
+        "count": 0,
+        "txns": 0,
+        "error": "Skipped (query timeout)"
+      }
     },
     "8h": {
-      "pacifica_traders": 2555,
-      "flashtrade_traders": 102,
-      "jupiter_traders": 1409,
+      "pacifica_traders": 2556,
+      "jupiter_traders": 1415,
+      "flashtrade_traders": 106,
       "wallet_overlap": {
-        "drift_only": 2769,
-        "jupiter_only": 1267,
-        "pacifica_only": 6682,
+        "drift_only": 2995,
+        "jupiter_only": 1347,
+        "pacifica_only": 6696,
         "drift_jupiter": 6,
         "drift_pacifica": 2,
         "jupiter_pacifica": 12,
@@ -1128,71 +1150,51 @@
         "multi_platform": 20
       },
       "adrena_traders": 26,
+      "drift_traders": 1494,
       "liquidations": {
-        "count": 6641,
-        "txns": 6641
-      },
-      "drift_traders": 1483
+        "count": 7003,
+        "txns": 7003
+      }
     },
-    "4h": {
-      "pacifica_traders": 1597,
-      "flashtrade_traders": 69,
-      "adrena_traders": 15,
-      "wallet_overlap": {
-        "drift_only": 1509,
-        "jupiter_only": 716,
-        "pacifica_only": 6476,
-        "drift_jupiter": 1,
-        "drift_pacifica": 0,
-        "jupiter_pacifica": 5,
-        "all_three": 0,
-        "multi_platform": 6
-      },
-      "jupiter_traders": 865,
-      "liquidations": {
-        "count": 6391,
-        "txns": 6391
-      },
-      "drift_traders": 913
-    },
-    "24h": {
-      "pacifica_traders": 6389,
-      "flashtrade_traders": 235,
-      "wallet_overlap": {
-        "drift_only": 4945,
-        "jupiter_only": 2172,
-        "pacifica_only": 7209,
-        "drift_jupiter": 16,
-        "drift_pacifica": 8,
-        "jupiter_pacifica": 17,
-        "all_three": 0,
-        "multi_platform": 41
-      },
-      "jupiter_traders": 2629,
-      "adrena_traders": 48,
-      "drift_traders": 0,
+    "1h": {
+      "pacifica_traders": 639,
+      "jupiter_traders": 301,
+      "flashtrade_traders": 34,
+      "adrena_traders": 7,
+      "drift_traders": 433,
       "liquidations": {
         "count": 0,
         "txns": 0,
-        "error": "Skipped (query timeout)"
+        "error": "Query timeout"
+      },
+      "wallet_overlap": {
+        "drift_only": 841,
+        "jupiter_only": 294,
+        "pacifica_only": 6390,
+        "drift_jupiter": 1,
+        "drift_pacifica": 0,
+        "jupiter_pacifica": 0,
+        "all_three": 0,
+        "multi_platform": 1
       }
     }
   },
-  "drift_traders_1h": 434,
-  "jupiter_traders_1h": 322,
+  "drift_traders_1h": 433,
+  "jupiter_traders_1h": 301,
   "liquidations_1h": {
-    "count": 1582,
-    "txns": 1582
+    "count": 0,
+    "txns": 0,
+    "error": "Query timeout"
   },
   "wallet_overlap": {
-    "drift_only": 845,
-    "jupiter_only": 322,
-    "pacifica_only": 6389,
-    "drift_jupiter": 0,
+    "drift_only": 841,
+    "jupiter_only": 294,
+    "pacifica_only": 6390,
+    "drift_jupiter": 1,
     "drift_pacifica": 0,
     "jupiter_pacifica": 0,
     "all_three": 0,
-    "multi_platform": 0
+    "multi_platform": 1
   },
   "pnl_leaderboard": {
     "pacifica": {
