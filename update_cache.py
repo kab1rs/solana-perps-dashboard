@@ -143,6 +143,9 @@ def extract_snapshot(cache: dict) -> dict:
         if data.get("volume", 0) > 10000:  # Only significant markets
             funding_rates[market] = data.get("funding_rate", 0)
 
+    # Store 1h liquidation count for aggregation
+    liquidations_1h = cache.get("time_windows", {}).get("1h", {}).get("liquidations", {})
+
     return {
         "timestamp": now,
         "total_volume_24h": total_volume,
@@ -150,6 +153,7 @@ def extract_snapshot(cache: dict) -> dict:
         "total_open_interest": total_oi,
         "protocols": protocols,
         "funding_rates": funding_rates,
+        "liquidations_1h": liquidations_1h,  # Store hourly liquidation count for 24h aggregation
     }
 
 
@@ -169,6 +173,57 @@ def prune_old_snapshots(history: dict) -> dict:
         logger.info(f"Pruned {pruned_count} old snapshots (>{HISTORY_RETENTION_HOURS}h)")
 
     return history
+
+
+def aggregate_liquidations_from_history(hours: int = 24) -> dict:
+    """Aggregate liquidation counts from historical snapshots.
+
+    Instead of running a slow 24h Dune query, sum up hourly liquidation counts
+    from stored snapshots. This avoids timeouts for longer time windows.
+    """
+    history = load_history()
+    snapshots = history.get("snapshots", [])
+
+    if not snapshots:
+        logger.warning("No historical snapshots available for liquidation aggregation")
+        return {"count": 0, "txns": 0, "error": "No historical data"}
+
+    # Get snapshots from the last N hours
+    cutoff = datetime.utcnow() - timedelta(hours=hours)
+    cutoff_str = cutoff.isoformat() + "Z"
+
+    recent_snapshots = [
+        s for s in snapshots
+        if s.get("timestamp", "") >= cutoff_str
+    ]
+
+    if len(recent_snapshots) < hours * 0.5:  # Need at least half the expected snapshots
+        logger.warning(f"Insufficient snapshots for {hours}h aggregation: {len(recent_snapshots)} found")
+        return {
+            "count": 0,
+            "txns": 0,
+            "error": f"Insufficient data ({len(recent_snapshots)} snapshots for {hours}h)"
+        }
+
+    # Sum up liquidation counts (note: each snapshot is ~1h of data)
+    total_count = 0
+    total_txns = 0
+    valid_snapshots = 0
+
+    for s in recent_snapshots:
+        liq_data = s.get("liquidations_1h", {})
+        if liq_data and not liq_data.get("error"):
+            total_count += liq_data.get("count", 0)
+            total_txns += liq_data.get("txns", 0)
+            valid_snapshots += 1
+
+    logger.info(f"Aggregated {hours}h liquidations from {valid_snapshots} snapshots: {total_count} count, {total_txns} txns")
+
+    return {
+        "count": total_count,
+        "txns": total_txns,
+        "aggregated_from": valid_snapshots,
+    }
 
 
 def save_history_snapshot(cache: dict) -> bool:
@@ -238,6 +293,7 @@ def fetch_time_window_data(hours: int) -> dict:
         "adrena_traders": lambda h=hours: fetch_adrena_traders(hours=h),
     }
     if hours <= 8:
+        # For shorter windows, query Dune directly (fast)
         queries["liquidations"] = lambda h=hours: fetch_drift_liquidations(hours=h)
     if hours <= 24:
         queries["wallet_overlap"] = lambda h=hours: fetch_cross_platform_wallets(hours=h)
@@ -259,8 +315,12 @@ def fetch_time_window_data(hours: int) -> dict:
                 elif name == "wallet_overlap":
                     result[name] = {"multi_platform": 0, "drift_only": 0, "jupiter_only": 0, "error": str(e)}
 
-    # Set defaults for skipped queries
-    if hours > 8:
+    # For 24h liquidations, use historical aggregation instead of slow Dune query
+    if hours == 24:
+        logger.info("Using historical aggregation for 24h liquidations...")
+        result["liquidations"] = aggregate_liquidations_from_history(hours=24)
+    elif hours > 8 and hours != 24:
+        # Other long windows still skip liquidations
         result["liquidations"] = {"count": 0, "txns": 0, "error": "Skipped (query timeout)"}
 
     logger.info(f"Completed {window_key} window data")
