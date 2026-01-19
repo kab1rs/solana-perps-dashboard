@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-01-19T11:43:18.828654Z",
+  "updated_at": "2026-01-19T11:57:05.208422Z",
   "protocols": [
     {
       "protocol": "Drift Trade",
@@ -23,13 +23,13 @@
     },
     {
       "protocol": "Jupiter Perpetual Exchange",
-      "volume_24h": 344202347,
+      "volume_24h": 344150314,
       "volume_7d": 2260072785,
-      "change_1d": 346.35,
-      "change_7d": 56.49,
-      "transactions": 555,
-      "traders": 4520,
-      "fees": 206521.40819999998
+      "change_1d": 346.29,
+      "change_7d": 56.47,
+      "transactions": 0,
+      "traders": 4530,
+      "fees": 206490.18839999998
     },
     {
       "protocol": "FlashTrade",
@@ -37,29 +37,29 @@
       "volume_7d": 121822970,
       "change_1d": -1.34,
       "change_7d": -30.49,
-      "transactions": 991,
-      "traders": 324,
+      "transactions": 995,
+      "traders": 325,
       "fees": 4044.704
     },
     {
       "protocol": "Adrena Protocol",
-      "volume_24h": 18570624,
+      "volume_24h": 18711387,
       "volume_7d": 37395121,
-      "change_1d": 1728.43,
-      "change_7d": 429.63,
+      "change_1d": 1742.29,
+      "change_7d": 433.65,
       "transactions": 0,
       "traders": 68,
-      "fees": 9285.312
+      "fees": 9355.6935
     },
     {
       "protocol": "Pacifica",
-      "volume_24h": 985656486,
+      "volume_24h": 987666659,
       "volume_7d": 5846655246,
-      "change_1d": 146.17,
-      "change_7d": 56.34,
-      "transactions": 0,
-      "traders": 7182,
-      "fees": 492828.243
+      "change_1d": 146.67,
+      "change_7d": 56.66,
+      "transactions": 903,
+      "traders": 7177,
+      "fees": 493833.3295
     }
   ],
   "drift_markets": {
@@ -916,16 +916,16 @@
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 2008,
-      "BTC": 129,
-      "ETH": 98,
+      "SOL": 567,
+      "BTC": 151,
+      "ETH": 93,
       "USDC": 1
     },
     "volumes": {
-      "SOL": 309104791.04472274,
-      "BTC": 19857827.711538464,
-      "ETH": 15085791.594812166,
-      "USDC": 153936.64892665474
+      "SOL": 240311857.18965518,
+      "BTC": 63998395.83004926,
+      "ETH": 39416230.54433498,
+      "USDC": 423830.43596059113
     }
   },
   "total_open_interest": 263681504.44776145,
@@ -935,10 +935,10 @@
       "chains": [
         "Off Chain"
       ],
-      "volume_24h": 4314455126,
+      "volume_24h": 4416949701,
       "volume_7d": 31637022234,
-      "change_1d": 117.86,
-      "change_7d": 142.59
+      "change_1d": 123.04,
+      "change_7d": 148.35
     },
     {
       "name": "Hyperliquid Perps",
@@ -985,20 +985,20 @@
       "chains": [
         "Arbitrum"
       ],
-      "volume_24h": 1582959603,
+      "volume_24h": 1582024285,
       "volume_7d": 11047401018,
-      "change_1d": 45.09,
-      "change_7d": 2.29
+      "change_1d": 45,
+      "change_7d": 2.23
     },
     {
       "name": "Grvt Perps",
       "chains": [
         "Grvt"
       ],
-      "volume_24h": 1439157461,
+      "volume_24h": 1453232847,
       "volume_7d": 10964182848,
-      "change_1d": 30.39,
-      "change_7d": 16.99
+      "change_1d": 31.67,
+      "change_7d": 18.13
     },
     {
       "name": "Extended",
@@ -1026,30 +1026,30 @@
       "chains": [
         "Solana"
       ],
-      "volume_24h": 985656486,
+      "volume_24h": 987666659,
       "volume_7d": 5846655246,
-      "change_1d": 146.17,
-      "change_7d": 56.34
+      "change_1d": 146.67,
+      "change_7d": 56.66
     },
     {
       "name": "Reya Perps",
       "chains": [
         "ReyaChain"
       ],
-      "volume_24h": 415756014,
+      "volume_24h": 455643145,
       "volume_7d": 3467457209,
-      "change_1d": 24.93,
-      "change_7d": 56.87
+      "change_1d": 36.92,
+      "change_7d": 71.92
     },
     {
       "name": "Jupiter Perpetual Exchange",
       "chains": [
         "Solana"
       ],
-      "volume_24h": 344202347,
+      "volume_24h": 344150314,
       "volume_7d": 2260072785,
-      "change_1d": 346.35,
-      "change_7d": 56.49
+      "change_1d": 346.29,
+      "change_7d": 56.47
     },
     {
       "name": "MYX Finance",
@@ -1058,10 +1058,10 @@
         "Linea",
         "BSC"
       ],
-      "volume_24h": 280411310,
+      "volume_24h": 280466940,
       "volume_7d": 1958861948,
-      "change_1d": 3.42,
-      "change_7d": 3.29
+      "change_1d": 3.44,
+      "change_7d": 3.31
     },
     {
       "name": "Avantis",
@@ -1093,61 +1093,82 @@
   ],
   "time_windows": {
     "24h": {
-      "pacifica_traders": 7182,
-      "drift_traders": 3584,
-      "wallet_overlap": {
-        "drift_only": 5446,
-        "jupiter_only": 2664,
-        "pacifica_only": 7730,
-        "drift_jupiter": 20,
-        "drift_pacifica": 7,
-        "jupiter_pacifica": 15,
-        "all_three": 2,
-        "multi_platform": 44
-      },
-      "flashtrade_traders": 324,
-      "jupiter_traders": 4520,
+      "pacifica_traders": 7177,
       "adrena_traders": 68,
+      "wallet_overlap": {
+        "drift_only": 5613,
+        "jupiter_only": 2744,
+        "pacifica_only": 7757,
+        "drift_jupiter": 21,
+        "drift_pacifica": 7,
+        "jupiter_pacifica": 16,
+        "all_three": 2,
+        "multi_platform": 46
+      },
+      "flashtrade_traders": 325,
+      "jupiter_traders": 4530,
+      "drift_traders": 3584,
       "liquidations": {
         "count": 0,
         "txns": 0,
         "error": "No historical data"
       }
     },
-    "4h": {
-      "pacifica_traders": 1795,
-      "drift_traders": 926,
-      "jupiter_traders": 744,
+    "8h": {
+      "pacifica_traders": 2870,
+      "jupiter_traders": 1613,
+      "adrena_traders": 21,
       "wallet_overlap": {
-        "drift_only": 1502,
-        "jupiter_only": 582,
-        "pacifica_only": 7266,
-        "drift_jupiter": 2,
-        "drift_pacifica": 3,
-        "jupiter_pacifica": 1,
+        "drift_only": 2492,
+        "jupiter_only": 1036,
+        "pacifica_only": 7357,
+        "drift_jupiter": 7,
+        "drift_pacifica": 4,
+        "jupiter_pacifica": 5,
         "all_three": 0,
-        "multi_platform": 6
+        "multi_platform": 16
       },
-      "flashtrade_traders": 72,
+      "flashtrade_traders": 157,
+      "drift_traders": 1651,
+      "liquidations": {
+        "count": 1907,
+        "txns": 1907
+      }
+    },
+    "4h": {
+      "pacifica_traders": 1794,
+      "flashtrade_traders": 71,
+      "jupiter_traders": 762,
+      "wallet_overlap": {
+        "drift_only": 1795,
+        "jupiter_only": 722,
+        "pacifica_only": 7309,
+        "drift_jupiter": 3,
+        "drift_pacifica": 3,
+        "jupiter_pacifica": 3,
+        "all_three": 0,
+        "multi_platform": 9
+      },
+      "drift_traders": 937,
       "adrena_traders": 10,
       "liquidations": {
-        "count": 1095,
-        "txns": 1095
+        "count": 1094,
+        "txns": 1094
       }
     },
     "1h": {
-      "pacifica_traders": 718,
-      "jupiter_traders": 226,
-      "flashtrade_traders": 24,
+      "pacifica_traders": 717,
+      "jupiter_traders": 262,
+      "flashtrade_traders": 25,
       "adrena_traders": 2,
-      "drift_traders": 383,
+      "drift_traders": 414,
       "wallet_overlap": {
-        "drift_only": 768,
-        "jupiter_only": 224,
-        "pacifica_only": 7178,
-        "drift_jupiter": 1,
+        "drift_only": 830,
+        "jupiter_only": 265,
+        "pacifica_only": 7174,
+        "drift_jupiter": 2,
         "drift_pacifica": 1,
-        "jupiter_pacifica": 3,
+        "jupiter_pacifica": 2,
         "all_three": 0,
         "multi_platform": 5
       },
@@ -1156,461 +1177,26 @@
         "txns": 0,
         "error": "Query timeout"
       }
-    },
-    "8h": {
-      "pacifica_traders": 2872,
-      "flashtrade_traders": 154,
-      "jupiter_traders": 1623,
-      "wallet_overlap": {
-        "drift_only": 2222,
-        "jupiter_only": 907,
-        "pacifica_only": 7315,
-        "drift_jupiter": 6,
-        "drift_pacifica": 4,
-        "jupiter_pacifica": 3,
-        "all_three": 0,
-        "multi_platform": 13
-      },
-      "drift_traders": 1673,
-      "adrena_traders": 21,
-      "liquidations": {
-        "count": 0,
-        "txns": 0,
-        "error": "Query timeout"
-      }
     }
   },
-  "drift_traders_1h": 383,
-  "jupiter_traders_1h": 226,
+  "drift_traders_1h": 414,
+  "jupiter_traders_1h": 262,
   "liquidations_1h": {
     "count": 0,
     "txns": 0,
     "error": "Query timeout"
   },
   "wallet_overlap": {
-    "drift_only": 768,
-    "jupiter_only": 224,
-    "pacifica_only": 7178,
-    "drift_jupiter": 1,
+    "drift_only": 830,
+    "jupiter_only": 265,
+    "pacifica_only": 7174,
+    "drift_jupiter": 2,
     "drift_pacifica": 1,
-    "jupiter_pacifica": 3,
+    "jupiter_pacifica": 2,
     "all_three": 0,
     "multi_platform": 5
   },
   "pnl_leaderboard": {
-    "jupiter": {
-      "top_winners": [
-        {
-          "address": "6ms5C8my6a4NbEZ4iXQmHacYnjFvv5dyeQT5ksa8dBnc",
-          "pnl_weekly": 174200.971957,
-          "volume_weekly": 4503204.137257,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "2TsucVJVZjtKa4UnR6nGaZJzK7ABdrjdoS32nJKFU2ej",
-          "pnl_weekly": 34591.345326,
-          "volume_weekly": 521560.415902,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "3DcBEVDt5yoyxt2rxXZNqbSdRzGF3By8wkMiPo9cHrJf",
-          "pnl_weekly": 21810.27608,
-          "volume_weekly": 774686.228946,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "FPXbkEVB3ybHwfxF58JnEXigP3PRk6XgKHzNdKzmMhud",
-          "pnl_weekly": 17502.120845,
-          "volume_weekly": 591460.9385,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "EBinepDuQhc6BaJn5EiqDb2jevmLs5sm4CzXtDNewJaN",
-          "pnl_weekly": 15771.456025,
-          "volume_weekly": 207369.806475,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "FP5XrBnLKHLjtDegztUpKgvv4km4cGsyZUWU2tPodaDp",
-          "pnl_weekly": 14953.527018,
-          "volume_weekly": 364381.7018,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "3cK1taVFkKxGJZE9CPzRJfUTdRUTPXh7kXJdqxEdXyco",
-          "pnl_weekly": 14650.033837,
-          "volume_weekly": 231925.19616,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "H7599BJG5Je8aCwrV2p8mK7mpwNe3e9PzZ78vwXuJEQ2",
-          "pnl_weekly": 13775.381127,
-          "volume_weekly": 223287.98815,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "E7vNowx3fr3Cb9cuqVMdd5zYJm9J5nnEzkREp5evngv6",
-          "pnl_weekly": 11357.219807,
-          "volume_weekly": 254833.855,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "73qTtsPND5SywasH357X6zgztVSRhhZiSxLqp2kFYhpj",
-          "pnl_weekly": 9792.043238,
-          "volume_weekly": 886588.10353,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "7q1FMC5NVUhiuCMfs8D6pFaWjj8rGWGVLbsi2EuLrXe3",
-          "pnl_weekly": 9074.968982,
-          "volume_weekly": 419984.868275,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "6QNfJVEhKtJxZEnf26SoghegvaDRPx1eWKfecGwBf4vw",
-          "pnl_weekly": 8821.213166,
-          "volume_weekly": 185278.087136,
-          "markets": [
-            "SOL",
-            "ETH"
-          ]
-        },
-        {
-          "address": "3ng9Z2zSBouAkr26QTJzTYm3nKic2wWAJmrH6KZd44Vx",
-          "pnl_weekly": 7689.68283,
-          "volume_weekly": 1638134.760256,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "Hodve6eQnrrubMmoApZM2mCy4hrwTQGS9kxvxEk2xmZH",
-          "pnl_weekly": 6574.688923,
-          "volume_weekly": 508072.90103,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "HSousXq67ecQs2ePWH647Ser6cdqwwWao3aasTmLxKjq",
-          "pnl_weekly": 6423.982926,
-          "volume_weekly": 401760.35816,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "7AXGq94srLWHrWRLziF9C2c6WRWBsrHdN1jk11EBoYGM",
-          "pnl_weekly": 5908.757748,
-          "volume_weekly": 515981.662772,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "5oLhAkeky42jgZ1XPRJuRxufuNE88ePQUeubRtfjz2Dm",
-          "pnl_weekly": 5709.004916,
-          "volume_weekly": 1068996.188593,
-          "markets": [
-            "ETH"
-          ]
-        },
-        {
-          "address": "4sUznj9rDvnG7FyS7JF4cmBfKGxPGPCe4Ugp8km6Sniy",
-          "pnl_weekly": 5553.8331579999995,
-          "volume_weekly": 387806.187874,
-          "markets": [
-            "SOL",
-            "BTC",
-            "ETH"
-          ]
-        },
-        {
-          "address": "2Uub1sVDaRC2TUMpQvFQYrmsPiuGRcPH4LnGErSyW17g",
-          "pnl_weekly": 5198.4414,
-          "volume_weekly": 148921.95122,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "4CEgHGA28Bd6NNxEmHjJR1Fh3Jij4dTzx1U9eZtyThY1",
-          "pnl_weekly": 4862.795078,
-          "volume_weekly": 80741.6475,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "Akz6ncypSEZLVuQ87tskCksFJWbEiir8m9XYkJuSN1Cx",
-          "pnl_weekly": 4724.573202,
-          "volume_weekly": 100000.0,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "DXHFCHKFJKYipmQyMrusMKBDx6ApCd6spvPhp6ZJeMMx",
-          "pnl_weekly": 4449.617607,
-          "volume_weekly": 89207.404384,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "4gLZztSiwUnQtbqzc6sJrTjfgA5RCweHgokiLgEWPn3u",
-          "pnl_weekly": 4421.230927,
-          "volume_weekly": 856278.322876,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "ABzaB5tGJQjWqCaaPvcBtYRzmLjv7eg2RwnXXQvu4RXY",
-          "pnl_weekly": 4382.812103,
-          "volume_weekly": 37831.140912,
-          "markets": [
-            "ETH"
-          ]
-        },
-        {
-          "address": "DvtLgmyK9wiCq4LJtk5jFuwkXnZnAMe18AR3oDcRaCTe",
-          "pnl_weekly": 4149.978858,
-          "volume_weekly": 410659.238926,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "Beqkiqhh7UJ5jtxFjqnMEGhVc6TCfEFqiKof6Sj8j6Ph",
-          "pnl_weekly": 3618.440347,
-          "volume_weekly": 90349.382356,
-          "markets": [
-            "ETH"
-          ]
-        },
-        {
-          "address": "7gntoA6CQxsj9xduk8tsaQYezFX7PvHtT5hHR9EqcBu6",
-          "pnl_weekly": 3477.813959,
-          "volume_weekly": 2114320.218186,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "9snNSu43C8nVcL32pZc8jP29qNFSksDKXWSdT3AC2rjF",
-          "pnl_weekly": 3444.004727,
-          "volume_weekly": 68745.488442,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "2ZtWSqs17yjtpXSLsz3psv6ZpbWc8SjKvvPkQRRMByzC",
-          "pnl_weekly": 3443.149619,
-          "volume_weekly": 117182.949863,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "3GdUhZANReQ6EZhpYxak13pLRxwEEzgAfCqTxcNfaCvW",
-          "pnl_weekly": 3414.190322,
-          "volume_weekly": 55827.977786,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "GMrzPcJqWKh7GYuSCvouYnvEQ5N4pXQ1kwKzV81kVkK1",
-          "pnl_weekly": 3395.881821,
-          "volume_weekly": 158821.400253,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "6QnJeRFYcutn4a2XJQxDGkABJS76LDnx8kHShZF5cdZe",
-          "pnl_weekly": 3184.890829,
-          "volume_weekly": 69204.846915,
-          "markets": [
-            "BTC",
-            "ETH"
-          ]
-        },
-        {
-          "address": "4u2kAYgq8eYSoXWy3cPqAkpCqxXdPUpJGQQZbKFtRp3K",
-          "pnl_weekly": 3148.318987,
-          "volume_weekly": 191975.245921,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "Fp8ARgLzFmhy2ygsMTKTeRdh3AekNHFE3toBnC3VPrdd",
-          "pnl_weekly": 3041.516291,
-          "volume_weekly": 63058.626857,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "GHTokw5LMa48AjwqBgESdGXNhmSaPxVMBRFoMFBGGzdi",
-          "pnl_weekly": 2851.7868,
-          "volume_weekly": 1270672.002,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "BHSni1b9RezsbqMtTGu5Jw79DBJiASyEhPPvYyHF4Lne",
-          "pnl_weekly": 2824.87313,
-          "volume_weekly": 98435.92724,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "2e8dQrJxYpDNzAJSzZ3dhJ3GdkbXSRYibs6TKWgF7WGL",
-          "pnl_weekly": 2656.373541,
-          "volume_weekly": 157865.79265,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "2cju5w4rnc4FjjE8nJRnZyNULFSW6VTn4QUSUVENXMT5",
-          "pnl_weekly": 2578.484518,
-          "volume_weekly": 65167.373496,
-          "markets": [
-            "SOL",
-            "BTC"
-          ]
-        },
-        {
-          "address": "5d7p8y5zypetueM1zTkuTP716gRrDX3tjeP24woVM5N9",
-          "pnl_weekly": 2434.862808,
-          "volume_weekly": 68092.314671,
-          "markets": [
-            "SOL",
-            "BTC"
-          ]
-        },
-        {
-          "address": "2hyM4Lfjxha6wNQFfXxdejVGmVAtuutJksnvmjiPuVMm",
-          "pnl_weekly": 2289.559389,
-          "volume_weekly": 157731.685709,
-          "markets": [
-            "SOL",
-            "BTC"
-          ]
-        },
-        {
-          "address": "C4xMK1pDy16NWPmRsJFoNbspwu2tTxf9KXgyybDqPJiA",
-          "pnl_weekly": 2288.586776,
-          "volume_weekly": 573860.60178,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "4PC46K64Jv8PT8bBUb9PGPaXyVBDmy5DQ1XNBUYms8XJ",
-          "pnl_weekly": 2274.206355,
-          "volume_weekly": 60449.939955,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "99xnE2zEFi8YhmKDaikc1EvH6ELTQJppnqUwMzmpLXrs",
-          "pnl_weekly": 2024.284949,
-          "volume_weekly": 52420.55477,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "4YbNj1U45zM7Ksp5YgaUG9eNMoT48seoydXoKVybwQcK",
-          "pnl_weekly": 2009.955613,
-          "volume_weekly": 93237.935798,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "5be47s2sPV5bQGJhVxBMgjHcZiB1yzAZHCPT14ebo6j9",
-          "pnl_weekly": 2003.45641,
-          "volume_weekly": 90229.906421,
-          "markets": [
-            "BTC"
-          ]
-        },
-        {
-          "address": "AtBkMEPqVaK5yS5rbUg8Ka4ZkjDNJwwT8jBk4b9LP5oZ",
-          "pnl_weekly": 1882.811764,
-          "volume_weekly": 136753.615498,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "8GLX8q5YpicmkyHQsn4wZKLiYEthifqNC8QdXBQHyxzS",
-          "pnl_weekly": 1882.436223,
-          "volume_weekly": 67186.040918,
-          "markets": [
-            "ETH"
-          ]
-        },
-        {
-          "address": "GDiXmLdKqPfLbwwR3H5EBBuGjcGmrrf1nMGFmkqDtMrQ",
-          "pnl_weekly": 1834.440149,
-          "volume_weekly": 285576.80214,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "5yJsWusop4D6b5xQ7f8FMqNyzFNU2PvXcJGfqTA33XNz",
-          "pnl_weekly": 1715.646259,
-          "volume_weekly": 32893.597687,
-          "markets": [
-            "SOL"
-          ]
-        },
-        {
-          "address": "Ae3VaYL4gZ2rdn2SfZA7HiNDkAuqjJcBGzfbmG8xJ4T1",
-          "pnl_weekly": 1697.150318,
-          "volume_weekly": 28000.0,
-          "markets": [
-            "SOL"
-          ]
-        }
-      ],
-      "top_losers": [],
-      "total_traders": 141
-    },
     "pacifica": {
       "top_winners": [
         {
@@ -2617,6 +2203,419 @@
         }
       ],
       "total_traders": 9667
+    },
+    "jupiter": {
+      "top_winners": [
+        {
+          "address": "6ms5C8my6a4NbEZ4iXQmHacYnjFvv5dyeQT5ksa8dBnc",
+          "pnl_weekly": 174200.971957,
+          "volume_weekly": 4503204.137257,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "2TsucVJVZjtKa4UnR6nGaZJzK7ABdrjdoS32nJKFU2ej",
+          "pnl_weekly": 34591.345326,
+          "volume_weekly": 521560.415902,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "3DcBEVDt5yoyxt2rxXZNqbSdRzGF3By8wkMiPo9cHrJf",
+          "pnl_weekly": 21810.27608,
+          "volume_weekly": 774686.228946,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "FPXbkEVB3ybHwfxF58JnEXigP3PRk6XgKHzNdKzmMhud",
+          "pnl_weekly": 17502.120845,
+          "volume_weekly": 591460.9385,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "EBinepDuQhc6BaJn5EiqDb2jevmLs5sm4CzXtDNewJaN",
+          "pnl_weekly": 15771.456025,
+          "volume_weekly": 207369.806475,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "FP5XrBnLKHLjtDegztUpKgvv4km4cGsyZUWU2tPodaDp",
+          "pnl_weekly": 14953.527018,
+          "volume_weekly": 364381.7018,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "3cK1taVFkKxGJZE9CPzRJfUTdRUTPXh7kXJdqxEdXyco",
+          "pnl_weekly": 14650.033837,
+          "volume_weekly": 231925.19616,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "H7599BJG5Je8aCwrV2p8mK7mpwNe3e9PzZ78vwXuJEQ2",
+          "pnl_weekly": 13775.381127,
+          "volume_weekly": 223287.98815,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "E7vNowx3fr3Cb9cuqVMdd5zYJm9J5nnEzkREp5evngv6",
+          "pnl_weekly": 11357.219807,
+          "volume_weekly": 254833.855,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "73qTtsPND5SywasH357X6zgztVSRhhZiSxLqp2kFYhpj",
+          "pnl_weekly": 9792.043238,
+          "volume_weekly": 886588.10353,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "7q1FMC5NVUhiuCMfs8D6pFaWjj8rGWGVLbsi2EuLrXe3",
+          "pnl_weekly": 9074.968982,
+          "volume_weekly": 419984.868275,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "6QNfJVEhKtJxZEnf26SoghegvaDRPx1eWKfecGwBf4vw",
+          "pnl_weekly": 8821.213166,
+          "volume_weekly": 185278.087136,
+          "markets": [
+            "SOL",
+            "ETH"
+          ]
+        },
+        {
+          "address": "3ng9Z2zSBouAkr26QTJzTYm3nKic2wWAJmrH6KZd44Vx",
+          "pnl_weekly": 7689.68283,
+          "volume_weekly": 1638134.760256,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "Hodve6eQnrrubMmoApZM2mCy4hrwTQGS9kxvxEk2xmZH",
+          "pnl_weekly": 6574.688923,
+          "volume_weekly": 508072.90103,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "HSousXq67ecQs2ePWH647Ser6cdqwwWao3aasTmLxKjq",
+          "pnl_weekly": 6423.982926,
+          "volume_weekly": 401760.35816,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "7AXGq94srLWHrWRLziF9C2c6WRWBsrHdN1jk11EBoYGM",
+          "pnl_weekly": 5908.757748,
+          "volume_weekly": 515981.662772,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "5oLhAkeky42jgZ1XPRJuRxufuNE88ePQUeubRtfjz2Dm",
+          "pnl_weekly": 5709.004916,
+          "volume_weekly": 1068996.188593,
+          "markets": [
+            "ETH"
+          ]
+        },
+        {
+          "address": "4sUznj9rDvnG7FyS7JF4cmBfKGxPGPCe4Ugp8km6Sniy",
+          "pnl_weekly": 5553.8331579999995,
+          "volume_weekly": 387806.187874,
+          "markets": [
+            "SOL",
+            "BTC",
+            "ETH"
+          ]
+        },
+        {
+          "address": "2Uub1sVDaRC2TUMpQvFQYrmsPiuGRcPH4LnGErSyW17g",
+          "pnl_weekly": 5198.4414,
+          "volume_weekly": 148921.95122,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "4CEgHGA28Bd6NNxEmHjJR1Fh3Jij4dTzx1U9eZtyThY1",
+          "pnl_weekly": 4862.795078,
+          "volume_weekly": 80741.6475,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "Akz6ncypSEZLVuQ87tskCksFJWbEiir8m9XYkJuSN1Cx",
+          "pnl_weekly": 4724.573202,
+          "volume_weekly": 100000.0,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "DXHFCHKFJKYipmQyMrusMKBDx6ApCd6spvPhp6ZJeMMx",
+          "pnl_weekly": 4449.617607,
+          "volume_weekly": 89207.404384,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "4gLZztSiwUnQtbqzc6sJrTjfgA5RCweHgokiLgEWPn3u",
+          "pnl_weekly": 4421.230927,
+          "volume_weekly": 856278.322876,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "ABzaB5tGJQjWqCaaPvcBtYRzmLjv7eg2RwnXXQvu4RXY",
+          "pnl_weekly": 4382.812103,
+          "volume_weekly": 37831.140912,
+          "markets": [
+            "ETH"
+          ]
+        },
+        {
+          "address": "DvtLgmyK9wiCq4LJtk5jFuwkXnZnAMe18AR3oDcRaCTe",
+          "pnl_weekly": 4149.978858,
+          "volume_weekly": 410659.238926,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "Beqkiqhh7UJ5jtxFjqnMEGhVc6TCfEFqiKof6Sj8j6Ph",
+          "pnl_weekly": 3618.440347,
+          "volume_weekly": 90349.382356,
+          "markets": [
+            "ETH"
+          ]
+        },
+        {
+          "address": "7gntoA6CQxsj9xduk8tsaQYezFX7PvHtT5hHR9EqcBu6",
+          "pnl_weekly": 3477.813959,
+          "volume_weekly": 2114320.218186,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "9snNSu43C8nVcL32pZc8jP29qNFSksDKXWSdT3AC2rjF",
+          "pnl_weekly": 3444.004727,
+          "volume_weekly": 68745.488442,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "2ZtWSqs17yjtpXSLsz3psv6ZpbWc8SjKvvPkQRRMByzC",
+          "pnl_weekly": 3443.149619,
+          "volume_weekly": 117182.949863,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "3GdUhZANReQ6EZhpYxak13pLRxwEEzgAfCqTxcNfaCvW",
+          "pnl_weekly": 3414.190322,
+          "volume_weekly": 55827.977786,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "GMrzPcJqWKh7GYuSCvouYnvEQ5N4pXQ1kwKzV81kVkK1",
+          "pnl_weekly": 3395.881821,
+          "volume_weekly": 158821.400253,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "6QnJeRFYcutn4a2XJQxDGkABJS76LDnx8kHShZF5cdZe",
+          "pnl_weekly": 3184.890829,
+          "volume_weekly": 69204.846915,
+          "markets": [
+            "BTC",
+            "ETH"
+          ]
+        },
+        {
+          "address": "4u2kAYgq8eYSoXWy3cPqAkpCqxXdPUpJGQQZbKFtRp3K",
+          "pnl_weekly": 3148.318987,
+          "volume_weekly": 191975.245921,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "Fp8ARgLzFmhy2ygsMTKTeRdh3AekNHFE3toBnC3VPrdd",
+          "pnl_weekly": 3041.516291,
+          "volume_weekly": 63058.626857,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "GHTokw5LMa48AjwqBgESdGXNhmSaPxVMBRFoMFBGGzdi",
+          "pnl_weekly": 2851.7868,
+          "volume_weekly": 1270672.002,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "BHSni1b9RezsbqMtTGu5Jw79DBJiASyEhPPvYyHF4Lne",
+          "pnl_weekly": 2824.87313,
+          "volume_weekly": 98435.92724,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "2e8dQrJxYpDNzAJSzZ3dhJ3GdkbXSRYibs6TKWgF7WGL",
+          "pnl_weekly": 2656.373541,
+          "volume_weekly": 157865.79265,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "2cju5w4rnc4FjjE8nJRnZyNULFSW6VTn4QUSUVENXMT5",
+          "pnl_weekly": 2578.484518,
+          "volume_weekly": 65167.373496,
+          "markets": [
+            "SOL",
+            "BTC"
+          ]
+        },
+        {
+          "address": "5d7p8y5zypetueM1zTkuTP716gRrDX3tjeP24woVM5N9",
+          "pnl_weekly": 2434.862808,
+          "volume_weekly": 68092.314671,
+          "markets": [
+            "SOL",
+            "BTC"
+          ]
+        },
+        {
+          "address": "2hyM4Lfjxha6wNQFfXxdejVGmVAtuutJksnvmjiPuVMm",
+          "pnl_weekly": 2289.559389,
+          "volume_weekly": 157731.685709,
+          "markets": [
+            "SOL",
+            "BTC"
+          ]
+        },
+        {
+          "address": "C4xMK1pDy16NWPmRsJFoNbspwu2tTxf9KXgyybDqPJiA",
+          "pnl_weekly": 2288.586776,
+          "volume_weekly": 573860.60178,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "4PC46K64Jv8PT8bBUb9PGPaXyVBDmy5DQ1XNBUYms8XJ",
+          "pnl_weekly": 2274.206355,
+          "volume_weekly": 60449.939955,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "99xnE2zEFi8YhmKDaikc1EvH6ELTQJppnqUwMzmpLXrs",
+          "pnl_weekly": 2024.284949,
+          "volume_weekly": 52420.55477,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "4YbNj1U45zM7Ksp5YgaUG9eNMoT48seoydXoKVybwQcK",
+          "pnl_weekly": 2009.955613,
+          "volume_weekly": 93237.935798,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "5be47s2sPV5bQGJhVxBMgjHcZiB1yzAZHCPT14ebo6j9",
+          "pnl_weekly": 2003.45641,
+          "volume_weekly": 90229.906421,
+          "markets": [
+            "BTC"
+          ]
+        },
+        {
+          "address": "AtBkMEPqVaK5yS5rbUg8Ka4ZkjDNJwwT8jBk4b9LP5oZ",
+          "pnl_weekly": 1882.811764,
+          "volume_weekly": 136753.615498,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "8GLX8q5YpicmkyHQsn4wZKLiYEthifqNC8QdXBQHyxzS",
+          "pnl_weekly": 1882.436223,
+          "volume_weekly": 67186.040918,
+          "markets": [
+            "ETH"
+          ]
+        },
+        {
+          "address": "GDiXmLdKqPfLbwwR3H5EBBuGjcGmrrf1nMGFmkqDtMrQ",
+          "pnl_weekly": 1834.440149,
+          "volume_weekly": 285576.80214,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "5yJsWusop4D6b5xQ7f8FMqNyzFNU2PvXcJGfqTA33XNz",
+          "pnl_weekly": 1715.646259,
+          "volume_weekly": 32893.597687,
+          "markets": [
+            "SOL"
+          ]
+        },
+        {
+          "address": "Ae3VaYL4gZ2rdn2SfZA7HiNDkAuqjJcBGzfbmG8xJ4T1",
+          "pnl_weekly": 1697.150318,
+          "volume_weekly": 28000.0,
+          "markets": [
+            "SOL"
+          ]
+        }
+      ],
+      "top_losers": [],
+      "total_traders": 141
     }
   }
 }
