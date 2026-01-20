@@ -1159,7 +1159,7 @@ st.divider()
 
 # Cross-Platform Wallet Analysis
 st.header("Cross-Platform Traders")
-st.caption(f"Wallet overlap between Drift and Jupiter Perps ({time_window} window)")
+st.caption(f"Wallet overlap between Drift, Jupiter, and Pacifica ({time_window} window)")
 
 wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
 
@@ -1170,65 +1170,133 @@ if wallet_data.get("error"):
     else:
         st.caption(wallet_data.get("error", "Unknown error"))
 else:
-    multi = wallet_data.get("multi_platform", 0)
+    # Extract all overlap categories
     drift_only = wallet_data.get("drift_only", 0)
     jupiter_only = wallet_data.get("jupiter_only", 0)
-    total = multi + drift_only + jupiter_only
+    pacifica_only = wallet_data.get("pacifica_only", 0)
+    drift_jupiter = wallet_data.get("drift_jupiter", 0)
+    drift_pacifica = wallet_data.get("drift_pacifica", 0)
+    jupiter_pacifica = wallet_data.get("jupiter_pacifica", 0)
+    all_three = wallet_data.get("all_three", 0)
+    multi = wallet_data.get("multi_platform", 0)
+
+    # Calculate totals per platform
+    drift_total = drift_only + drift_jupiter + drift_pacifica + all_three
+    jupiter_total = jupiter_only + drift_jupiter + jupiter_pacifica + all_three
+    pacifica_total = pacifica_only + drift_pacifica + jupiter_pacifica + all_three
+    total = drift_only + jupiter_only + pacifica_only + drift_jupiter + drift_pacifica + jupiter_pacifica + all_three
 
     if total > 0:
-        col1, col2, col3, col4 = st.columns(4)
+        # Top metrics row
+        col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
             st.metric(
-                "Multi-Platform",
-                f"{multi:,}",
-                help="Wallets active on BOTH Drift and Jupiter"
+                "All Three",
+                f"{all_three:,}",
+                help="Wallets active on Drift, Jupiter, AND Pacifica"
             )
 
         with col2:
             st.metric(
-                "Drift Exclusive",
-                f"{drift_only:,}",
-                help="Wallets active ONLY on Drift"
+                "Multi-Platform",
+                f"{multi:,}",
+                help="Wallets active on 2+ platforms"
             )
 
         with col3:
             st.metric(
-                "Jupiter Exclusive",
+                "Drift Only",
+                f"{drift_only:,}",
+                help="Wallets active ONLY on Drift"
+            )
+
+        with col4:
+            st.metric(
+                "Jupiter Only",
                 f"{jupiter_only:,}",
                 help="Wallets active ONLY on Jupiter"
             )
 
-        with col4:
-            overlap_pct = (multi / total * 100) if total > 0 else 0
+        with col5:
             st.metric(
-                "Overlap Rate",
-                f"{overlap_pct:.1f}%",
-                help="Percentage of traders using both platforms"
+                "Pacifica Only",
+                f"{pacifica_only:,}",
+                help="Wallets active ONLY on Pacifica"
             )
 
-        # Visualization: Platform distribution pie chart
+        # Pair overlaps row
+        st.markdown("""
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748B; margin: 1rem 0 0.5rem 0;">Platform Pairs</div>
+        """, unsafe_allow_html=True)
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Drift + Jupiter", f"{drift_jupiter:,}", help="On both Drift and Jupiter (not Pacifica)")
+        with col2:
+            st.metric("Drift + Pacifica", f"{drift_pacifica:,}", help="On both Drift and Pacifica (not Jupiter)")
+        with col3:
+            st.metric("Jupiter + Pacifica", f"{jupiter_pacifica:,}", help="On both Jupiter and Pacifica (not Drift)")
+        with col4:
+            overlap_pct = (multi / total * 100) if total > 0 else 0
+            st.metric("Overlap Rate", f"{overlap_pct:.1f}%", help="Percentage of traders using 2+ platforms")
+
+        # Visualization row
         col1, col2 = st.columns([1, 1])
 
         with col1:
             with st.spinner("Loading chart..."):
+                # Pie chart with all categories
+                labels = []
+                values = []
+                colors = []
+
+                if all_three > 0:
+                    labels.append("All Three")
+                    values.append(all_three)
+                    colors.append(PLOTLY_THEME["accent_solana"])
+                if drift_jupiter > 0:
+                    labels.append("Drift+Jupiter")
+                    values.append(drift_jupiter)
+                    colors.append("#7C3AED")
+                if drift_pacifica > 0:
+                    labels.append("Drift+Pacifica")
+                    values.append(drift_pacifica)
+                    colors.append("#8B5CF6")
+                if jupiter_pacifica > 0:
+                    labels.append("Jupiter+Pacifica")
+                    values.append(jupiter_pacifica)
+                    colors.append("#A78BFA")
+                if drift_only > 0:
+                    labels.append("Drift Only")
+                    values.append(drift_only)
+                    colors.append(PROTOCOL_COLORS["Drift"])
+                if jupiter_only > 0:
+                    labels.append("Jupiter Only")
+                    values.append(jupiter_only)
+                    colors.append(PROTOCOL_COLORS["Jupiter"])
+                if pacifica_only > 0:
+                    labels.append("Pacifica Only")
+                    values.append(pacifica_only)
+                    colors.append(PROTOCOL_COLORS["Pacifica"])
+
                 fig = go.Figure(data=[go.Pie(
-                    labels=["Both Platforms", "Drift Only", "Jupiter Only"],
-                    values=[multi, drift_only, jupiter_only],
+                    labels=labels,
+                    values=values,
                     hole=0.55,
                     marker=dict(
-                        colors=[PLOTLY_THEME["accent_solana"], PROTOCOL_COLORS["Drift"], PROTOCOL_COLORS["Jupiter"]],
+                        colors=colors,
                         line=dict(color=PLOTLY_THEME["bg_color"], width=2)
                     ),
                     textinfo="label+percent",
                     textposition="outside",
-                    textfont=dict(size=10, color=PLOTLY_THEME["text_color"]),
+                    textfont=dict(size=9, color=PLOTLY_THEME["text_color"]),
                     hovertemplate="<b>%{label}</b><br>Traders: %{value:,}<br>Share: %{percent}<extra></extra>",
                 )])
                 fig.update_layout(
                     title=dict(text="Trader Distribution", font=dict(size=14)),
                     showlegend=False,
-                    height=300,
+                    height=320,
                     annotations=[dict(
                         text=f"<b>{total:,}</b><br>traders",
                         x=0.5, y=0.5,
@@ -1244,22 +1312,22 @@ else:
                 # Bar chart showing totals per platform
                 fig = go.Figure(data=[
                     go.Bar(
-                        x=["Drift", "Jupiter"],
-                        y=[multi + drift_only, multi + jupiter_only],
-                        marker_color=[PROTOCOL_COLORS["Drift"], PROTOCOL_COLORS["Jupiter"]],
-                        marker_line_color=[PROTOCOL_COLORS["Drift"], PROTOCOL_COLORS["Jupiter"]],
+                        x=["Drift", "Jupiter", "Pacifica"],
+                        y=[drift_total, jupiter_total, pacifica_total],
+                        marker_color=[PROTOCOL_COLORS["Drift"], PROTOCOL_COLORS["Jupiter"], PROTOCOL_COLORS["Pacifica"]],
+                        marker_line_color=[PROTOCOL_COLORS["Drift"], PROTOCOL_COLORS["Jupiter"], PROTOCOL_COLORS["Pacifica"]],
                         marker_line_width=1,
-                        text=[f"{multi + drift_only:,}", f"{multi + jupiter_only:,}"],
+                        text=[f"{drift_total:,}", f"{jupiter_total:,}", f"{pacifica_total:,}"],
                         textposition="outside",
                         textfont=dict(size=11, color=PLOTLY_THEME["text_color"]),
                         hovertemplate="<b>%{x}</b><br>Traders: %{y:,}<extra></extra>",
                     )
                 ])
                 fig.update_layout(
-                    title=dict(text=f"Total Traders ({time_window})", font=dict(size=14)),
+                    title=dict(text=f"Total Traders by Platform ({time_window})", font=dict(size=14)),
                     yaxis_title="Unique Wallets",
-                    height=300,
-                    bargap=0.5,
+                    height=320,
+                    bargap=0.4,
                 )
                 apply_plotly_theme(fig)
                 st.plotly_chart(fig, use_container_width=True)
