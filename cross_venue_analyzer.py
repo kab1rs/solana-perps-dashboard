@@ -67,6 +67,35 @@ def load_jupiter_data(csv_files: list[str]) -> list[dict]:
     return trades
 
 
+def load_pacifica_data(csv_files: list[str]) -> list[dict]:
+    """Load and normalize Pacifica trade data."""
+    trades = []
+    for file_path in csv_files:
+        with open(file_path, "r") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                side = row.get("side", "")
+                direction = ""
+                if "long" in side:
+                    direction = "long"
+                elif "short" in side:
+                    direction = "short"
+
+                role = "maker" if "maker" in row.get("event_type", "") else "taker"
+
+                trades.append({
+                    "venue": "pacifica",
+                    "wallet": row.get("wallet", ""),
+                    "role": role,
+                    "volume_usd": float(row.get("volume_usd", 0) or 0),
+                    "market": row.get("market", "UNKNOWN"),
+                    "direction": direction,
+                    "timestamp": int(row.get("timestamp", 0) or 0),
+                    "signature": row.get("history_id", ""),
+                })
+    return trades
+
+
 def analyze_cross_venue(trades: list[dict], min_volume: float = 1000) -> dict:
     """
     Analyze wallet activity across venues.
@@ -190,47 +219,76 @@ def print_cross_venue_report(analysis: dict):
     for venue, stats in sorted(analysis["venue_stats"].items()):
         print(f"{venue:<15}{stats['wallets']:>12,}${stats['volume']:>18,.0f}{stats['trades']:>15,}")
 
-    print(f"\n{'TOP CROSS-VENUE TRADERS':^80}")
-    print("-"*80)
-    print(f"{'Wallet':<45}{'Total Vol':>14}{'Drift':>12}{'Jupiter':>12}")
-    print("-"*80)
+    print(f"\n{'TOP CROSS-VENUE TRADERS':^92}")
+    print("-"*92)
+    print(f"{'Wallet':<45}{'Total Vol':>14}{'Drift':>11}{'Jupiter':>11}{'Pacifica':>11}")
+    print("-"*92)
 
     for w in analysis["top_cross_venue"][:25]:
         wallet_short = w["wallet"][:43] + ".." if len(w["wallet"]) > 43 else w["wallet"]
         drift_vol = w["volume_by_venue"].get("drift", 0)
         jup_vol = w["volume_by_venue"].get("jupiter", 0)
-        print(f"{wallet_short:<45}${w['total_volume']:>12,.0f}${drift_vol:>10,.0f}${jup_vol:>10,.0f}")
+        pac_vol = w["volume_by_venue"].get("pacifica", 0)
+        print(f"{wallet_short:<45}${w['total_volume']:>12,.0f}${drift_vol:>9,.0f}${jup_vol:>9,.0f}${pac_vol:>9,.0f}")
 
     # Identify interesting patterns
-    print(f"\n{'INTERESTING PATTERNS':^80}")
-    print("-"*80)
+    print(f"\n{'INTERESTING PATTERNS':^92}")
+    print("-"*92)
 
-    # Heavy Drift traders who also use Jupiter
+    def format_venue_breakdown(w):
+        """Format venue volume breakdown for a wallet."""
+        parts = []
+        for venue in ["drift", "jupiter", "pacifica"]:
+            vol = w["volume_by_venue"].get(venue, 0)
+            if vol > 0:
+                parts.append(f"{venue.capitalize()}: ${vol:,.0f}")
+        return " | ".join(parts)
+
+    # Heavy Drift traders
     drift_heavy = [w for w in analysis["top_cross_venue"]
-                   if w["volume_by_venue"].get("drift", 0) > w["volume_by_venue"].get("jupiter", 0) * 2]
+                   if w["volume_by_venue"].get("drift", 0) > sum(
+                       w["volume_by_venue"].get(v, 0) for v in ["jupiter", "pacifica"]
+                   )]
     if drift_heavy[:5]:
-        print("\nDrift-heavy cross-venue traders (>2x volume on Drift):")
+        print("\nDrift-heavy cross-venue traders (majority volume on Drift):")
         for w in drift_heavy[:5]:
             print(f"  {w['wallet'][:50]}...")
-            print(f"    Drift: ${w['volume_by_venue'].get('drift', 0):,.0f} | Jupiter: ${w['volume_by_venue'].get('jupiter', 0):,.0f}")
+            print(f"    {format_venue_breakdown(w)}")
 
-    # Heavy Jupiter traders who also use Drift
+    # Heavy Jupiter traders
     jup_heavy = [w for w in analysis["top_cross_venue"]
-                 if w["volume_by_venue"].get("jupiter", 0) > w["volume_by_venue"].get("drift", 0) * 2]
+                 if w["volume_by_venue"].get("jupiter", 0) > sum(
+                     w["volume_by_venue"].get(v, 0) for v in ["drift", "pacifica"]
+                 )]
     if jup_heavy[:5]:
-        print("\nJupiter-heavy cross-venue traders (>2x volume on Jupiter):")
+        print("\nJupiter-heavy cross-venue traders (majority volume on Jupiter):")
         for w in jup_heavy[:5]:
             print(f"  {w['wallet'][:50]}...")
-            print(f"    Jupiter: ${w['volume_by_venue'].get('jupiter', 0):,.0f} | Drift: ${w['volume_by_venue'].get('drift', 0):,.0f}")
+            print(f"    {format_venue_breakdown(w)}")
 
-    # Balanced traders
-    balanced = [w for w in analysis["top_cross_venue"]
-                if 0.5 < (w["volume_by_venue"].get("drift", 0) / max(w["volume_by_venue"].get("jupiter", 1), 1)) < 2]
-    if balanced[:5]:
-        print("\nBalanced cross-venue traders (similar volume on both):")
-        for w in balanced[:5]:
+    # Heavy Pacifica traders
+    pac_heavy = [w for w in analysis["top_cross_venue"]
+                 if w["volume_by_venue"].get("pacifica", 0) > sum(
+                     w["volume_by_venue"].get(v, 0) for v in ["drift", "jupiter"]
+                 )]
+    if pac_heavy[:5]:
+        print("\nPacifica-heavy cross-venue traders (majority volume on Pacifica):")
+        for w in pac_heavy[:5]:
             print(f"  {w['wallet'][:50]}...")
-            print(f"    Drift: ${w['volume_by_venue'].get('drift', 0):,.0f} | Jupiter: ${w['volume_by_venue'].get('jupiter', 0):,.0f}")
+            print(f"    {format_venue_breakdown(w)}")
+
+    # Traders active on all 3 venues
+    all_three = [w for w in analysis["top_cross_venue"]
+                 if len(w["venues"]) >= 3 or (
+                     w["volume_by_venue"].get("drift", 0) > 0 and
+                     w["volume_by_venue"].get("jupiter", 0) > 0 and
+                     w["volume_by_venue"].get("pacifica", 0) > 0
+                 )]
+    if all_three[:5]:
+        print("\nTraders active on all three venues:")
+        for w in all_three[:5]:
+            print(f"  {w['wallet'][:50]}...")
+            print(f"    {format_venue_breakdown(w)}")
 
     # Directional bias
     print("\nDirectional bias among cross-venue traders:")
@@ -259,6 +317,12 @@ Examples:
 
   # Analyze only Drift data
   python cross_venue_analyzer.py --drift "drift_data/*.csv"
+
+  # Analyze all three venues
+  python cross_venue_analyzer.py \\
+    --drift "drift_data/*.csv" \\
+    --jupiter "jupiter_data/*.csv" \\
+    --pacifica "pacifica_data/*.csv"
         """
     )
 
@@ -271,6 +335,11 @@ Examples:
         "--jupiter",
         type=str,
         help="Glob pattern for Jupiter CSV files"
+    )
+    parser.add_argument(
+        "--pacifica",
+        type=str,
+        help="Glob pattern for Pacifica CSV files"
     )
     parser.add_argument(
         "--min-volume",
@@ -293,8 +362,8 @@ Examples:
 
     args = parser.parse_args()
 
-    if not args.drift and not args.jupiter:
-        parser.error("At least one of --drift or --jupiter must be specified")
+    if not args.drift and not args.jupiter and not args.pacifica:
+        parser.error("At least one of --drift, --jupiter, or --pacifica must be specified")
 
     all_trades = []
 
@@ -319,6 +388,17 @@ Examples:
             print(f"  Loaded {len(jupiter_trades):,} Jupiter trades")
         else:
             print(f"Warning: No files matched pattern '{args.jupiter}'")
+
+    # Load Pacifica data
+    if args.pacifica:
+        pacifica_files = glob.glob(args.pacifica)
+        if pacifica_files:
+            print(f"Loading {len(pacifica_files)} Pacifica file(s)...")
+            pacifica_trades = load_pacifica_data(pacifica_files)
+            all_trades.extend(pacifica_trades)
+            print(f"  Loaded {len(pacifica_trades):,} Pacifica trades")
+        else:
+            print(f"Warning: No files matched pattern '{args.pacifica}'")
 
     if not all_trades:
         print("No trades loaded. Check your file patterns.")
