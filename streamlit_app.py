@@ -1100,29 +1100,29 @@ st.divider()
 # Market Deep Dive
 st.header("Market Deep Dive")
 
-col1, col2 = st.columns(2)
+window_data = get_time_window_data(cache, time_window)
+pacifica_markets = cache.get("pacifica_markets", {})
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    window_data = get_time_window_data(cache, time_window)
     drift_traders = window_data.get("drift_traders", 0)
-    st.subheader(f"Drift Markets ({drift_traders:,} traders/{time_window})")
+    st.subheader(f"Drift ({drift_traders:,}/{time_window})")
 
     if drift_markets:
         drift_data = []
         total_vol = sum(m["volume"] for m in drift_markets.values())
 
-        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:15]
+        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:12]
 
         for market, info in sorted_markets:
             share = (info["volume"] / total_vol * 100) if total_vol > 0 else 0
             funding = info.get("funding_rate", 0)
-            oi_usd = info.get("open_interest", 0) * info.get("last_price", 0)
 
             drift_data.append({
-                "Market": market,
-                "Volume 24h": f"${info['volume']:,.0f}",
+                "Market": market.replace("-PERP", ""),
+                "Volume": f"${info['volume']:,.0f}",
                 "Funding": format_funding(funding),
-                "Open Interest": f"${oi_usd:,.0f}",
                 "Share": f"{share:.1f}%",
             })
 
@@ -1130,7 +1130,7 @@ with col1:
 
 with col2:
     jupiter_traders = window_data.get("jupiter_traders", 0)
-    st.subheader(f"Jupiter Markets ({jupiter_traders:,} traders/{time_window})")
+    st.subheader(f"Jupiter ({jupiter_traders:,}/{time_window})")
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
@@ -1139,21 +1139,44 @@ with col2:
         jupiter_data = []
         total_trades = sum(jupiter_trades.values())
 
-        for market in sorted(jupiter_trades.keys(), key=lambda x: jupiter_trades[x], reverse=True):
+        for market in sorted(jupiter_trades.keys(), key=lambda x: jupiter_trades[x], reverse=True)[:12]:
             trades = jupiter_trades[market]
             vol = jupiter_volumes.get(market, 0)
             share = (trades / total_trades * 100) if total_trades > 0 else 0
-            avg_size = vol / trades if trades > 0 else 0
 
             jupiter_data.append({
                 "Market": market,
                 "Trades": f"{trades:,}",
                 "Volume": f"${vol:,.0f}",
-                "Avg Trade": f"${avg_size:,.0f}",
                 "Share": f"{share:.1f}%",
             })
 
         st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
+
+with col3:
+    pacifica_traders = window_data.get("pacifica_traders", 0)
+    st.subheader(f"Pacifica ({pacifica_traders:,}/{time_window})")
+
+    if pacifica_markets:
+        pacifica_data = []
+
+        # Sort by max leverage (proxy for popularity) since volume is estimated
+        sorted_markets = sorted(pacifica_markets.items(), key=lambda x: x[1].get("max_leverage", 0), reverse=True)[:12]
+
+        for market, info in sorted_markets:
+            funding = info.get("funding_rate", 0)
+            leverage = info.get("max_leverage", 0)
+
+            pacifica_data.append({
+                "Market": market,
+                "Funding": format_funding(funding),
+                "Max Lev": f"{leverage}x",
+            })
+
+        st.dataframe(pd.DataFrame(pacifica_data), width="stretch", hide_index=True)
+        st.caption("49 markets · Per-market volume not available via API")
+    else:
+        st.caption("Market data loading...")
 
 st.divider()
 

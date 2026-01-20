@@ -537,6 +537,72 @@ def fetch_pacifica_pnl_leaderboard(limit: int = 100) -> dict:
         return {"top_winners": [], "top_losers": []}
 
 
+def fetch_pacifica_markets() -> dict:
+    """Fetch Pacifica market data from their API.
+
+    Uses /api/v1/info for market list and funding rates.
+    Volume data comes from leaderboard aggregation.
+    """
+    logger.info("Fetching Pacifica markets from API...")
+
+    try:
+        # Fetch market info (funding rates, leverage, etc.)
+        req = Request(
+            "https://api.pacifica.fi/api/v1/info",
+            headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+        )
+        with urlopen(req, timeout=30) as response:
+            info_result = json.loads(response.read().decode("utf-8"))
+
+        if not info_result.get("success") or "data" not in info_result:
+            logger.warning("Pacifica info API returned unexpected format")
+            return {}
+
+        # Fetch leaderboard for volume aggregation
+        req2 = Request(
+            "https://app.pacifica.fi/api/v1/leaderboard",
+            headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+        )
+        with urlopen(req2, timeout=30) as response:
+            lb_result = json.loads(response.read().decode("utf-8"))
+
+        # Calculate total 24h volume from top traders
+        total_volume_24h = 0
+        if lb_result.get("success") and lb_result.get("data"):
+            for trader in lb_result["data"][:100]:  # Top 100 traders
+                total_volume_24h += float(trader.get("volume_1d", 0) or 0)
+
+        markets_data = info_result["data"]
+        markets = {}
+        num_markets = len(markets_data)
+
+        for market in markets_data:
+            symbol = market.get("symbol", "")
+            if not symbol:
+                continue
+
+            funding_rate = float(market.get("funding_rate", 0) or 0)
+            max_leverage = int(market.get("max_leverage", 0) or 0)
+
+            # Estimate per-market volume (evenly distributed as placeholder)
+            # Real per-market data would need trades endpoint aggregation
+            estimated_volume = total_volume_24h / num_markets if num_markets > 0 else 0
+
+            markets[symbol] = {
+                "volume": estimated_volume,
+                "trades": 0,  # Not available from this endpoint
+                "funding_rate": funding_rate,
+                "max_leverage": max_leverage,
+            }
+
+        logger.info(f"Pacifica markets: {len(markets)} markets, ${total_volume_24h:,.0f} total volume (24h)")
+        return markets
+
+    except Exception as e:
+        logger.warning(f"Pacifica markets API failed: {e}")
+        return {}
+
+
 # Jupiter markets for P&L aggregation
 JUPITER_PNL_MARKETS = {
     "SOL": "So11111111111111111111111111111111111111112",

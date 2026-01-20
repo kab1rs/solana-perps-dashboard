@@ -263,6 +263,7 @@ from solana_perps_dashboard import (
     fetch_cross_platform_wallets,
     fetch_jupiter_accurate_traders,
     fetch_pacifica_traders,
+    fetch_pacifica_markets,
     fetch_flashtrade_traders,
     fetch_adrena_traders,
     fetch_jupiter_market_breakdown,
@@ -342,6 +343,7 @@ def update_cache():
         "protocols": [],
         "drift_markets": {},
         "jupiter_markets": {},
+        "pacifica_markets": {},
         "total_open_interest": 0,
         "global_derivatives": [],
         "time_windows": {},
@@ -355,11 +357,12 @@ def update_cache():
     # Fetch fast APIs in parallel
     logger.info("Fetching fast APIs in parallel...")
     defillama_volumes = {}
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         future_to_name = {
             executor.submit(fetch_defillama_volume): "defillama",
             executor.submit(fetch_global_derivatives): "global",
             executor.submit(fetch_drift_markets_from_api): "drift_markets",
+            executor.submit(fetch_pacifica_markets): "pacifica_markets",
         }
         for future in as_completed(future_to_name):
             name = future_to_name[future]
@@ -375,12 +378,16 @@ def update_cache():
                         m.get("open_interest", 0) * m.get("last_price", 0)
                         for m in result.values()
                     )
+                elif name == "pacifica_markets":
+                    cache["pacifica_markets"] = result
             except Exception as e:
                 logger.error(f"{name} failed: {e}")
                 if name == "global":
                     cache["global_derivatives"] = []
                 elif name == "drift_markets":
                     cache["drift_markets"] = {}
+                elif name == "pacifica_markets":
+                    cache["pacifica_markets"] = {}
 
     # Fetch ALL time windows in parallel (major performance improvement)
     # Previously: windows ran sequentially (~10 min total)
@@ -517,6 +524,7 @@ def update_cache():
     logger.info(f"Protocols: {len(cache['protocols'])}")
     logger.info(f"Drift markets: {len(cache['drift_markets'])}")
     logger.info(f"Jupiter markets: {len(cache['jupiter_markets'].get('trades', {}))}")
+    logger.info(f"Pacifica markets: {len(cache['pacifica_markets'])}")
     logger.info(f"Global derivatives: {len(cache['global_derivatives'])}")
     logger.info(f"Total Open Interest: ${cache['total_open_interest']:,.0f}")
     logger.info("Time window data:")
