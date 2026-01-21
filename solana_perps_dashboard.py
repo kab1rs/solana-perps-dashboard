@@ -860,15 +860,16 @@ def fetch_cross_platform_wallets_from_dune(hours: int = 1) -> dict:
     return {"drift": drift_wallets, "jupiter": jupiter_wallets}
 
 
-def fetch_cross_platform_wallets(hours: int = 1) -> dict:
-    """Fetch wallet overlap between Drift, Jupiter, and Pacifica for the past N hours.
+def fetch_cross_platform_wallets(hours: int = 24) -> dict:
+    """Fetch wallet overlap between Drift, Jupiter, and Pacifica for the past 24 hours.
 
-    For 1h window: Queries Dune directly and saves a snapshot for future aggregation.
-    For longer windows (4h/8h/24h): Aggregates from cached hourly snapshots to avoid timeouts.
+    Always uses 24h data for consistency since Pacifica API only provides 24h granularity.
+    The hours parameter is ignored - all platforms use 24h windows.
 
     Returns counts for all overlap combinations.
     """
-    logger.info(f"Fetching cross-platform wallets ({hours}h)...")
+    # Always use 24h for consistency (Pacifica API only has 24h data)
+    logger.info("Fetching cross-platform wallets (24h)...")
 
     empty_result = {
         "drift_only": 0, "jupiter_only": 0, "pacifica_only": 0,
@@ -876,7 +877,7 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
         "all_three": 0, "multi_platform": 0,
     }
 
-    # Get Pacifica wallets from API (most accurate for off-chain CLOB)
+    # Get Pacifica wallets from API (24h - only granularity available)
     pacifica_api = get_pacifica_api_data()
     if pacifica_api:
         pacifica_wallets = pacifica_api.get("wallets_24h", set())
@@ -885,49 +886,36 @@ def fetch_cross_platform_wallets(hours: int = 1) -> dict:
         pacifica_wallets = set()
         logger.warning("Pacifica API unavailable for wallet overlap")
 
-    # For 1h window: Query Dune directly and save snapshot
-    if hours == 1:
-        dune_result = fetch_cross_platform_wallets_from_dune(hours=1)
+    # Always query 24h from Dune for consistency with Pacifica
+    snapshots = load_wallet_snapshots(24)
 
+    if snapshots["snapshots_loaded"] == 0:
+        logger.warning("No wallet snapshots available, falling back to Dune query")
+        dune_result = fetch_cross_platform_wallets_from_dune(hours=24)
         if "error" in dune_result:
-            logger.error(f"Dune wallet query failed: {dune_result['error']}")
-            return {**empty_result, "error": dune_result["error"]}
-
+            return {**empty_result, "error": f"No snapshots and Dune failed: {dune_result['error']}"}
         drift_wallets = dune_result["drift"]
         jupiter_wallets = dune_result["jupiter"]
-        logger.info(f"Dune: {len(drift_wallets)} Drift wallets, {len(jupiter_wallets)} Jupiter wallets")
-
-        # Save snapshot for future aggregation
-        save_wallet_snapshot(drift_wallets, jupiter_wallets, pacifica_wallets)
-
-        # Prune old snapshots periodically
-        prune_old_wallet_snapshots()
-
-    # For longer windows: Aggregate from cached snapshots
     else:
-        snapshots = load_wallet_snapshots(hours)
+        drift_wallets = snapshots["drift"]
+        jupiter_wallets = snapshots["jupiter"]
+        # Use Pacifica from snapshots if available, otherwise use API
+        if snapshots["pacifica"]:
+            pacifica_wallets = snapshots["pacifica"]
+        logger.info(f"Aggregated from {snapshots['snapshots_loaded']} snapshots: "
+                   f"{len(drift_wallets)} Drift, {len(jupiter_wallets)} Jupiter, {len(pacifica_wallets)} Pacifica")
 
-        if snapshots["snapshots_loaded"] == 0:
-            logger.warning(f"No wallet snapshots available for {hours}h window, falling back to Dune")
-            # Fallback: try Dune directly (may timeout)
-            dune_result = fetch_cross_platform_wallets_from_dune(hours=hours)
-            if "error" in dune_result:
-                return {**empty_result, "error": f"No snapshots and Dune failed: {dune_result['error']}"}
-            drift_wallets = dune_result["drift"]
-            jupiter_wallets = dune_result["jupiter"]
-        else:
-            drift_wallets = snapshots["drift"]
-            jupiter_wallets = snapshots["jupiter"]
-            # Use Pacifica from snapshots if available, otherwise use API
-            if snapshots["pacifica"]:
-                pacifica_wallets = snapshots["pacifica"]
-            logger.info(f"Aggregated from {snapshots['snapshots_loaded']} snapshots: "
-                       f"{len(drift_wallets)} Drift, {len(jupiter_wallets)} Jupiter, {len(pacifica_wallets)} Pacifica")
+    # Save snapshot for future aggregation (1h of data for building up 24h)
+    # Query fresh 1h data from Dune for the snapshot
+    dune_1h = fetch_cross_platform_wallets_from_dune(hours=1)
+    if "error" not in dune_1h:
+        save_wallet_snapshot(dune_1h["drift"], dune_1h["jupiter"], pacifica_wallets)
+        prune_old_wallet_snapshots()
 
     # Calculate overlap
     result = calculate_wallet_overlap(drift_wallets, jupiter_wallets, pacifica_wallets)
     total = sum(v for k, v in result.items() if k != "multi_platform")
-    logger.info(f"{total} total wallets ({result['all_three']} on all 3, {result['multi_platform']} multi-platform)")
+    logger.info(f"{total} total wallets (24h) - {result['all_three']} on all 3, {result['multi_platform']} multi-platform")
     return result
 
 

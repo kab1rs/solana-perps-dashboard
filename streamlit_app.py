@@ -1180,18 +1180,15 @@ with col3:
 
 st.divider()
 
-# Cross-Platform Wallet Analysis
-st.header("Cross-Platform Traders")
-st.caption(f"Wallet overlap between Drift, Jupiter, and Pacifica ({time_window} window)")
+# Cross-Platform Wallet Analysis (always 24h for consistency)
+st.header("Cross-Platform Traders (24h)")
+st.caption("Wallet overlap between Drift, Jupiter, and Pacifica")
 
-wallet_data = get_time_window_data(cache, time_window).get("wallet_overlap", {})
+# Always use 24h wallet data for consistency (Pacifica API only provides 24h granularity)
+wallet_data = cache.get("time_windows", {}).get("24h", {}).get("wallet_overlap", {})
 
 if wallet_data.get("error"):
-    st.warning(f"Wallet data unavailable for {time_window} window")
-    if "timeout" in wallet_data.get("error", "").lower() or "skipped" in wallet_data.get("error", "").lower():
-        st.caption("Wallet overlap queries time out beyond 4h due to data volume. Try 1h or 4h window.")
-    else:
-        st.caption(wallet_data.get("error", "Unknown error"))
+    st.warning(f"Wallet data unavailable: {wallet_data.get('error', 'Unknown error')}")
 else:
     # Extract all overlap categories
     drift_only = wallet_data.get("drift_only", 0)
@@ -1347,7 +1344,7 @@ else:
                     )
                 ])
                 fig.update_layout(
-                    title=dict(text=f"Total Traders by Platform ({time_window})", font=dict(size=14)),
+                    title=dict(text="Total Traders by Platform (24h)", font=dict(size=14)),
                     yaxis_title="Unique Wallets",
                     height=320,
                     bargap=0.4,
