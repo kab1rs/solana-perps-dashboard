@@ -22,590 +22,854 @@ st.set_page_config(
     layout="wide",
 )
 
-# Premium "Terminal Luxe" CSS Design System
-st.markdown("""
+# ══════════════════════════════════════════════════════════════════════════════
+# TERMINAL THEME CONFIGURATION
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Theme options - can be changed via sidebar
+TERMINAL_THEMES = {
+    "matrix": {
+        "name": "Matrix Green",
+        "accent": "#00FF41",
+        "accent_dim": "#00aa2a",
+        "positive": "#00FF41",
+        "negative": "#FF0040",
+        "warning": "#FFB000",
+    },
+    "amber": {
+        "name": "Amber Retro",
+        "accent": "#FFB000",
+        "accent_dim": "#aa7500",
+        "positive": "#00FF41",
+        "negative": "#FF0040",
+        "warning": "#FFB000",
+    },
+    "solana": {
+        "name": "Solana Purple",
+        "accent": "#9945FF",
+        "accent_dim": "#6b30b3",
+        "positive": "#00FFA3",
+        "negative": "#FF4F6F",
+        "warning": "#FFB800",
+    },
+    "cyan": {
+        "name": "Cyber Cyan",
+        "accent": "#00FFA3",
+        "accent_dim": "#00aa6d",
+        "positive": "#00FFA3",
+        "negative": "#FF4F6F",
+        "warning": "#FFB800",
+    },
+}
+
+# Get theme from URL query params or session state (settings persistence)
+query_params = st.query_params
+
+# Initialize from URL params if available, otherwise use defaults
+if "terminal_theme" not in st.session_state:
+    saved_theme = query_params.get("theme", "matrix")
+    st.session_state.terminal_theme = saved_theme if saved_theme in TERMINAL_THEMES else "matrix"
+if "crt_effects" not in st.session_state:
+    st.session_state.crt_effects = query_params.get("crt", "1") == "1"
+if "show_alerts" not in st.session_state:
+    st.session_state.show_alerts = query_params.get("alerts", "1") == "1"
+
+theme = TERMINAL_THEMES[st.session_state.terminal_theme]
+crt_enabled = st.session_state.crt_effects
+
+# Terminal CSS Design System
+st.markdown(f"""
 <style>
     /* ══════════════════════════════════════════════════════════════════════════
-       SOLANA PERPS INSIGHTS - TERMINAL LUXE DESIGN SYSTEM
-       A premium trading terminal aesthetic with deep blacks and neon accents
+       SOLANA PERPS TERMINAL - PURE TERMINAL AESTHETIC
+       Monospace everything, box-drawing borders, dense data display
        ══════════════════════════════════════════════════════════════════════════ */
 
-    /* Import distinctive fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    /* Import monospace font */
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-    /* CSS Variables - Design Tokens */
-    :root {
-        /* Colors - Rich dark palette with neon accents */
-        --bg-void: #06060a;
-        --bg-deep: #0a0a0f;
-        --bg-surface: #0f0f16;
-        --bg-elevated: #14141d;
-        --bg-card: rgba(20, 20, 32, 0.7);
+    /* CSS Variables - Terminal Design Tokens */
+    :root {{
+        /* Background colors - pure black */
+        --bg-void: #000000;
+        --bg-deep: #0a0a0a;
+        --bg-surface: #111111;
+        --bg-elevated: #1a1a1a;
+        --bg-card: #0d0d0d;
 
-        /* Accent colors */
-        --accent-solana: #9945FF;
-        --accent-cyan: #00FFA3;
-        --accent-magenta: #DC1FFF;
-        --accent-blue: #4F9DFF;
-        --accent-amber: #FFB800;
-
-        /* Semantic colors */
-        --positive: #00FFA3;
-        --negative: #FF4F6F;
-        --warning: #FFB800;
-        --muted: #6B7280;
+        /* Theme accent colors */
+        --accent: {theme['accent']};
+        --accent-dim: {theme['accent_dim']};
+        --positive: {theme['positive']};
+        --negative: {theme['negative']};
+        --warning: {theme['warning']};
 
         /* Text colors */
-        --text-primary: #F8FAFC;
-        --text-secondary: #94A3B8;
-        --text-muted: #64748B;
+        --text-primary: #e0e0e0;
+        --text-secondary: #888888;
+        --text-muted: #555555;
+        --text-bright: #ffffff;
 
-        /* Borders & Effects */
-        --border-subtle: rgba(255, 255, 255, 0.06);
-        --border-glow: rgba(153, 69, 255, 0.3);
-        --glow-solana: 0 0 30px rgba(153, 69, 255, 0.15);
-        --glow-cyan: 0 0 20px rgba(0, 255, 163, 0.1);
+        /* Borders */
+        --border-color: #333333;
+        --border-bright: #444444;
 
-        /* Typography */
-        --font-display: 'Outfit', sans-serif;
-        --font-mono: 'JetBrains Mono', monospace;
+        /* Typography - monospace only */
+        --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-        /* Spacing */
-        --radius-sm: 6px;
-        --radius-md: 10px;
-        --radius-lg: 16px;
-        --radius-xl: 24px;
-    }
+        /* No border radius - sharp corners */
+        --radius: 0px;
+    }}
 
     /* ═══════════ GLOBAL STYLES ═══════════ */
 
-    .stApp {
-        background: linear-gradient(135deg, var(--bg-void) 0%, var(--bg-deep) 50%, #0d0a14 100%);
-        font-family: var(--font-display);
-    }
+    .stApp {{
+        background: var(--bg-void) !important;
+        font-family: var(--font-mono) !important;
+    }}
 
-    /* Subtle grid pattern overlay */
-    .stApp::before {
+    /* CRT Scanline effect overlay - conditional */
+    .stApp::before {{
         content: '';
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-image:
-            linear-gradient(rgba(153, 69, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(153, 69, 255, 0.02) 1px, transparent 1px);
-        background-size: 60px 60px;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        );
         pointer-events: none;
-        z-index: 0;
+        z-index: 1000;
+        opacity: {0.3 if crt_enabled else 0};
+        transition: opacity 0.3s ease;
+    }}
+
+    /* CRT text glow effect */
+    {"" if not crt_enabled else '''
+    .stApp {
+        text-shadow: 0 0 2px ''' + theme['accent'] + '''20;
     }
+    '''}
 
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-        max-width: 1400px;
+    /* CRT screen flicker animation */
+    {"" if not crt_enabled else '''
+    @keyframes flicker {
+        0%, 100% { opacity: 1; }
+        92% { opacity: 1; }
+        93% { opacity: 0.8; }
+        94% { opacity: 1; }
     }
-
-    /* ═══════════ TYPOGRAPHY ═══════════ */
-
-    h1, h2, h3, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        font-family: var(--font-display) !important;
-        font-weight: 600 !important;
-        letter-spacing: -0.02em;
+    .stApp {
+        animation: flicker 8s infinite;
     }
+    '''}
 
-    h1, .stMarkdown h1 {
-        font-size: 2.5rem !important;
-        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-solana) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.5rem !important;
-    }
+    .main .block-container {{
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        max-width: 1600px;
+    }}
 
-    h2, .stMarkdown h2 {
-        font-size: 1.4rem !important;
-        color: var(--text-primary) !important;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--border-subtle);
-        margin-top: 1.5rem !important;
-    }
+    /* ═══════════ TYPOGRAPHY - ALL MONOSPACE ═══════════ */
 
-    h2::before {
-        content: '◈';
-        color: var(--accent-solana);
-        font-size: 0.9em;
-    }
-
-    h3, .stMarkdown h3 {
-        font-size: 1.1rem !important;
-        color: var(--text-secondary) !important;
-        font-weight: 500 !important;
-    }
-
-    p, span, div {
-        font-family: var(--font-display);
-    }
-
-    /* Caption styling */
-    .stCaption, small, .caption {
+    * {{
         font-family: var(--font-mono) !important;
-        font-size: 0.75rem !important;
-        color: var(--text-muted) !important;
-        letter-spacing: 0.02em;
-    }
+    }}
 
-    /* ═══════════ SIDEBAR ═══════════ */
-
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-deep) 100%);
-        border-right: 1px solid var(--border-subtle);
-    }
-
-    section[data-testid="stSidebar"] .stMarkdown h1 {
-        font-size: 1.3rem !important;
-        background: linear-gradient(135deg, var(--accent-solana) 0%, var(--accent-cyan) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    h1, h2, h3, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {{
+        font-family: var(--font-mono) !important;
+        font-weight: 600 !important;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border-subtle);
-        margin-bottom: 1rem !important;
-    }
+    }}
 
-    section[data-testid="stSidebar"] a {
-        font-family: var(--font-mono) !important;
+    h1, .stMarkdown h1 {{
+        font-size: 1.2rem !important;
+        color: var(--accent) !important;
+        margin-bottom: 0.5rem !important;
+    }}
+
+    h2, .stMarkdown h2 {{
+        font-size: 0.9rem !important;
+        color: var(--accent) !important;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-top: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }}
+
+    h2::before {{
+        content: '► ';
+        color: var(--accent);
+    }}
+
+    h3, .stMarkdown h3 {{
         font-size: 0.85rem !important;
+        color: var(--text-secondary) !important;
+        font-weight: 500 !important;
+    }}
+
+    h3::before {{
+        content: '> ';
+        color: var(--accent-dim);
+    }}
+
+    p, span, div, label {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.8rem;
+    }}
+
+    /* Caption styling */
+    .stCaption, small, .caption {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.7rem !important;
+        color: var(--text-muted) !important;
+    }}
+
+    /* ═══════════ SIDEBAR - TERMINAL STYLE ═══════════ */
+
+    section[data-testid="stSidebar"] {{
+        background: var(--bg-deep) !important;
+        border-right: 1px solid var(--border-color);
+    }}
+
+    section[data-testid="stSidebar"] > div {{
+        background: var(--bg-deep) !important;
+    }}
+
+    section[data-testid="stSidebar"] .stMarkdown h1 {{
+        font-size: 0.9rem !important;
+        color: var(--accent) !important;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 0.75rem !important;
+    }}
+
+    section[data-testid="stSidebar"] a {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.75rem !important;
         color: var(--text-secondary) !important;
         text-decoration: none;
         display: block;
-        padding: 8px 12px;
-        margin: 2px 0;
-        border-radius: var(--radius-sm);
-        transition: all 0.2s ease;
+        padding: 6px 8px;
+        margin: 1px 0;
         border-left: 2px solid transparent;
-    }
+        transition: all 0.1s ease;
+    }}
 
-    section[data-testid="stSidebar"] a:hover {
-        color: var(--accent-cyan) !important;
-        background: rgba(0, 255, 163, 0.05);
-        border-left-color: var(--accent-cyan);
-    }
+    section[data-testid="stSidebar"] a:hover {{
+        color: var(--accent) !important;
+        background: rgba(255, 255, 255, 0.03);
+        border-left-color: var(--accent);
+    }}
 
-    section[data-testid="stSidebar"] hr {
-        border-color: var(--border-subtle);
-        margin: 1.5rem 0;
-    }
+    section[data-testid="stSidebar"] hr {{
+        border-color: var(--border-color);
+        margin: 1rem 0;
+    }}
 
-    /* ═══════════ METRIC CARDS ═══════════ */
+    /* ═══════════ METRIC CARDS - TERMINAL PANELS ═══════════ */
 
-    div[data-testid="stMetric"] {
-        background: var(--bg-card);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem 1.5rem;
-        transition: all 0.3s ease;
+    div[data-testid="stMetric"] {{
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 0.75rem 1rem;
         position: relative;
-        overflow: hidden;
-    }
+    }}
 
-    div[data-testid="stMetric"]::before {
-        content: '';
+    div[data-testid="stMetric"]::before {{
+        content: '┌─';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--accent-solana), transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
+        top: -1px;
+        left: -1px;
+        color: var(--border-bright);
+        font-size: 0.7rem;
+    }}
 
-    div[data-testid="stMetric"]:hover {
-        border-color: var(--border-glow);
-        box-shadow: var(--glow-solana);
-        transform: translateY(-2px);
-    }
+    div[data-testid="stMetric"]::after {{
+        content: '─┐';
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        color: var(--border-bright);
+        font-size: 0.7rem;
+    }}
 
-    div[data-testid="stMetric"]:hover::before {
-        opacity: 1;
-    }
+    div[data-testid="stMetric"] label {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.65rem !important;
+        color: var(--text-muted) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500 !important;
+    }}
 
-    div[data-testid="stMetric"] label {
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {{
+        font-family: var(--font-mono) !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        color: var(--accent) !important;
+        letter-spacing: 0.02em;
+    }}
+
+    div[data-testid="stMetric"] div[data-testid="stMetricDelta"] {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.7rem !important;
+    }}
+
+    div[data-testid="stMetric"] div[data-testid="stMetricDelta"] svg {{
+        display: none;
+    }}
+
+    /* ═══════════ DATA TABLES - DENSE TERMINAL ═══════════ */
+
+    div[data-testid="stDataFrame"] {{
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }}
+
+    div[data-testid="stDataFrame"] table {{
         font-family: var(--font-mono) !important;
         font-size: 0.75rem !important;
+    }}
+
+    div[data-testid="stDataFrame"] th {{
+        background: var(--bg-elevated) !important;
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        font-size: 0.65rem !important;
+        letter-spacing: 0.08em;
+        padding: 8px 12px !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }}
+
+    div[data-testid="stDataFrame"] td {{
+        color: var(--text-primary) !important;
+        padding: 6px 12px !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }}
+
+    div[data-testid="stDataFrame"] tr:hover td {{
+        background: rgba(255, 255, 255, 0.03) !important;
+        color: var(--text-bright) !important;
+    }}
+
+    /* ═══════════ BUTTONS & RADIO - TERMINAL STYLE ═══════════ */
+
+    div[data-testid="stRadio"] > div {{
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 0.25rem;
+        gap: 0;
+    }}
+
+    div[data-testid="stRadio"] label {{
+        font-family: var(--font-mono) !important;
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.8rem !important;
+        border-radius: var(--radius) !important;
+        color: var(--text-secondary) !important;
+        transition: all 0.1s ease !important;
+    }}
+
+    div[data-testid="stRadio"] label:hover {{
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: var(--text-primary) !important;
+    }}
+
+    div[data-testid="stRadio"] label[data-checked="true"] {{
+        background: var(--bg-elevated) !important;
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        border: 1px solid var(--accent-dim);
+    }}
+
+    /* Hide radio circles */
+    div[data-testid="stRadio"] input[type="radio"] {{
+        display: none;
+    }}
+
+    /* ═══════════ SELECT BOX - TERMINAL STYLE ═══════════ */
+
+    div[data-testid="stSelectbox"] > div > div {{
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+    }}
+
+    div[data-testid="stSelectbox"] label {{
+        font-size: 0.7rem !important;
         color: var(--text-muted) !important;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-weight: 500 !important;
-    }
-
-    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        font-family: var(--font-display) !important;
-        font-size: 1.75rem !important;
-        font-weight: 600 !important;
-        color: var(--text-primary) !important;
-        letter-spacing: -0.02em;
-    }
-
-    div[data-testid="stMetric"] div[data-testid="stMetricDelta"] {
-        font-family: var(--font-mono) !important;
-        font-size: 0.8rem !important;
-    }
-
-    div[data-testid="stMetric"] div[data-testid="stMetricDelta"] svg {
-        display: none;
-    }
-
-    div[data-testid="stMetric"] div[data-testid="stMetricDelta"][data-testid*="Up"],
-    div[data-testid="stMetric"] div[data-testid="stMetricDelta"]:has(svg[data-icon="arrowUp"]) {
-        color: var(--positive) !important;
-    }
-
-    /* ═══════════ DATA TABLES ═══════════ */
-
-    div[data-testid="stDataFrame"] {
-        background: var(--bg-card);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-subtle);
-        overflow: hidden;
-    }
-
-    div[data-testid="stDataFrame"] table {
-        font-family: var(--font-mono) !important;
-        font-size: 0.85rem !important;
-    }
-
-    div[data-testid="stDataFrame"] th {
-        background: var(--bg-elevated) !important;
-        color: var(--text-muted) !important;
-        font-weight: 500 !important;
-        text-transform: uppercase;
-        font-size: 0.7rem !important;
-        letter-spacing: 0.06em;
-        padding: 12px 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    div[data-testid="stDataFrame"] td {
-        color: var(--text-secondary) !important;
-        padding: 10px 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    div[data-testid="stDataFrame"] tr:hover td {
-        background: rgba(153, 69, 255, 0.05) !important;
-        color: var(--text-primary) !important;
-    }
-
-    /* ═══════════ BUTTONS & RADIO ═══════════ */
-
-    div[data-testid="stRadio"] > div {
-        background: var(--bg-card);
-        border-radius: var(--radius-lg);
-        padding: 0.5rem;
-        border: 1px solid var(--border-subtle);
-        gap: 0.25rem;
-    }
-
-    div[data-testid="stRadio"] label {
-        font-family: var(--font-mono) !important;
-        font-size: 0.85rem !important;
-        padding: 0.6rem 1.2rem !important;
-        border-radius: var(--radius-md) !important;
-        transition: all 0.2s ease !important;
-        color: var(--text-secondary) !important;
-    }
-
-    div[data-testid="stRadio"] label:hover {
-        background: rgba(153, 69, 255, 0.1) !important;
-        color: var(--text-primary) !important;
-    }
-
-    div[data-testid="stRadio"] label[data-checked="true"] {
-        background: linear-gradient(135deg, rgba(153, 69, 255, 0.3) 0%, rgba(0, 255, 163, 0.15) 100%) !important;
-        color: var(--text-primary) !important;
-        font-weight: 500 !important;
-        box-shadow: inset 0 0 0 1px var(--accent-solana);
-    }
-
-    /* Hide radio circles */
-    div[data-testid="stRadio"] input[type="radio"] {
-        display: none;
-    }
+    }}
 
     /* ═══════════ ALERTS & INFO BOXES ═══════════ */
 
-    div[data-testid="stAlert"] {
+    div[data-testid="stAlert"] {{
         background: var(--bg-card) !important;
-        border: 1px solid var(--border-subtle) !important;
-        border-radius: var(--radius-md) !important;
-        font-family: var(--font-display) !important;
-    }
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        font-family: var(--font-mono) !important;
+        font-size: 0.75rem !important;
+    }}
 
-    .stAlert[data-baseweb*="info"] {
-        border-left: 3px solid var(--accent-blue) !important;
-    }
+    .stAlert[data-baseweb*="info"] {{
+        border-left: 3px solid var(--accent) !important;
+    }}
 
-    .stAlert[data-baseweb*="warning"] {
+    .stAlert[data-baseweb*="warning"] {{
         border-left: 3px solid var(--warning) !important;
-    }
+    }}
 
-    .stAlert[data-baseweb*="error"] {
+    .stAlert[data-baseweb*="error"] {{
         border-left: 3px solid var(--negative) !important;
-    }
+    }}
 
-    /* ═══════════ DIVIDERS ═══════════ */
+    /* ═══════════ DIVIDERS - TERMINAL STYLE ═══════════ */
 
-    hr {
+    hr {{
         border: none;
         height: 1px;
-        background: linear-gradient(90deg,
-            transparent,
-            var(--border-subtle) 20%,
-            var(--border-subtle) 80%,
-            transparent
-        );
-        margin: 2rem 0;
-    }
+        background: var(--border-color);
+        margin: 1.5rem 0;
+    }}
 
     /* ═══════════ SPINNERS ═══════════ */
 
-    .stSpinner > div {
-        border-top-color: var(--accent-solana) !important;
-    }
+    .stSpinner > div {{
+        border-top-color: var(--accent) !important;
+    }}
 
-    /* ═══════════ CUSTOM CLASSES ═══════════ */
+    /* ═══════════ TERMINAL CUSTOM CLASSES ═══════════ */
 
-    .positive { color: var(--positive) !important; }
-    .negative { color: var(--negative) !important; }
-    .muted { color: var(--text-muted) !important; }
-
-    .data-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        background: var(--bg-elevated);
-        border-radius: 100px;
-        font-family: var(--font-mono);
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        border: 1px solid var(--border-subtle);
-    }
-
-    .data-badge::before {
-        content: '';
-        width: 6px;
-        height: 6px;
-        background: var(--positive);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-    }
-
-    .section-intro {
+    .terminal-box {{
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        padding: 1rem;
         font-family: var(--font-mono);
         font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 1.5rem;
-        padding-left: 1rem;
-        border-left: 2px solid var(--border-subtle);
-    }
+        color: var(--text-primary);
+        position: relative;
+    }}
 
-    .footer-credits {
-        font-family: var(--font-mono);
+    .terminal-header {{
+        color: var(--accent);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }}
+
+    .terminal-value {{
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+    }}
+
+    .terminal-label {{
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }}
+
+    .positive {{ color: var(--positive) !important; }}
+    .negative {{ color: var(--negative) !important; }}
+    .muted {{ color: var(--text-muted) !important; }}
+    .accent {{ color: var(--accent) !important; }}
+
+    /* Blinking cursor effect */
+    @keyframes blink {{
+        0%, 50% {{ opacity: 1; }}
+        51%, 100% {{ opacity: 0; }}
+    }}
+
+    .cursor {{
+        display: inline-block;
+        width: 8px;
+        height: 14px;
+        background: var(--accent);
+        animation: blink 1s infinite;
+        vertical-align: middle;
+        margin-left: 2px;
+    }}
+
+    /* Status indicator */
+    .status-dot {{
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }}
+
+    .status-dot.live {{ background: var(--positive); }}
+    .status-dot.stale {{ background: var(--warning); }}
+    .status-dot.error {{ background: var(--negative); }}
+
+    /* Terminal-style loading animation */
+    @keyframes terminal-loading {{
+        0% {{ content: '[    ]'; }}
+        20% {{ content: '[=   ]'; }}
+        40% {{ content: '[==  ]'; }}
+        60% {{ content: '[=== ]'; }}
+        80% {{ content: '[====]'; }}
+        100% {{ content: '[    ]'; }}
+    }}
+
+    @keyframes pulse {{
+        0%, 100% {{ opacity: 0.4; }}
+        50% {{ opacity: 1; }}
+    }}
+
+    .terminal-loading {{
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent);
         font-size: 0.75rem;
-        color: var(--text-muted);
-        padding: 2rem;
-        text-align: center;
-        border-top: 1px solid var(--border-subtle);
-        margin-top: 3rem;
-    }
+    }}
 
-    .footer-credits a {
-        color: var(--accent-solana);
-        text-decoration: none;
-    }
+    .terminal-loading::before {{
+        content: '▶';
+        animation: pulse 1s infinite;
+    }}
 
-    .footer-credits a:hover {
-        text-decoration: underline;
-    }
+    /* Streamlit spinner override - terminal style */
+    .stSpinner > div {{
+        border-color: var(--accent) !important;
+    }}
 
-    /* ═══════════ ANIMATIONS ═══════════ */
+    .stSpinner > div > div {{
+        background-color: transparent !important;
+    }}
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+    div[data-testid="stSpinner"] {{
+        color: var(--accent) !important;
+    }}
 
-    .main .block-container > div {
-        animation: fadeInUp 0.4s ease-out;
-    }
+    div[data-testid="stSpinner"]::before {{
+        content: '> LOADING...';
+        color: var(--accent);
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+    }}
 
-    /* Stagger animation for columns */
-    .main .block-container [data-testid="column"]:nth-child(1) { animation-delay: 0s; }
-    .main .block-container [data-testid="column"]:nth-child(2) { animation-delay: 0.05s; }
-    .main .block-container [data-testid="column"]:nth-child(3) { animation-delay: 0.1s; }
-    .main .block-container [data-testid="column"]:nth-child(4) { animation-delay: 0.15s; }
-    .main .block-container [data-testid="column"]:nth-child(5) { animation-delay: 0.2s; }
+    /* Hide default streamlit elements */
+    #MainMenu {{ visibility: hidden; }}
+    footer {{ visibility: hidden; }}
+    header {{ visibility: hidden; }}
 
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar navigation
+# Sidebar navigation - Terminal Style
 with st.sidebar:
-    st.markdown("""
-    <div style="padding: 0.5rem 0 1.5rem 0;">
-        <div style="font-family: 'Outfit', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: #64748B; margin-bottom: 0.5rem;">Dashboard</div>
-        <div style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 600; background: linear-gradient(135deg, #9945FF, #00FFA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Solana Perps</div>
+    # Terminal-style header
+    st.markdown(f"""
+    <div style="padding: 0.5rem 0 1rem 0; border-bottom: 1px solid #333;">
+        <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: #555; margin-bottom: 0.25rem;">┌── TERMINAL ──┐</div>
+        <div style="font-size: 1rem; font-weight: 700; color: {theme['accent']};">SOL/PERPS<span class="cursor"></span></div>
+        <div style="font-size: 0.65rem; color: #555; margin-top: 0.25rem;">v1.0.0</div>
     </div>
     """, unsafe_allow_html=True)
 
+    # Theme selector
     st.markdown("""
-    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748B; margin-bottom: 0.75rem; padding-left: 0.5rem;">Navigate</div>
+    <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ THEME ]</div>
     """, unsafe_allow_html=True)
 
+    theme_names = {k: v["name"] for k, v in TERMINAL_THEMES.items()}
+    selected_theme = st.selectbox(
+        "Theme",
+        options=list(theme_names.keys()),
+        format_func=lambda x: theme_names[x],
+        index=list(theme_names.keys()).index(st.session_state.terminal_theme),
+        label_visibility="collapsed"
+    )
+
+    if selected_theme != st.session_state.terminal_theme:
+        st.session_state.terminal_theme = selected_theme
+        st.query_params["theme"] = selected_theme
+        st.rerun()
+
+    # Display settings
     st.markdown("""
+    <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ DISPLAY ]</div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        crt_toggle = st.checkbox("CRT", value=st.session_state.crt_effects, help="Scanlines & glow")
+        if crt_toggle != st.session_state.crt_effects:
+            st.session_state.crt_effects = crt_toggle
+            st.query_params["crt"] = "1" if crt_toggle else "0"
+            st.rerun()
+    with col2:
+        alerts_toggle = st.checkbox("Alerts", value=st.session_state.show_alerts, help="Show alerts panel")
+        if alerts_toggle != st.session_state.show_alerts:
+            st.session_state.show_alerts = alerts_toggle
+            st.query_params["alerts"] = "1" if alerts_toggle else "0"
+            st.rerun()
+
+    st.markdown("""
+    <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ NAVIGATE ]</div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
 <style>
-.nav-link {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: #94A3B8;
+.nav-link {{
+    font-size: 0.75rem;
+    color: #888;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    margin: 3px 0;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    display: block;
+    padding: 6px 8px;
+    margin: 1px 0;
     border-left: 2px solid transparent;
-}
-.nav-link:hover {
-    color: #00FFA3;
-    background: rgba(0, 255, 163, 0.06);
-    border-left-color: #00FFA3;
-}
-.nav-link .icon {
-    font-size: 1rem;
-    width: 20px;
-    text-align: center;
-}
+    transition: all 0.1s ease;
+}}
+.nav-link:hover {{
+    color: {theme['accent']};
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: {theme['accent']};
+}}
+.nav-link::before {{
+    content: '> ';
+    color: #444;
+}}
+.nav-link:hover::before {{
+    color: {theme['accent']};
+}}
 </style>
 
-<a href="#solana-perps-overview" class="nav-link"><span class="icon">◈</span> Overview</a>
-<a href="#cross-chain-comparison" class="nav-link"><span class="icon">⬡</span> Cross-Chain</a>
-<a href="#solana-protocol-breakdown" class="nav-link"><span class="icon">◐</span> Protocols</a>
-<a href="#best-venue-by-asset" class="nav-link"><span class="icon">⟁</span> Best Venue</a>
-<a href="#funding-rate-overview" class="nav-link"><span class="icon">⏱</span> Funding Rates</a>
-<a href="#market-deep-dive" class="nav-link"><span class="icon">◉</span> Market Deep Dive</a>
-<a href="#cross-platform-traders" class="nav-link"><span class="icon">⊕</span> Cross-Platform</a>
-<a href="#quick-insights" class="nav-link"><span class="icon">✦</span> Quick Insights</a>
+<a href="#solana-perps-overview" class="nav-link">OVERVIEW</a>
+<a href="#cross-chain-comparison" class="nav-link">CROSS_CHAIN</a>
+<a href="#solana-protocol-breakdown" class="nav-link">PROTOCOLS</a>
+<a href="#best-venue-by-asset" class="nav-link">BEST_VENUE</a>
+<a href="#funding-rate-overview" class="nav-link">FUNDING</a>
+<a href="#market-deep-dive" class="nav-link">MARKETS</a>
+<a href="#cross-platform-traders" class="nav-link">WALLETS</a>
+<a href="#quick-insights" class="nav-link">INSIGHTS</a>
     """, unsafe_allow_html=True)
 
     st.divider()
 
-    # Live status indicator
-    st.markdown("""
-    <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: rgba(20, 20, 32, 0.5); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-        <div style="width: 8px; height: 8px; background: #00FFA3; border-radius: 50%; animation: pulse 2s infinite;"></div>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #94A3B8;">Auto-refresh: 15 min</span>
+    # System status - terminal style
+    st.markdown(f"""
+    <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin-bottom: 0.5rem;">[ SYSTEM ]</div>
+    <div style="padding: 8px; background: #0d0d0d; border: 1px solid #333; font-size: 0.7rem;">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+            <span class="status-dot live"></span>
+            <span style="color: {theme['positive']};">ONLINE</span>
+        </div>
+        <div style="color: #555;">REFRESH: 15min</div>
+        <div style="color: #555;">SOURCES: 4</div>
     </div>
-    <style>
-    @keyframes pulse {
-        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 163, 0.4); }
-        50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(0, 255, 163, 0); }
-    }
-    </style>
     """, unsafe_allow_html=True)
 
+    # Keyboard shortcuts info
+    with st.expander("⌨ SHORTCUTS", expanded=False):
+        st.markdown(f"""
+        <div style="font-size: 0.65rem; font-family: var(--font-mono); line-height: 1.8;">
+            <div style="margin-bottom: 8px; color: #555;">─ NAVIGATION ─</div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">↑</span> <span style="color: #888;">Scroll up</span></div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">↓</span> <span style="color: #888;">Scroll down</span></div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">Home</span> <span style="color: #888;">Top of page</span></div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">End</span> <span style="color: #888;">Bottom</span></div>
+            <div style="margin: 8px 0; color: #555;">─ SIDEBAR ─</div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">C</span> <span style="color: #888;">Close sidebar</span></div>
+            <div style="margin: 8px 0; color: #555;">─ REFRESH ─</div>
+            <div><span style="color: {theme['accent']}; background: #1a1a1a; padding: 2px 6px; border: 1px solid #333;">R</span> <span style="color: #888;">Reload page</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+
 
 # ══════════════════════════════════════════════════════════════════════════
-# PLOTLY THEME CONFIGURATION - Terminal Luxe Design System
+# PLOTLY THEME CONFIGURATION - Terminal Style
 # ══════════════════════════════════════════════════════════════════════════
 
-PLOTLY_THEME = {
-    "bg_color": "rgba(10, 10, 15, 0.0)",
-    "paper_color": "rgba(10, 10, 15, 0.0)",
-    "grid_color": "rgba(255, 255, 255, 0.04)",
-    "text_color": "#94A3B8",
-    "title_color": "#F8FAFC",
-    "accent_solana": "#9945FF",
-    "accent_cyan": "#00FFA3",
-    "accent_blue": "#4F9DFF",
-    "positive": "#00FFA3",
-    "negative": "#FF4F6F",
-    "font_family": "JetBrains Mono, monospace",
-}
+def get_plotly_theme():
+    """Get Plotly theme based on current terminal theme."""
+    current_theme = TERMINAL_THEMES[st.session_state.terminal_theme]
+    return {
+        "bg_color": "rgba(0, 0, 0, 0)",
+        "paper_color": "rgba(0, 0, 0, 0)",
+        "grid_color": "rgba(255, 255, 255, 0.05)",
+        "text_color": "#888888",
+        "title_color": current_theme["accent"],
+        "accent": current_theme["accent"],
+        "accent_dim": current_theme["accent_dim"],
+        "positive": current_theme["positive"],
+        "negative": current_theme["negative"],
+        "font_family": "JetBrains Mono, monospace",
+    }
 
-# Protocol-specific colors
+PLOTLY_THEME = get_plotly_theme()
+
+# Protocol-specific colors - terminal style
 PROTOCOL_COLORS = {
     "Drift": "#4F9DFF",
     "Jupiter": "#00FFA3",
     "Pacifica": "#DC1FFF",
     "Adrena": "#FFB800",
     "FlashTrade": "#FF6B6B",
-    "default": "#9945FF",
+    "default": theme["accent"],
 }
 
 # Sequential color palette for charts
-CHART_COLORS = ["#9945FF", "#00FFA3", "#4F9DFF", "#DC1FFF", "#FFB800", "#FF6B6B", "#6366F1", "#14B8A6"]
+CHART_COLORS = [theme["accent"], "#4F9DFF", "#00FFA3", "#DC1FFF", "#FFB800", "#FF6B6B", "#6366F1", "#14B8A6"]
 
 
 def apply_plotly_theme(fig):
-    """Apply the Terminal Luxe theme to a Plotly figure."""
+    """Apply the Terminal theme to a Plotly figure."""
+    plotly_theme = get_plotly_theme()
     fig.update_layout(
-        font_family=PLOTLY_THEME["font_family"],
-        font_color=PLOTLY_THEME["text_color"],
-        font_size=11,
-        title_font_size=14,
-        title_font_color=PLOTLY_THEME["title_color"],
-        title_font_family="Outfit, sans-serif",
-        paper_bgcolor=PLOTLY_THEME["paper_color"],
-        plot_bgcolor=PLOTLY_THEME["bg_color"],
-        margin=dict(t=60, b=40, l=40, r=40),
+        font_family=plotly_theme["font_family"],
+        font_color=plotly_theme["text_color"],
+        font_size=10,
+        title_font_size=12,
+        title_font_color=plotly_theme["title_color"],
+        title_font_family=plotly_theme["font_family"],
+        paper_bgcolor=plotly_theme["paper_color"],
+        plot_bgcolor=plotly_theme["bg_color"],
+        margin=dict(t=50, b=40, l=40, r=40),
         xaxis=dict(
-            gridcolor=PLOTLY_THEME["grid_color"],
-            linecolor=PLOTLY_THEME["grid_color"],
-            tickfont=dict(size=10),
-            title_font=dict(size=11, color=PLOTLY_THEME["text_color"]),
+            gridcolor=plotly_theme["grid_color"],
+            linecolor="#333333",
+            tickfont=dict(size=9, color="#888888"),
+            title_font=dict(size=10, color="#888888"),
+            zerolinecolor="#333333",
         ),
         yaxis=dict(
-            gridcolor=PLOTLY_THEME["grid_color"],
-            linecolor=PLOTLY_THEME["grid_color"],
-            tickfont=dict(size=10),
-            title_font=dict(size=11, color=PLOTLY_THEME["text_color"]),
+            gridcolor=plotly_theme["grid_color"],
+            linecolor="#333333",
+            tickfont=dict(size=9, color="#888888"),
+            title_font=dict(size=10, color="#888888"),
+            zerolinecolor="#333333",
         ),
         legend=dict(
             bgcolor="rgba(0,0,0,0)",
-            font=dict(size=10),
+            font=dict(size=9, color="#888888"),
             borderwidth=0,
         ),
         hoverlabel=dict(
-            bgcolor="#14141d",
-            bordercolor="#9945FF",
-            font_size=11,
-            font_family=PLOTLY_THEME["font_family"],
+            bgcolor="#1a1a1a",
+            bordercolor=plotly_theme["accent"],
+            font_size=10,
+            font_family=plotly_theme["font_family"],
         ),
     )
     return fig
+
+
+def terminal_section_header(title: str) -> str:
+    """Generate a terminal-style section header."""
+    title_upper = title.upper().replace(" ", "_")
+    padding = 80 - len(title_upper) - 6  # Account for brackets and dashes
+    return f"""
+<div style="margin: 1.5rem 0 1rem 0;">
+    <div style="color: {theme['accent']}; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+        ┌─[ {title_upper} ]{"─" * max(padding, 1)}┐
+    </div>
+</div>
+"""
+
+
+def ascii_bar(value: float, max_value: float, width: int = 20) -> str:
+    """Generate an ASCII progress bar."""
+    if max_value == 0:
+        return "░" * width
+    filled = int((value / max_value) * width)
+    return "█" * filled + "░" * (width - filled)
+
+
+def ascii_bar_html(value: float, max_value: float, width: int = 15, color: str = None) -> str:
+    """Generate an HTML-styled ASCII progress bar."""
+    if color is None:
+        color = theme["accent"]
+    if max_value == 0:
+        return f'<span style="color: #333;">{"░" * width}</span>'
+    filled = int((value / max_value) * width)
+    pct = (value / max_value) * 100
+    bar = f'<span style="color: {color};">{"█" * filled}</span><span style="color: #333;">{"░" * (width - filled)}</span>'
+    return f'{bar} <span style="color: #888;">{pct:.0f}%</span>'
+
+
+def ascii_sparkline(values: list, width: int = 10) -> str:
+    """Generate an ASCII sparkline from values."""
+    if not values:
+        return "─" * width
+    chars = "▁▂▃▄▅▆▇█"
+    min_val = min(values)
+    max_val = max(values)
+    if max_val == min_val:
+        return chars[4] * len(values)
+    return "".join(chars[int((v - min_val) / (max_val - min_val) * 7)] for v in values[-width:])
+
+
+def render_terminal_table(headers: list, rows: list, col_styles: dict = None) -> str:
+    """Render a terminal-style HTML table with box drawing characters."""
+    if col_styles is None:
+        col_styles = {}
+
+    # Build header row
+    header_cells = "".join(f'<th style="padding: 8px 12px; text-align: left; color: {theme["accent"]}; font-size: 0.7rem; letter-spacing: 0.05em; border-bottom: 1px solid #333;">{h}</th>' for h in headers)
+
+    # Build data rows
+    data_rows = ""
+    for row in rows:
+        cells = ""
+        for i, cell in enumerate(row):
+            style = col_styles.get(i, "color: #888;")
+            cells += f'<td style="padding: 6px 12px; font-size: 0.75rem; border-bottom: 1px solid #222; {style}">{cell}</td>'
+        data_rows += f'<tr style="transition: background 0.1s;">{cells}</tr>'
+
+    return f'''
+    <div style="background: #0a0a0a; border: 1px solid #333; overflow: hidden; margin: 0.5rem 0;">
+        <table style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace;">
+            <thead><tr style="background: #111;">{header_cells}</tr></thead>
+            <tbody>{data_rows}</tbody>
+        </table>
+    </div>
+    '''
+
+
+def collapsible_section(title: str, content_key: str, default_open: bool = True) -> bool:
+    """Create a collapsible section header. Returns True if section is open."""
+    if f"collapse_{content_key}" not in st.session_state:
+        st.session_state[f"collapse_{content_key}"] = default_open
+
+    is_open = st.session_state[f"collapse_{content_key}"]
+    indicator = "▼" if is_open else "►"
+
+    col1, col2 = st.columns([20, 1])
+    with col1:
+        st.markdown(f"""
+        <div style="color: {theme['accent']}; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; cursor: pointer;">
+            {indicator} {title.upper().replace(" ", "_")}
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        if st.button("toggle", key=f"btn_{content_key}", label_visibility="collapsed"):
+            st.session_state[f"collapse_{content_key}"] = not is_open
+            st.rerun()
+
+    return is_open
 
 
 def load_cache():
@@ -667,18 +931,47 @@ def get_time_window_data(cache: dict, window: str) -> dict:
     }
 
 
-# Load cached data
+# Load cached data with terminal-style loading state
 cache = load_cache()
 
 if cache is None:
-    st.error("No cached data available. Please wait for the first data update.")
+    st.markdown(f"""
+    <div style="text-align: center; padding: 4rem 2rem; background: #0a0a0a; border: 1px solid #ff4444;">
+        <div style="color: #ff4444; font-size: 1.2rem; margin-bottom: 1rem;">
+            ╔══════════════════════════════════════╗
+        </div>
+        <div style="color: #ff4444; font-size: 0.9rem; margin-bottom: 0.5rem;">
+            ║  ERROR: CACHE_NOT_FOUND             ║
+        </div>
+        <div style="color: #ff4444; font-size: 1.2rem; margin-bottom: 1rem;">
+            ╚══════════════════════════════════════╝
+        </div>
+        <div style="color: #888; font-size: 0.75rem; margin-top: 1rem;">
+            > No cached data available<br>
+            > Waiting for first data update...<br>
+            > Cache updates every 15 minutes via GitHub Actions
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     st.stop()
 
-# Header with premium styling
-st.markdown("""
-<div style="margin-bottom: 1.5rem;">
-    <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.75rem; font-weight: 700; background: linear-gradient(135deg, #F8FAFC 0%, #9945FF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; letter-spacing: -0.03em;">Solana Perps Insights</h1>
-    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #64748B; margin-top: 0.5rem;">Real-time analytics across Drift, Jupiter & more</p>
+# Header - Terminal Style (clean, no ASCII art)
+st.markdown(f"""
+<div style="background: #0a0a0a; border: 1px solid {theme['accent']}40; padding: 1.5rem; margin-bottom: 1rem;">
+    <div style="text-align: center;">
+        <div style="color: {theme['accent']}; font-size: 2rem; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.25rem;">
+            SOLANA PERPS
+        </div>
+        <div style="color: #555; font-size: 0.7rem; letter-spacing: 0.2em; margin-bottom: 1rem;">
+            ════════════════════════════════════════
+        </div>
+        <div style="color: {theme['accent']}; font-size: 0.75rem; letter-spacing: 0.15em;">
+            PERPETUALS ANALYTICS TERMINAL
+        </div>
+        <div style="color: #444; font-size: 0.65rem; margin-top: 0.5rem;">
+            v1.0.0
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -688,32 +981,104 @@ updated_at = cache.get("updated_at", "Unknown")
 try:
     updated_time = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
     age_minutes = (datetime.now(timezone.utc) - updated_time).total_seconds() / 60
-    time_display = updated_time.strftime("%b %d, %H:%M UTC")
+    time_display = updated_time.strftime("%Y-%m-%d %H:%M:%S UTC")
     is_stale = age_minutes > 30
 except (ValueError, TypeError):
     time_display = updated_at
     is_stale = False
     age_minutes = 0
 
-# Status bar with timestamp
-status_color = "#FFB800" if is_stale else "#00FFA3"
+# Terminal-style system status bar
+status_indicator = "●" if not is_stale else "○"
+status_text = "LIVE" if not is_stale else "STALE"
+status_color = theme['positive'] if not is_stale else theme['warning']
+
 st.markdown(f"""
-<div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.25rem; background: rgba(20, 20, 32, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem; backdrop-filter: blur(10px);">
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <div style="width: 8px; height: 8px; background: {status_color}; border-radius: 50%;"></div>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #94A3B8;">Last update: <span style="color: #F8FAFC;">{time_display}</span></span>
+<div style="background: #0d0d0d; border: 1px solid #333; padding: 0.5rem 1rem; margin-bottom: 1rem; font-size: 0.7rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <span style="color: {status_color};">[{status_indicator}] {status_text}</span>
+            <span style="color: #555;">│</span>
+            <span style="color: #888;">UPDATED: <span style="color: #e0e0e0;">{time_display}</span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <span style="color: #555;">SOURCES:</span>
+            <span style="color: #4F9DFF;">DEFILLAMA</span>
+            <span style="color: #00FFA3;">DRIFT</span>
+            <span style="color: #FFB800;">DUNE</span>
+            <span style="color: #9945FF;">RPC</span>
+        </div>
     </div>
-    <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.1);"></div>
-    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748B;">Sources: DeFiLlama · Drift API · Dune · Solana RPC</span>
 </div>
 """, unsafe_allow_html=True)
 
 if is_stale:
-    st.warning(f"Data is {int(age_minutes)} minutes old. Cache may be stale.")
+    st.warning(f"⚠ DATA STALE: {int(age_minutes)} minutes since last update")
 
-# Time window selector with label
-st.markdown("""
-<div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748B; margin-bottom: 0.5rem;">Time Window</div>
+# Alerts Panel - Show unusual market conditions
+if st.session_state.show_alerts:
+    drift_markets_alert = cache.get("drift_markets", {})
+    alerts = []
+
+    # Check for extreme funding rates (>0.1% or <-0.1%)
+    for market, info in drift_markets_alert.items():
+        funding = info.get("funding_rate", 0)
+        vol = info.get("volume", 0)
+        if vol > 100000:  # Only check markets with decent volume
+            if funding > 0.001:  # >0.1%
+                alerts.append({
+                    "type": "funding_high",
+                    "icon": "⚠",
+                    "msg": f"{market.replace('-PERP', '')} funding HIGH: {funding*100:+.3f}% (longs pay)",
+                    "color": theme["negative"]
+                })
+            elif funding < -0.001:  # <-0.1%
+                alerts.append({
+                    "type": "funding_low",
+                    "icon": "💰",
+                    "msg": f"{market.replace('-PERP', '')} funding LOW: {funding*100:+.3f}% (shorts pay)",
+                    "color": theme["positive"]
+                })
+
+    # Check for big volume changes
+    for _, row in pd.DataFrame(cache.get("protocols", [])).iterrows():
+        change = row.get("change_1d", 0)
+        if change > 50:
+            alerts.append({
+                "type": "volume_spike",
+                "icon": "📈",
+                "msg": f"{row['protocol']} volume +{change:.0f}% in 24h",
+                "color": theme["positive"]
+            })
+        elif change < -30:
+            alerts.append({
+                "type": "volume_drop",
+                "icon": "📉",
+                "msg": f"{row['protocol']} volume {change:.0f}% in 24h",
+                "color": theme["warning"]
+            })
+
+    if alerts:
+        alerts_html = "".join([
+            f'<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">'
+            f'<span>{a["icon"]}</span>'
+            f'<span style="color: {a["color"]};">{a["msg"]}</span>'
+            f'</div>'
+            for a in alerts[:5]  # Limit to 5 alerts
+        ])
+
+        st.markdown(f"""
+        <div style="background: #0a0a0a; border: 1px solid {theme['warning']}40; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.7rem;">
+            <div style="color: {theme['warning']}; font-size: 0.65rem; letter-spacing: 0.1em; margin-bottom: 0.5rem; text-transform: uppercase;">
+                ⚡ ALERTS ({len(alerts)})
+            </div>
+            {alerts_html}
+        </div>
+        """, unsafe_allow_html=True)
+
+# Time window selector - terminal style
+st.markdown(f"""
+<div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin-bottom: 0.5rem;">[ TIME_WINDOW ]</div>
 """, unsafe_allow_html=True)
 
 time_window = st.radio(
@@ -735,25 +1100,84 @@ total_fees = protocol_df["fees"].sum()
 total_txns = protocol_df["transactions"].sum()
 total_oi = cache.get("total_open_interest", 0)
 
-# Top metrics row
-st.header("Solana Perps Overview")
+# Get top protocol and SOL price for sidebar
+top_protocol = protocol_df.iloc[0] if len(protocol_df) > 0 else None
+drift_markets = cache.get("drift_markets", {})
+sol_price = drift_markets.get("SOL-PERP", {}).get("last_price", 0)
+sol_funding = drift_markets.get("SOL-PERP", {}).get("funding_rate", 0)
+
+# Add mini stats to sidebar
+with st.sidebar:
+    st.markdown(f"""
+    <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ QUICK_STATS ]</div>
+    <div style="background: #0a0a0a; border: 1px solid #333; padding: 0.5rem; font-size: 0.7rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: #555;">SOL_PRICE</span>
+            <span style="color: {theme['accent']};">${sol_price:,.2f}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: #555;">SOL_FUND</span>
+            <span style="color: {theme['positive'] if sol_funding < 0 else theme['negative']};">{sol_funding*100:+.4f}%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: #555;">VOL_24H</span>
+            <span style="color: #e0e0e0;">{format_volume(total_volume)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: #555;">OPEN_INT</span>
+            <span style="color: #e0e0e0;">{format_volume(total_oi)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span style="color: #555;">TRADERS</span>
+            <span style="color: #e0e0e0;">{total_traders:,}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Top movers
+    if len(protocol_df) > 0:
+        top_gainer = protocol_df.loc[protocol_df["change_1d"].idxmax()]
+        st.markdown(f"""
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ TOP_MOVER_24H ]</div>
+        <div style="background: #0a0a0a; border: 1px solid #333; padding: 0.5rem; font-size: 0.7rem;">
+            <div style="color: {PROTOCOL_COLORS.get(top_gainer['protocol'], theme['accent'])}; font-weight: 600;">{top_gainer['protocol']}</div>
+            <div style="color: {theme['positive']}; font-size: 0.85rem;">▲ {top_gainer['change_1d']:.1f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Terminal-style section header
+st.markdown(f"""
+<div style="margin: 1.5rem 0 1rem 0;">
+    <div style="color: {theme['accent']}; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">
+        ┌─[ SOLANA_PERPS_OVERVIEW ]─────────────────────────────────────────────────────────┐
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Metrics in terminal box style
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    st.metric("24h Volume", format_volume(total_volume), help="Source: DeFiLlama. Sum of all Solana perps protocols.")
+    st.metric("VOL_24H", format_volume(total_volume), help="Source: DeFiLlama")
 with col2:
-    st.metric("Drift Open Interest", format_volume(total_oi), help="Source: Drift API. Jupiter OI not yet available.")
+    st.metric("OPEN_INT", format_volume(total_oi), help="Source: Drift API")
 with col3:
-    st.metric("Traders (24h)", f"{total_traders:,}", help="Source: Dune Analytics. Drift + Jupiter + Pacifica. Note: Pacifica uses off-chain matching, so count shows active on-chain users (deposits/settlements) which may undercount actual traders.")
+    st.metric("TRADERS", f"{total_traders:,}", help="Drift + Jupiter + Pacifica")
 with col4:
-    st.metric("Fees Generated", f"${total_fees:,.0f}", help="Estimated from volume × protocol fee rates.")
+    st.metric("FEES", f"${total_fees:,.0f}", help="Estimated fees")
 with col5:
-    st.metric("Transactions", f"{total_txns:,}", help="Source: Solana RPC. Program signature counts.")
+    st.metric("TXN_COUNT", f"{total_txns:,}", help="Program signatures")
+
+st.markdown(f"""
+<div style="color: {theme['accent']}; font-size: 0.8rem; margin-bottom: 0.5rem;">
+    └───────────────────────────────────────────────────────────────────────────────────────┘
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
 # Cross-Chain Comparison
-st.header("Cross-Chain Comparison")
-st.caption("How Solana perps compare to other chains")
+st.markdown(terminal_section_header("Cross-Chain Comparison"), unsafe_allow_html=True)
+st.caption("> Comparing Solana perps to other chains")
 
 global_derivatives = cache.get("global_derivatives", [])
 
@@ -794,45 +1218,46 @@ if global_derivatives:
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        # Create comparison table with rank column
-        comparison_data = []
-        for i, p in enumerate(global_derivatives[:15]):
-            chains = ", ".join(p.get("chains", [])[:2])
+        # Create terminal-style comparison table
+        max_global_vol = global_derivatives[0]["volume_24h"] if global_derivatives else 1
+        comparison_rows = []
+        for i, p in enumerate(global_derivatives[:12]):
             is_solana = "Solana" in p.get("chains", [])
-            comparison_data.append({
-                "Rank": f"#{i + 1}",
-                "Protocol": p["name"],
-                "Chain": chains,
-                "Volume 24h": format_volume(p["volume_24h"]),
-                "Market Share": f"{p['volume_24h']/global_total*100:.1f}%",
-                "24h": format_change(p.get("change_1d", 0)),
-                "7d": format_change(p.get("change_7d", 0)),
-            })
+            chain = p.get("chains", ["?"])[0][:3].upper()
+            vol = p["volume_24h"]
+            change_1d = p.get("change_1d", 0)
+            share = vol / global_total * 100 if global_total > 0 else 0
 
-        comp_df = pd.DataFrame(comparison_data)
+            # Highlight Solana protocols
+            name_color = theme["accent"] if is_solana else "#888"
+            change_color = theme["positive"] if change_1d > 0 else theme["negative"] if change_1d < 0 else "#555"
 
-        # Style the dataframe to highlight Solana rows
-        def highlight_solana(row):
-            is_solana = any(sp["name"] == row["Protocol"] for sp in solana_protocols)
-            if is_solana:
-                return ["background-color: rgba(139, 92, 246, 0.2)"] * len(row)
-            return [""] * len(row)
+            comparison_rows.append([
+                f'<span style="color: #555;">#{i+1:02d}</span>',
+                f'<span style="color: {name_color}; font-weight: {"600" if is_solana else "400"};">{p["name"][:12]}</span>',
+                f'<span style="color: #555;">{chain}</span>',
+                f'<span style="color: #e0e0e0;">{format_volume(vol)}</span>',
+                ascii_bar_html(vol, max_global_vol, width=8, color=theme["accent"] if is_solana else "#555"),
+                f'<span style="color: {change_color};">{"▲" if change_1d > 0 else "▼" if change_1d < 0 else "─"}{abs(change_1d):.1f}%</span>',
+            ])
 
-        styled_df = comp_df.style.apply(highlight_solana, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        st.markdown(render_terminal_table(
+            headers=["#", "PROTOCOL", "CHAIN", "VOL_24H", "SHARE", "Δ24H"],
+            rows=comparison_rows
+        ), unsafe_allow_html=True)
 
     with col2:
         # Bar chart for clearer comparison (better than pie for rankings)
         with st.spinner("Loading chart..."):
             top_10 = global_derivatives[:10]
-            colors = [PLOTLY_THEME["accent_solana"] if "Solana" in p.get("chains", []) else "rgba(100, 116, 139, 0.5)" for p in top_10]
+            colors = [theme["accent"] if "Solana" in p.get("chains", []) else "rgba(100, 116, 139, 0.5)" for p in top_10]
 
             fig = go.Figure(data=[
                 go.Bar(
                     x=[p["name"][:10] for p in top_10],
                     y=[p["volume_24h"] for p in top_10],
                     marker_color=colors,
-                    marker_line_color=[PLOTLY_THEME["accent_solana"] if "Solana" in p.get("chains", []) else "rgba(100, 116, 139, 0.3)" for p in top_10],
+                    marker_line_color=[theme["accent"] if "Solana" in p.get("chains", []) else "rgba(100, 116, 139, 0.3)" for p in top_10],
                     marker_line_width=1,
                     text=[format_volume(p["volume_24h"]) for p in top_10],
                     textposition="outside",
@@ -857,55 +1282,66 @@ if global_derivatives:
             apply_plotly_theme(fig)
             st.plotly_chart(fig, use_container_width=True)
 
-    # Summary box with premium styling
+    # Summary box - terminal style
     solana_share = (solana_total / global_total * 100) if global_total > 0 else 0
     st.markdown(f"""
-    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; background: linear-gradient(135deg, rgba(153, 69, 255, 0.1) 0%, rgba(0, 255, 163, 0.05) 100%); border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.2); margin-top: 1rem;">
-        <span style="font-size: 1.5rem;">◈</span>
-        <div>
-            <span style="font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: #F8FAFC; font-weight: 500;">Solana Perps:</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #00FFA3; margin-left: 0.5rem;">{format_volume(solana_total)}</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94A3B8;"> total volume</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #64748B;"> · </span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #9945FF;">{solana_share:.1f}%</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94A3B8;"> global share</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #64748B;"> · </span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94A3B8;">{len(solana_protocols)} protocols</span>
-        </div>
+    <div style="background: #0d0d0d; border: 1px solid #333; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.75rem;">
+        <span style="color: {theme['accent']};">SOLANA_SUMMARY:</span>
+        <span style="color: {theme['positive']}; margin-left: 1rem;">{format_volume(solana_total)}</span>
+        <span style="color: #555;"> VOL</span>
+        <span style="color: #333; margin: 0 0.5rem;">│</span>
+        <span style="color: {theme['accent']};">{solana_share:.1f}%</span>
+        <span style="color: #555;"> GLOBAL_SHARE</span>
+        <span style="color: #333; margin: 0 0.5rem;">│</span>
+        <span style="color: #888;">{len(solana_protocols)} PROTOCOLS</span>
     </div>
     """, unsafe_allow_html=True)
 
 st.divider()
 
 # Solana Protocol Comparison with Chart
-st.header("Solana Protocol Breakdown")
+st.markdown(terminal_section_header("Solana Protocol Breakdown"), unsafe_allow_html=True)
 
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    display_df = protocol_df.copy()
-    display_df["Market Share"] = (display_df["volume_24h"] / total_volume * 100).round(1).astype(str) + "%"
-    display_df["24h Change"] = display_df["change_1d"].apply(format_change)
-    display_df["7d Change"] = display_df["change_7d"].apply(format_change)
-    display_df["Volume 24h"] = display_df["volume_24h"].apply(lambda x: f"${x:,.0f}")
-    display_df["Fees"] = display_df["fees"].apply(lambda x: f"${x:,.0f}")
-    # Add asterisk to Pacifica traders to indicate it's an estimate
-    def format_traders(row):
-        count = row["traders"]
-        if row["protocol"] == "Pacifica" and count > 0:
-            return f"{count:,}*"
-        return f"{count:,}"
-    display_df["Traders"] = display_df.apply(format_traders, axis=1)
-    display_df = display_df.rename(columns={"protocol": "Protocol"})
+    # Build terminal-style table with ASCII bars
+    max_vol = protocol_df["volume_24h"].max()
+    table_rows = []
+    for _, row in protocol_df.iterrows():
+        proto = row["protocol"]
+        vol = row["volume_24h"]
+        change_1d = row["change_1d"]
+        traders = row["traders"]
+        fees = row["fees"]
 
-    st.dataframe(
-        display_df[["Protocol", "Volume 24h", "24h Change", "7d Change", "Market Share", "Traders", "Fees"]],
-        width="stretch",
-        hide_index=True,
-    )
-    # Add footnote for Pacifica if present
-    if "Pacifica" in display_df["Protocol"].values:
-        st.caption("*Pacifica uses off-chain matching. Trader count shows on-chain users only and may differ from actual traders.")
+        # Color for change
+        change_color = theme["positive"] if change_1d > 0 else theme["negative"] if change_1d < 0 else "#888"
+        change_str = f'<span style="color: {change_color};">{"▲" if change_1d > 0 else "▼" if change_1d < 0 else "─"} {abs(change_1d):.1f}%</span>'
+
+        # Protocol color
+        proto_color = PROTOCOL_COLORS.get(proto, theme["accent"])
+
+        # Traders with asterisk for Pacifica
+        traders_str = f"{traders:,}*" if proto == "Pacifica" else f"{traders:,}"
+
+        table_rows.append([
+            f'<span style="color: {proto_color};">{proto}</span>',
+            f'<span style="color: #e0e0e0;">${vol:,.0f}</span>',
+            ascii_bar_html(vol, max_vol, width=12, color=proto_color),
+            change_str,
+            f'<span style="color: #888;">{traders_str}</span>',
+            f'<span style="color: #666;">${fees:,.0f}</span>',
+        ])
+
+    st.markdown(render_terminal_table(
+        headers=["PROTOCOL", "VOL_24H", "SHARE", "Δ24H", "TRADERS", "FEES"],
+        rows=table_rows
+    ), unsafe_allow_html=True)
+
+    # Footnote
+    if "Pacifica" in protocol_df["protocol"].values:
+        st.caption("* Pacifica: on-chain users only")
 
 with col2:
     # Solana protocols pie chart with premium styling
@@ -934,7 +1370,7 @@ with col2:
             annotations=[dict(
                 text="<b>SOL</b><br>Perps",
                 x=0.5, y=0.5,
-                font=dict(size=14, color=PLOTLY_THEME["title_color"], family="Outfit, sans-serif"),
+                font=dict(size=14, color=PLOTLY_THEME["title_color"], family="JetBrains Mono, monospace"),
                 showarrow=False
             )]
         )
@@ -944,8 +1380,8 @@ with col2:
 st.divider()
 
 # Best Venue by Asset
-st.header("Best Venue by Asset")
-st.caption("Compare where to trade each asset across Solana perp DEXes")
+st.markdown(terminal_section_header("Best Venue by Asset"), unsafe_allow_html=True)
+st.caption("> Compare trading venues for each asset")
 
 drift_markets = cache.get("drift_markets", {})
 jupiter_markets = cache.get("jupiter_markets", {})
@@ -967,7 +1403,11 @@ if not common_assets:
 # Limit to top 8 assets for display
 common_assets = common_assets[:8] if len(common_assets) > 8 else common_assets
 
-venue_data = []
+venue_rows = []
+max_combined_vol = max(
+    (drift_markets.get(f"{a}-PERP", {}).get("volume", 0) + jupiter_markets.get("volumes", {}).get(a, 0))
+    for a in common_assets
+) if common_assets else 1
 
 for asset in common_assets:
     drift_key = f"{asset}-PERP"
@@ -977,25 +1417,37 @@ for asset in common_assets:
     drift_vol = drift_info.get("volume", 0)
     drift_funding = drift_info.get("funding_rate", 0)
     drift_oi = drift_info.get("open_interest", 0)
+    drift_price = drift_info.get("last_price", 0)
 
-    best_volume = "Jupiter" if jupiter_vol > drift_vol else "Drift"
+    # Determine winner
+    if jupiter_vol > drift_vol:
+        winner = f'<span style="color: {PROTOCOL_COLORS["Jupiter"]};">JUP</span>'
+    elif drift_vol > jupiter_vol:
+        winner = f'<span style="color: {PROTOCOL_COLORS["Drift"]};">DRIFT</span>'
+    else:
+        winner = '<span style="color: #555;">TIE</span>'
 
-    venue_data.append({
-        "Asset": asset,
-        "Drift Volume": f"${drift_vol:,.0f}",
-        "Jupiter Volume": f"${jupiter_vol:,.0f}",
-        "Best Volume": best_volume,
-        "Drift Funding": format_funding(drift_funding),
-        "Drift OI": f"${drift_oi * drift_info.get('last_price', 0):,.0f}",
-    })
+    # Funding color
+    fund_color = theme["positive"] if drift_funding < 0 else theme["negative"] if drift_funding > 0 else "#888"
 
-venue_df = pd.DataFrame(venue_data)
-st.dataframe(venue_df, width="stretch", hide_index=True)
+    venue_rows.append([
+        f'<span style="color: #e0e0e0; font-weight: 600;">{asset}</span>',
+        f'<span style="color: {PROTOCOL_COLORS["Drift"]};">${drift_vol:,.0f}</span>',
+        f'<span style="color: {PROTOCOL_COLORS["Jupiter"]};">${jupiter_vol:,.0f}</span>',
+        winner,
+        f'<span style="color: {fund_color};">{drift_funding*100:+.4f}%</span>',
+        f'<span style="color: #888;">${drift_oi * drift_price:,.0f}</span>',
+    ])
+
+st.markdown(render_terminal_table(
+    headers=["ASSET", "DRIFT_VOL", "JUP_VOL", "BEST", "FUNDING", "OI"],
+    rows=venue_rows
+), unsafe_allow_html=True)
 
 st.divider()
 
 # Funding Rate Heatmap
-st.header("Funding Rate Overview")
+st.markdown(terminal_section_header("Funding Rates"), unsafe_allow_html=True)
 
 col1, col2 = st.columns([2, 1])
 
@@ -1061,8 +1513,8 @@ with col1:
             st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.markdown("""
-    <div style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 500; color: #F8FAFC; margin-bottom: 1rem;">Funding Extremes</div>
+    st.markdown(f"""
+    <div style="font-size: 0.7rem; font-weight: 600; color: {theme['accent']}; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">FUNDING_EXTREMES</div>
     """, unsafe_allow_html=True)
 
     if drift_markets:
@@ -1076,21 +1528,19 @@ with col2:
             highest = sorted_by_funding[-1]
 
             st.markdown(f"""
-            <div style="background: rgba(20, 20, 32, 0.6); border-radius: 12px; padding: 1rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem;">
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; margin-bottom: 0.5rem;">Shorts Pay Most</div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="width: 10px; height: 10px; background: #00FFA3; border-radius: 50%;"></span>
-                    <span style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; color: #F8FAFC;">{lowest[0].replace("-PERP", "")}</span>
-                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #00FFA3; margin-left: auto;">{format_funding(lowest[1].get('funding_rate', 0))}</span>
+            <div style="background: #0d0d0d; border: 1px solid #333; padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.75rem;">
+                <div style="color: #555; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">SHORTS_PAY_MOST</div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="color: #e0e0e0;">{lowest[0].replace("-PERP", "")}</span>
+                    <span style="color: {theme['positive']};">{format_funding(lowest[1].get('funding_rate', 0))}</span>
                 </div>
             </div>
 
-            <div style="background: rgba(20, 20, 32, 0.6); border-radius: 12px; padding: 1rem; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; margin-bottom: 0.5rem;">Longs Pay Most</div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="width: 10px; height: 10px; background: #FF4F6F; border-radius: 50%;"></span>
-                    <span style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600; color: #F8FAFC;">{highest[0].replace("-PERP", "")}</span>
-                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #FF4F6F; margin-left: auto;">{format_funding(highest[1].get('funding_rate', 0))}</span>
+            <div style="background: #0d0d0d; border: 1px solid #333; padding: 0.75rem; font-size: 0.75rem;">
+                <div style="color: #555; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">LONGS_PAY_MOST</div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="color: #e0e0e0;">{highest[0].replace("-PERP", "")}</span>
+                    <span style="color: {theme['negative']};">{format_funding(highest[1].get('funding_rate', 0))}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1098,7 +1548,7 @@ with col2:
 st.divider()
 
 # Market Deep Dive
-st.header("Market Deep Dive")
+st.markdown(terminal_section_header("Market Deep Dive"), unsafe_allow_html=True)
 
 window_data = get_time_window_data(cache, time_window)
 pacifica_markets = cache.get("pacifica_markets", {})
@@ -1107,82 +1557,104 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     drift_traders = window_data.get("drift_traders", 0)
-    st.subheader(f"Drift ({drift_traders:,}/{time_window})")
+    st.markdown(f"""
+    <div style="color: {PROTOCOL_COLORS['Drift']}; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">
+        DRIFT <span style="color: #888; font-weight: 400;">({drift_traders:,}/{time_window})</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     if drift_markets:
-        drift_data = []
         total_vol = sum(m["volume"] for m in drift_markets.values())
+        max_vol = max(m["volume"] for m in drift_markets.values())
+        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:10]
 
-        sorted_markets = sorted(drift_markets.items(), key=lambda x: x[1]["volume"], reverse=True)[:12]
-
+        drift_rows = []
         for market, info in sorted_markets:
-            share = (info["volume"] / total_vol * 100) if total_vol > 0 else 0
+            vol = info["volume"]
             funding = info.get("funding_rate", 0)
+            fund_color = theme["positive"] if funding < 0 else theme["negative"] if funding > 0 else "#888"
 
-            drift_data.append({
-                "Market": market.replace("-PERP", ""),
-                "Volume": f"${info['volume']:,.0f}",
-                "Funding": format_funding(funding),
-                "Share": f"{share:.1f}%",
-            })
+            drift_rows.append([
+                f'<span style="color: #e0e0e0;">{market.replace("-PERP", "")}</span>',
+                f'<span style="color: #888;">${vol/1e6:.1f}M</span>',
+                ascii_bar_html(vol, max_vol, width=8, color=PROTOCOL_COLORS["Drift"]),
+                f'<span style="color: {fund_color};">{funding*100:+.3f}%</span>',
+            ])
 
-        st.dataframe(pd.DataFrame(drift_data), width="stretch", hide_index=True)
+        st.markdown(render_terminal_table(
+            headers=["MKT", "VOL", "SHARE", "FUND"],
+            rows=drift_rows
+        ), unsafe_allow_html=True)
 
 with col2:
     jupiter_traders = window_data.get("jupiter_traders", 0)
-    st.subheader(f"Jupiter ({jupiter_traders:,}/{time_window})")
+    st.markdown(f"""
+    <div style="color: {PROTOCOL_COLORS['Jupiter']}; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">
+        JUPITER <span style="color: #888; font-weight: 400;">({jupiter_traders:,}/{time_window})</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     jupiter_trades = jupiter_markets.get("trades", {})
     jupiter_volumes = jupiter_markets.get("volumes", {})
 
     if jupiter_trades:
-        jupiter_data = []
         total_trades = sum(jupiter_trades.values())
+        max_trades = max(jupiter_trades.values())
 
-        for market in sorted(jupiter_trades.keys(), key=lambda x: jupiter_trades[x], reverse=True)[:12]:
+        jupiter_rows = []
+        for market in sorted(jupiter_trades.keys(), key=lambda x: jupiter_trades[x], reverse=True)[:10]:
             trades = jupiter_trades[market]
             vol = jupiter_volumes.get(market, 0)
-            share = (trades / total_trades * 100) if total_trades > 0 else 0
 
-            jupiter_data.append({
-                "Market": market,
-                "Trades": f"{trades:,}",
-                "Volume": f"${vol:,.0f}",
-                "Share": f"{share:.1f}%",
-            })
+            jupiter_rows.append([
+                f'<span style="color: #e0e0e0;">{market}</span>',
+                f'<span style="color: #888;">{trades:,}</span>',
+                f'<span style="color: #888;">${vol/1e6:.1f}M</span>',
+                ascii_bar_html(trades, max_trades, width=8, color=PROTOCOL_COLORS["Jupiter"]),
+            ])
 
-        st.dataframe(pd.DataFrame(jupiter_data), width="stretch", hide_index=True)
+        st.markdown(render_terminal_table(
+            headers=["MKT", "TRADES", "VOL", "SHARE"],
+            rows=jupiter_rows
+        ), unsafe_allow_html=True)
 
 with col3:
     pacifica_traders = window_data.get("pacifica_traders", 0)
-    st.subheader(f"Pacifica ({pacifica_traders:,}/{time_window})")
+    st.markdown(f"""
+    <div style="color: {PROTOCOL_COLORS['Pacifica']}; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">
+        PACIFICA <span style="color: #888; font-weight: 400;">({pacifica_traders:,}/{time_window})</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     if pacifica_markets:
-        pacifica_data = []
+        sorted_pac_markets = sorted(pacifica_markets.items(), key=lambda x: x[1].get("max_leverage", 0), reverse=True)[:10]
+        max_lev = max(m.get("max_leverage", 0) for _, m in sorted_pac_markets)
 
-        # Sort by max leverage (proxy for popularity) since volume is estimated
-        sorted_markets = sorted(pacifica_markets.items(), key=lambda x: x[1].get("max_leverage", 0), reverse=True)[:12]
-
-        for market, info in sorted_markets:
+        pacifica_rows = []
+        for market, info in sorted_pac_markets:
             funding = info.get("funding_rate", 0)
             leverage = info.get("max_leverage", 0)
+            fund_color = theme["positive"] if funding < 0 else theme["negative"] if funding > 0 else "#888"
 
-            pacifica_data.append({
-                "Market": market,
-                "Funding": format_funding(funding),
-                "Max Lev": f"{leverage}x",
-            })
+            pacifica_rows.append([
+                f'<span style="color: #e0e0e0;">{market}</span>',
+                f'<span style="color: {fund_color};">{funding*100:+.3f}%</span>',
+                f'<span style="color: {PROTOCOL_COLORS["Pacifica"]};">{leverage}x</span>',
+            ])
 
-        st.dataframe(pd.DataFrame(pacifica_data), width="stretch", hide_index=True)
-        st.caption("49 markets · Per-market volume not available via API")
+        st.markdown(render_terminal_table(
+            headers=["MKT", "FUND", "LEV"],
+            rows=pacifica_rows
+        ), unsafe_allow_html=True)
+        st.caption("49 markets · Volume not available")
     else:
         st.caption("Market data loading...")
 
 st.divider()
 
 # Cross-Platform Wallet Analysis (always 24h for consistency)
-st.header("Cross-Platform Traders (24h)")
-st.caption("Wallet overlap between Drift, Jupiter, and Pacifica")
+st.markdown(terminal_section_header("Cross-Platform Traders (24h)"), unsafe_allow_html=True)
+st.caption("> Wallet overlap: Drift × Jupiter × Pacifica")
 
 # Always use 24h wallet data for consistency (Pacifica API only provides 24h granularity)
 wallet_data = cache.get("time_windows", {}).get("24h", {}).get("wallet_overlap", {})
@@ -1246,8 +1718,8 @@ else:
             )
 
         # Pair overlaps row
-        st.markdown("""
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748B; margin: 1rem 0 0.5rem 0;">Platform Pairs</div>
+        st.markdown(f"""
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 1rem 0 0.5rem 0;">[ PLATFORM_PAIRS ]</div>
         """, unsafe_allow_html=True)
 
         col1, col2, col3, col4 = st.columns(4)
@@ -1274,7 +1746,7 @@ else:
                 if all_three > 0:
                     labels.append("All Three")
                     values.append(all_three)
-                    colors.append(PLOTLY_THEME["accent_solana"])
+                    colors.append(theme["accent"])
                 if drift_jupiter > 0:
                     labels.append("Drift+Jupiter")
                     values.append(drift_jupiter)
@@ -1320,7 +1792,7 @@ else:
                     annotations=[dict(
                         text=f"<b>{total:,}</b><br>traders",
                         x=0.5, y=0.5,
-                        font=dict(size=12, color=PLOTLY_THEME["title_color"], family="Outfit, sans-serif"),
+                        font=dict(size=12, color=PLOTLY_THEME["title_color"], family="JetBrains Mono, monospace"),
                         showarrow=False
                     )]
                 )
@@ -1357,7 +1829,7 @@ else:
 st.divider()
 
 # Unique Insights Section
-st.header("Quick Insights")
+st.markdown(terminal_section_header("Quick Insights"), unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -1417,32 +1889,22 @@ with col4:
         st.info("No liquidations")
     st.caption("Source: Drift")
 
-# Footer with premium styling
+# Footer - Terminal Style
 st.divider()
 
-st.markdown("""
-<div style="padding: 2rem 0; text-align: center;">
-    <div style="display: inline-flex; align-items: center; gap: 1.5rem; padding: 1.25rem 2rem; background: rgba(20, 20, 32, 0.5); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem;">
-        <div style="text-align: left;">
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748B; margin-bottom: 4px;">Data Sources</div>
-            <div style="font-family: 'Outfit', sans-serif; font-size: 0.85rem; color: #94A3B8;">
-                <span style="color: #9945FF;">DeFiLlama</span> ·
-                <span style="color: #4F9DFF;">Drift API</span> ·
-                <span style="color: #00FFA3;">Dune Analytics</span> ·
-                <span style="color: #FFB800;">Solana RPC</span>
-            </div>
-        </div>
+st.markdown(f"""
+<div style="padding: 1rem 0; text-align: center;">
+    <div style="background: #0a0a0a; border: 1px solid #333; padding: 0.75rem 1rem; display: inline-block; text-align: left; font-size: 0.65rem; margin-bottom: 1rem;">
+        <div style="color: {theme['accent']}; margin-bottom: 0.5rem; letter-spacing: 0.1em;">[ SYSTEM_INFO ]</div>
+        <div style="color: #666;">DATA_SOURCES: <span style="color: #888;">DEFILLAMA | DRIFT_API | DUNE | RPC</span></div>
+        <div style="color: #666;">REFRESH_RATE: <span style="color: #888;">15min</span></div>
+        <div style="color: #666;">FEATURES: <span style="color: #888;">CROSS_CHAIN | FUNDING | OI | WALLETS</span></div>
     </div>
 
-    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748B; line-height: 1.8;">
-        Cross-chain comparison · Funding rates · OI concentration · Wallet overlap<br>
-        <span style="color: #4B5563;">Aggregated insights updated every 15 minutes</span>
-    </div>
-
-    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04);">
-        <span style="font-family: 'Outfit', sans-serif; font-size: 0.8rem; color: #4B5563;">
-            Built with <span style="color: #9945FF;">◈</span> for the Solana ecosystem
-        </span>
+    <div style="font-size: 0.7rem; color: #555;">
+        <span style="color: {theme['accent']};">></span> SOLANA_PERPS_TERMINAL v1.0.0
+        <span style="color: #333; margin: 0 0.5rem;">|</span>
+        <span style="color: #555;">Built for the Solana ecosystem</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
