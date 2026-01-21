@@ -20,6 +20,7 @@ st.set_page_config(
     page_title="Solana Perps Insights",
     page_icon="◈",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
