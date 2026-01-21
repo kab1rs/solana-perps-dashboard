@@ -799,16 +799,26 @@ def ascii_bar(value: float, max_value: float, width: int = 20) -> str:
     return "█" * filled + "░" * (width - filled)
 
 
-def ascii_bar_html(value: float, max_value: float, width: int = 15, color: str = None) -> str:
-    """Generate an HTML-styled ASCII progress bar."""
+def ascii_bar_html(value: float, max_value: float, width: int = 15, color: str = None, total: float = None) -> str:
+    """Generate an HTML-styled ASCII progress bar.
+
+    Args:
+        value: The value to display
+        max_value: Max value for bar scaling (bar fills proportionally)
+        width: Number of characters for the bar
+        color: Bar color
+        total: If provided, shows share percentage (value/total) instead of relative to max
+    """
     if color is None:
         color = theme["accent"]
     if max_value == 0:
         return f'<span style="color: #333;">{"░" * width}</span>'
     filled = int((value / max_value) * width)
-    pct = (value / max_value) * 100
+    # Use total for percentage if provided, otherwise use max_value
+    pct_base = total if total is not None else max_value
+    pct = (value / pct_base) * 100 if pct_base > 0 else 0
     bar = f'<span style="color: {color};">{"█" * filled}</span><span style="color: #333;">{"░" * (width - filled)}</span>'
-    return f'{bar} <span style="color: #888;">{pct:.0f}%</span>'
+    return f'{bar} <span style="color: #888;">{pct:.1f}%</span>'
 
 
 def ascii_sparkline(values: list, width: int = 10) -> str:
@@ -1238,7 +1248,7 @@ if global_derivatives:
                 f'<span style="color: {name_color}; font-weight: {"600" if is_solana else "400"};">{p["name"][:12]}</span>',
                 f'<span style="color: #555;">{chain}</span>',
                 f'<span style="color: #e0e0e0;">{format_volume(vol)}</span>',
-                ascii_bar_html(vol, max_global_vol, width=8, color=theme["accent"] if is_solana else "#555"),
+                ascii_bar_html(vol, max_global_vol, width=8, color=theme["accent"] if is_solana else "#555", total=global_total),
                 f'<span style="color: {change_color};">{"▲" if change_1d > 0 else "▼" if change_1d < 0 else "─"}{abs(change_1d):.1f}%</span>',
             ])
 
@@ -1329,7 +1339,7 @@ with col1:
         table_rows.append([
             f'<span style="color: {proto_color};">{proto}</span>',
             f'<span style="color: #e0e0e0;">${vol:,.0f}</span>',
-            ascii_bar_html(vol, max_vol, width=12, color=proto_color),
+            ascii_bar_html(vol, max_vol, width=12, color=proto_color, total=total_volume),
             change_str,
             f'<span style="color: #888;">{traders_str}</span>',
             f'<span style="color: #666;">${fees:,.0f}</span>',
@@ -1578,7 +1588,7 @@ with col1:
             drift_rows.append([
                 f'<span style="color: #e0e0e0;">{market.replace("-PERP", "")}</span>',
                 f'<span style="color: #888;">${vol/1e6:.1f}M</span>',
-                ascii_bar_html(vol, max_vol, width=8, color=PROTOCOL_COLORS["Drift"]),
+                ascii_bar_html(vol, max_vol, width=8, color=PROTOCOL_COLORS["Drift"], total=total_vol),
                 f'<span style="color: {fund_color};">{funding*100:+.3f}%</span>',
             ])
 
@@ -1611,7 +1621,7 @@ with col2:
                 f'<span style="color: #e0e0e0;">{market}</span>',
                 f'<span style="color: #888;">{trades:,}</span>',
                 f'<span style="color: #888;">${vol/1e6:.1f}M</span>',
-                ascii_bar_html(trades, max_trades, width=8, color=PROTOCOL_COLORS["Jupiter"]),
+                ascii_bar_html(trades, max_trades, width=8, color=PROTOCOL_COLORS["Jupiter"], total=total_trades),
             ])
 
         st.markdown(render_terminal_table(
