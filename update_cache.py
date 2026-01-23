@@ -271,6 +271,8 @@ from solana_perps_dashboard import (
     distribute_volume_by_trades,
     fetch_pacifica_pnl_leaderboard,
     fetch_jupiter_pnl_leaderboard,
+    fetch_whale_activity,
+    fetch_all_liquidations_rpc,
     PROTOCOL_METADATA,
 )
 
@@ -347,6 +349,8 @@ def update_cache():
         "total_open_interest": 0,
         "global_derivatives": [],
         "time_windows": {},
+        "whale_activity": {"whales": [], "total_whales": 0, "active_last_1h": 0},
+        "liquidations_rpc": {"drift": {}, "jupiter": {}, "total_count": 0},
         # Legacy keys for backward compatibility
         "drift_traders_1h": 0,
         "jupiter_traders_1h": 0,
@@ -513,6 +517,30 @@ def update_cache():
                 logger.error(f"P&L leaderboard {protocol} failed: {e}")
                 cache["pnl_leaderboard"][protocol] = {"top_winners": [], "top_losers": []}
 
+    # Fetch whale activity and RPC-based liquidations in parallel
+    logger.info("Fetching whale activity and RPC liquidations...")
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        whale_future = executor.submit(fetch_whale_activity, max_whales=10, txns_per_whale=5)
+        liq_future = executor.submit(fetch_all_liquidations_rpc)
+
+        try:
+            cache["whale_activity"] = whale_future.result()
+            active_whales = cache["whale_activity"].get("active_last_1h", 0)
+            total_whales = cache["whale_activity"].get("total_whales", 0)
+            logger.info(f"Whale activity: {active_whales}/{total_whales} active in last 1h")
+        except Exception as e:
+            logger.error(f"Whale activity fetch failed: {e}")
+            cache["whale_activity"] = {"whales": [], "total_whales": 0, "active_last_1h": 0, "error": str(e)}
+
+        try:
+            cache["liquidations_rpc"] = liq_future.result()
+            drift_liq = cache["liquidations_rpc"].get("drift", {}).get("count_1h", 0)
+            jupiter_liq = cache["liquidations_rpc"].get("jupiter", {}).get("count_1h", 0)
+            logger.info(f"RPC liquidations (1h): Drift={drift_liq}, Jupiter={jupiter_liq}")
+        except Exception as e:
+            logger.error(f"RPC liquidations fetch failed: {e}")
+            cache["liquidations_rpc"] = {"drift": {}, "jupiter": {}, "total_count": 0, "error": str(e)}
+
     # Save to file (with validation and fallback)
     logger.info("=" * 60)
     cache_saved = save_cache(cache, old_cache)
@@ -537,6 +565,11 @@ def update_cache():
         liq = data.get("liquidations", {}).get("count", 0)
         multi = data.get("wallet_overlap", {}).get("multi_platform", 0)
         logger.info(f"  {window_key}: Drift={drift_t}, Jupiter={jup_t}, Pacifica={paci_t}, Flash={flash_t}, Adrena={adrena_t}, Liqs={liq}, Multi={multi}")
+    # Log whale activity and RPC liquidations
+    whale_data = cache.get("whale_activity", {})
+    logger.info(f"Whale activity: {whale_data.get('active_last_1h', 0)}/{whale_data.get('total_whales', 0)} active")
+    liq_rpc = cache.get("liquidations_rpc", {})
+    logger.info(f"RPC liquidations (1h): Drift={liq_rpc.get('drift', {}).get('count_1h', 0)}, Jupiter={liq_rpc.get('jupiter', {}).get('count_1h', 0)}")
 
 
 if __name__ == "__main__":

@@ -665,6 +665,8 @@ with st.sidebar:
 <a href="#funding-rate-overview" class="nav-link">FUNDING</a>
 <a href="#market-deep-dive" class="nav-link">MARKETS</a>
 <a href="#cross-platform-traders" class="nav-link">WALLETS</a>
+<a href="#whale-activity" class="nav-link">WHALES</a>
+<a href="#liquidations-rpc" class="nav-link">LIQUIDATIONS</a>
 <a href="#quick-insights" class="nav-link">INSIGHTS</a>
     """, unsafe_allow_html=True)
 
@@ -1836,6 +1838,195 @@ else:
                 st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("No wallet data available for the current period")
+
+st.divider()
+
+# Whale Activity Section
+st.markdown(terminal_section_header("Whale Activity"), unsafe_allow_html=True)
+st.caption("> Top traders from P&L leaderboards - recent activity via RPC")
+
+whale_data = cache.get("whale_activity", {})
+
+if whale_data.get("error"):
+    st.warning(f"Whale data unavailable: {whale_data.get('error', 'Unknown error')}")
+else:
+    whales = whale_data.get("whales", [])
+    active_count = whale_data.get("active_last_1h", 0)
+    total_whales = whale_data.get("total_whales", 0)
+
+    if whales:
+        col1, col2, col3 = st.columns([1, 1, 1])
+
+        with col1:
+            st.metric(
+                "Tracked Whales",
+                f"{total_whales}",
+                help="Top traders from Pacifica and Jupiter P&L leaderboards"
+            )
+
+        with col2:
+            st.metric(
+                "Active (1h)",
+                f"{active_count}",
+                f"{(active_count/total_whales*100):.0f}%" if total_whales > 0 else "0%",
+                help="Whales with transactions in the last hour"
+            )
+
+        with col3:
+            # Calculate total recent txns
+            total_recent_txns = sum(w.get("txn_count_1h", 0) for w in whales)
+            st.metric(
+                "Whale Txns (1h)",
+                f"{total_recent_txns}",
+                help="Total transactions from tracked whales in last hour"
+            )
+
+        # Whale activity table
+        whale_rows = []
+        for whale in whales[:10]:  # Show top 10
+            addr = whale.get("address", "")
+            short_addr = f"{addr[:4]}...{addr[-4:]}" if len(addr) > 8 else addr
+            source = whale.get("source", "").upper()[:3]
+            pnl = whale.get("pnl_24h", 0)
+            vol = whale.get("volume", 0)
+            txn_1h = whale.get("txn_count_1h", 0)
+            is_active = whale.get("is_active", False)
+
+            # Activity indicator
+            status = f'<span style="color: {theme["positive"]};">●</span>' if is_active else f'<span style="color: #333;">○</span>'
+
+            # PnL color
+            pnl_color = theme["positive"] if pnl > 0 else theme["negative"] if pnl < 0 else "#888"
+            pnl_str = f"+${pnl:,.0f}" if pnl > 0 else f"-${abs(pnl):,.0f}" if pnl < 0 else "$0"
+
+            source_color = PROTOCOL_COLORS.get("Pacifica", theme["accent"]) if source == "PAC" else PROTOCOL_COLORS.get("Jupiter", theme["accent"])
+
+            whale_rows.append([
+                status,
+                f'<span style="color: #e0e0e0;">{short_addr}</span>',
+                f'<span style="color: {source_color};">{source}</span>',
+                f'<span style="color: {pnl_color};">{pnl_str}</span>',
+                f'<span style="color: #888;">${vol:,.0f}</span>',
+                f'<span style="color: {theme["accent"] if txn_1h > 0 else "#555"};">{txn_1h}</span>',
+            ])
+
+        st.markdown(render_terminal_table(
+            headers=["", "ADDRESS", "SRC", "P&L", "VOLUME", "TXN_1H"],
+            rows=whale_rows
+        ), unsafe_allow_html=True)
+
+        st.caption(f"● Active in last 1h | Data updated: {whale_data.get('timestamp', 'Unknown')[:16]}")
+    else:
+        st.info("No whale data available")
+
+st.divider()
+
+# Real-time Liquidations Section (RPC-based)
+st.markdown(terminal_section_header("Liquidations (RPC)"), unsafe_allow_html=True)
+st.caption("> Real-time liquidation detection via Solana RPC")
+
+liq_rpc_data = cache.get("liquidations_rpc", {})
+
+if liq_rpc_data.get("error"):
+    st.warning(f"RPC liquidations unavailable: {liq_rpc_data.get('error', 'Unknown error')}")
+else:
+    drift_liq = liq_rpc_data.get("drift", {})
+    jupiter_liq = liq_rpc_data.get("jupiter", {})
+    total_1h = liq_rpc_data.get("total_count_1h", 0)
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "Drift Liquidations (1h)",
+            f"{drift_liq.get('count_1h', 0)}",
+            help="Liquidations detected on Drift in last hour"
+        )
+
+    with col2:
+        st.metric(
+            "Jupiter Liquidations (1h)",
+            f"{jupiter_liq.get('count_1h', 0)}",
+            help="Liquidations detected on Jupiter Perps in last hour"
+        )
+
+    with col3:
+        st.metric(
+            "Total (1h)",
+            f"{total_1h}",
+            help="Combined liquidations across protocols"
+        )
+
+    with col4:
+        total_checked = drift_liq.get("checked_transactions", 0) + jupiter_liq.get("checked_transactions", 0)
+        st.metric(
+            "Txns Scanned",
+            f"{total_checked}",
+            help="Number of recent transactions scanned for liquidations"
+        )
+
+    # Show recent liquidations table
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(f"""
+        <div style="color: {PROTOCOL_COLORS['Drift']}; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">
+            DRIFT LIQUIDATIONS
+        </div>
+        """, unsafe_allow_html=True)
+
+        drift_liqs = drift_liq.get("liquidations", [])[:5]
+        if drift_liqs:
+            drift_liq_rows = []
+            for liq in drift_liqs:
+                sig = liq.get("signature", "")
+                short_sig = f"{sig[:6]}...{sig[-6:]}" if len(sig) > 12 else sig
+                ts = liq.get("timestamp", "")
+                time_str = ts[11:16] if ts and len(ts) > 16 else "?"  # Extract HH:MM
+                liq_type = liq.get("type", "?").upper()[:4]
+
+                drift_liq_rows.append([
+                    f'<span style="color: #888;">{time_str}</span>',
+                    f'<span style="color: #e0e0e0;">{short_sig}</span>',
+                    f'<span style="color: {theme["warning"]};">{liq_type}</span>',
+                ])
+
+            st.markdown(render_terminal_table(
+                headers=["TIME", "SIGNATURE", "TYPE"],
+                rows=drift_liq_rows
+            ), unsafe_allow_html=True)
+        else:
+            st.info("No recent Drift liquidations")
+
+    with col2:
+        st.markdown(f"""
+        <div style="color: {PROTOCOL_COLORS['Jupiter']}; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">
+            JUPITER LIQUIDATIONS
+        </div>
+        """, unsafe_allow_html=True)
+
+        jupiter_liqs = jupiter_liq.get("liquidations", [])[:5]
+        if jupiter_liqs:
+            jup_liq_rows = []
+            for liq in jupiter_liqs:
+                sig = liq.get("signature", "")
+                short_sig = f"{sig[:6]}...{sig[-6:]}" if len(sig) > 12 else sig
+                ts = liq.get("timestamp", "")
+                time_str = ts[11:16] if ts and len(ts) > 16 else "?"
+
+                jup_liq_rows.append([
+                    f'<span style="color: #888;">{time_str}</span>',
+                    f'<span style="color: #e0e0e0;">{short_sig}</span>',
+                ])
+
+            st.markdown(render_terminal_table(
+                headers=["TIME", "SIGNATURE"],
+                rows=jup_liq_rows
+            ), unsafe_allow_html=True)
+        else:
+            st.info("No recent Jupiter liquidations")
+
+    st.caption(f"Data updated: {liq_rpc_data.get('timestamp', 'Unknown')[:16]} | Source: Solana RPC")
 
 st.divider()
 

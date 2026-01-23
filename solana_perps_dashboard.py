@@ -1249,6 +1249,304 @@ def fetch_signature_count(program_id: str, hours: int = 24) -> int:
     return count
 
 
+# --- Whale Wallet Monitoring via RPC ---
+
+def get_top_whale_addresses(limit: int = 20) -> list:
+    """Get top whale addresses from P&L leaderboards across protocols.
+
+    Combines top winners from Pacifica and Jupiter to create a whale watchlist.
+    """
+    logger.info(f"Getting top {limit} whale addresses from leaderboards...")
+    whale_addresses = []
+
+    # Get Pacifica whales (top P&L traders)
+    pacifica_pnl = fetch_pacifica_pnl_leaderboard(limit=limit)
+    for trader in pacifica_pnl.get("top_winners", [])[:limit // 2]:
+        addr = trader.get("address")
+        if addr and addr not in whale_addresses:
+            whale_addresses.append({
+                "address": addr,
+                "source": "pacifica",
+                "pnl_24h": trader.get("pnl_24h", 0),
+                "volume_24h": trader.get("volume_24h", 0),
+            })
+
+    # Get Jupiter whales (top weekly P&L)
+    jupiter_pnl = fetch_jupiter_pnl_leaderboard(limit=limit)
+    for trader in jupiter_pnl.get("top_winners", [])[:limit // 2]:
+        addr = trader.get("address")
+        if addr and addr not in [w["address"] for w in whale_addresses]:
+            whale_addresses.append({
+                "address": addr,
+                "source": "jupiter",
+                "pnl_weekly": trader.get("pnl_weekly", 0),
+                "volume_weekly": trader.get("volume_weekly", 0),
+            })
+
+    logger.info(f"Found {len(whale_addresses)} whale addresses")
+    return whale_addresses
+
+
+def fetch_wallet_recent_activity(wallet_address: str, limit: int = 10) -> list:
+    """Fetch recent transaction activity for a wallet via RPC.
+
+    Returns list of recent transactions with timestamps and success status.
+    """
+    params = [wallet_address, {"limit": limit}]
+    result = rpc_call("getSignaturesForAddress", params)
+
+    if not result or not isinstance(result, list):
+        return []
+
+    activity = []
+    for sig_info in result:
+        tx_time = sig_info.get("blockTime", 0)
+        activity.append({
+            "signature": sig_info.get("signature", ""),
+            "timestamp": datetime.fromtimestamp(tx_time).isoformat() if tx_time else None,
+            "success": sig_info.get("err") is None,
+            "slot": sig_info.get("slot", 0),
+        })
+
+    return activity
+
+
+def fetch_whale_activity(max_whales: int = 10, txns_per_whale: int = 5) -> dict:
+    """Fetch recent activity for top whale wallets via RPC.
+
+    Returns dict with whale addresses and their recent transactions,
+    plus summary statistics.
+    """
+    logger.info(f"Fetching whale activity for top {max_whales} whales...")
+
+    whales = get_top_whale_addresses(limit=max_whales * 2)[:max_whales]
+    whale_activity = []
+    active_count = 0
+    cutoff_time = datetime.utcnow() - timedelta(hours=1)
+
+    for whale in whales:
+        addr = whale["address"]
+        activity = fetch_wallet_recent_activity(addr, limit=txns_per_whale)
+
+        # Check if whale was active in the last hour
+        recent_activity = [
+            a for a in activity
+            if a.get("timestamp") and datetime.fromisoformat(a["timestamp"]) > cutoff_time
+        ]
+        is_active = len(recent_activity) > 0
+        if is_active:
+            active_count += 1
+
+        whale_activity.append({
+            "address": addr,
+            "source": whale.get("source", "unknown"),
+            "pnl_24h": whale.get("pnl_24h", whale.get("pnl_weekly", 0)),
+            "volume": whale.get("volume_24h", whale.get("volume_weekly", 0)),
+            "recent_txns": activity,
+            "txn_count_1h": len(recent_activity),
+            "is_active": is_active,
+        })
+
+        time.sleep(0.05)  # Rate limit protection
+
+    logger.info(f"Whale activity: {active_count}/{len(whale_activity)} whales active in last 1h")
+
+    return {
+        "whales": whale_activity,
+        "total_whales": len(whale_activity),
+        "active_last_1h": active_count,
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+    }
+
+
+# --- Real-time Liquidation Detection via RPC ---
+
+# Drift liquidation instruction discriminator (first 8 bytes)
+DRIFT_LIQUIDATE_PERP_DISCRIMINATOR = bytes.fromhex("4b2377f7bf128b02")
+
+
+def fetch_drift_liquidations_rpc(limit: int = 100) -> dict:
+    """Fetch recent Drift liquidation events via RPC.
+
+    Scans recent Drift program transactions for liquidation instructions
+    by checking the instruction discriminator.
+    """
+    logger.info(f"Fetching Drift liquidations via RPC (limit={limit})...")
+
+    drift_program = PROTOCOL_METADATA["Drift Trade"]["program_id"]
+    params = [drift_program, {"limit": limit}]
+    signatures = rpc_call("getSignaturesForAddress", params)
+
+    if not signatures or not isinstance(signatures, list):
+        logger.warning("Failed to fetch Drift signatures")
+        return {"liquidations": [], "count": 0, "error": "RPC call failed"}
+
+    liquidations = []
+    checked_count = 0
+
+    for sig_info in signatures:
+        signature = sig_info.get("signature")
+        if not signature or sig_info.get("err") is not None:
+            continue
+
+        checked_count += 1
+
+        # Fetch full transaction to inspect instructions
+        tx_params = [signature, {"encoding": "base64", "maxSupportedTransactionVersion": 0}]
+        tx_result = rpc_call("getTransaction", tx_params)
+
+        if not tx_result:
+            continue
+
+        # Check if this is a liquidation transaction
+        # Look for liquidation in the transaction meta logs
+        meta = tx_result.get("meta", {})
+        logs = meta.get("logMessages", [])
+
+        is_liquidation = False
+        liquidation_type = None
+        for log in logs:
+            if "liquidate" in log.lower():
+                is_liquidation = True
+                if "perp" in log.lower():
+                    liquidation_type = "perp"
+                elif "spot" in log.lower():
+                    liquidation_type = "spot"
+                else:
+                    liquidation_type = "unknown"
+                break
+
+        if is_liquidation:
+            block_time = tx_result.get("blockTime", 0)
+            liquidations.append({
+                "signature": signature,
+                "timestamp": datetime.fromtimestamp(block_time).isoformat() if block_time else None,
+                "slot": tx_result.get("slot", 0),
+                "type": liquidation_type,
+                "fee": meta.get("fee", 0) / 1e9,  # Convert lamports to SOL
+            })
+
+        # Stop early if we've found enough or checked enough
+        if len(liquidations) >= 20 or checked_count >= limit:
+            break
+
+        time.sleep(0.02)  # Rate limit protection
+
+    # Calculate time-based stats
+    now = datetime.utcnow()
+    liquidations_1h = [
+        l for l in liquidations
+        if l.get("timestamp") and (now - datetime.fromisoformat(l["timestamp"])).total_seconds() < 3600
+    ]
+
+    logger.info(f"Found {len(liquidations)} liquidations ({len(liquidations_1h)} in last 1h)")
+
+    return {
+        "liquidations": liquidations,
+        "count": len(liquidations),
+        "count_1h": len(liquidations_1h),
+        "checked_transactions": checked_count,
+        "timestamp": now.isoformat() + "Z",
+    }
+
+
+def fetch_jupiter_liquidations_rpc(limit: int = 100) -> dict:
+    """Fetch recent Jupiter Perps liquidation events via RPC.
+
+    Jupiter Perps liquidations happen when positions hit their liquidation price.
+    """
+    logger.info(f"Fetching Jupiter liquidations via RPC (limit={limit})...")
+
+    jupiter_program = PROTOCOL_METADATA["Jupiter Perpetual Exchange"]["program_id"]
+    params = [jupiter_program, {"limit": limit}]
+    signatures = rpc_call("getSignaturesForAddress", params)
+
+    if not signatures or not isinstance(signatures, list):
+        logger.warning("Failed to fetch Jupiter signatures")
+        return {"liquidations": [], "count": 0, "error": "RPC call failed"}
+
+    liquidations = []
+    checked_count = 0
+
+    for sig_info in signatures:
+        signature = sig_info.get("signature")
+        if not signature or sig_info.get("err") is not None:
+            continue
+
+        checked_count += 1
+
+        # Fetch full transaction to inspect logs
+        tx_params = [signature, {"encoding": "base64", "maxSupportedTransactionVersion": 0}]
+        tx_result = rpc_call("getTransaction", tx_params)
+
+        if not tx_result:
+            continue
+
+        # Check for liquidation in logs
+        meta = tx_result.get("meta", {})
+        logs = meta.get("logMessages", [])
+
+        is_liquidation = False
+        for log in logs:
+            if "liquidat" in log.lower():  # Catches "liquidate", "liquidation", "liquidated"
+                is_liquidation = True
+                break
+
+        if is_liquidation:
+            block_time = tx_result.get("blockTime", 0)
+            liquidations.append({
+                "signature": signature,
+                "timestamp": datetime.fromtimestamp(block_time).isoformat() if block_time else None,
+                "slot": tx_result.get("slot", 0),
+                "fee": meta.get("fee", 0) / 1e9,
+            })
+
+        if len(liquidations) >= 20 or checked_count >= limit:
+            break
+
+        time.sleep(0.02)
+
+    now = datetime.utcnow()
+    liquidations_1h = [
+        l for l in liquidations
+        if l.get("timestamp") and (now - datetime.fromisoformat(l["timestamp"])).total_seconds() < 3600
+    ]
+
+    logger.info(f"Found {len(liquidations)} Jupiter liquidations ({len(liquidations_1h)} in last 1h)")
+
+    return {
+        "liquidations": liquidations,
+        "count": len(liquidations),
+        "count_1h": len(liquidations_1h),
+        "checked_transactions": checked_count,
+        "timestamp": now.isoformat() + "Z",
+    }
+
+
+def fetch_all_liquidations_rpc() -> dict:
+    """Fetch liquidations from all supported protocols via RPC.
+
+    Returns combined liquidation data from Drift and Jupiter.
+    """
+    logger.info("Fetching all liquidations via RPC...")
+
+    drift_liqs = fetch_drift_liquidations_rpc(limit=50)
+    jupiter_liqs = fetch_jupiter_liquidations_rpc(limit=50)
+
+    total_count = drift_liqs.get("count", 0) + jupiter_liqs.get("count", 0)
+    total_1h = drift_liqs.get("count_1h", 0) + jupiter_liqs.get("count_1h", 0)
+
+    logger.info(f"Total liquidations: {total_count} ({total_1h} in last 1h)")
+
+    return {
+        "drift": drift_liqs,
+        "jupiter": jupiter_liqs,
+        "total_count": total_count,
+        "total_count_1h": total_1h,
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+    }
+
+
 def distribute_volume_by_trades(total_volume: float, market_trades: dict) -> dict:
     """Distribute total volume across markets by trade count proportion."""
     total_trades = sum(market_trades.values())
