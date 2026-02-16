@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-02-16T07:42:34.516557Z",
+  "updated_at": "2026-02-16T08:30:04.073785Z",
   "protocols": [
     {
       "protocol": "Drift Trade",
@@ -8,18 +8,18 @@
       "change_1d": -18.05,
       "change_7d": 22.74,
       "transactions": 0,
-      "traders": 2217,
+      "traders": 2184,
       "fees": 49614.3895
     },
     {
       "protocol": "Jupiter Perpetual Exchange",
-      "volume_24h": 208554424,
+      "volume_24h": 198685539,
       "volume_7d": 1689251595,
-      "change_1d": 63.57,
-      "change_7d": -5.56,
-      "transactions": 0,
-      "traders": 3028,
-      "fees": 125132.65439999998
+      "change_1d": 55.83,
+      "change_7d": -10.03,
+      "transactions": 801,
+      "traders": 2988,
+      "fees": 119211.3234
     },
     {
       "protocol": "FlashTrade",
@@ -27,8 +27,8 @@
       "volume_7d": 103118123,
       "change_1d": 115.05,
       "change_7d": 336.61,
-      "transactions": 987,
-      "traders": 393,
+      "transactions": 0,
+      "traders": 398,
       "fees": 12572.2
     },
     {
@@ -38,18 +38,18 @@
       "change_1d": 22.84,
       "change_7d": 1.48,
       "transactions": 0,
-      "traders": 0,
+      "traders": 47,
       "fees": 5243.5585
     },
     {
       "protocol": "Pacifica",
-      "volume_24h": 494062219,
+      "volume_24h": 511360060,
       "volume_7d": 4846936600,
-      "change_1d": 55.26,
-      "change_7d": -43.92,
-      "transactions": 397,
-      "traders": 2388,
-      "fees": 247031.1095
+      "change_1d": 60.7,
+      "change_7d": -41.95,
+      "transactions": 388,
+      "traders": 2371,
+      "fees": 255680.03
     },
     {
       "protocol": "Tread.fi Perps",
@@ -74,891 +74,1211 @@
   ],
   "drift_markets": {
     "SOL-PERP": {
-      "volume": 35876332.886819,
-      "open_interest": 1023638.31,
-      "funding_rate": -0.003566361,
-      "next_funding_rate": -0.003541,
-      "last_price": 85.178301,
-      "price_high": 91.1457,
+      "volume": 35466212.455734,
+      "open_interest": 1024271.17,
+      "funding_rate": -0.003439507,
+      "next_funding_rate": -0.003409,
+      "last_price": 85.000151,
+      "price_high": 90.3412,
       "price_low": 84.3184,
-      "index_price": 85.276404
+      "index_price": 85.096016
     },
     "BTC-PERP": {
-      "volume": 22938883.004863,
-      "open_interest": 596.352,
-      "funding_rate": 0.001776737,
-      "next_funding_rate": 0.001874,
-      "last_price": 68564.198345,
-      "price_high": 70995.4,
+      "volume": 22577915.524557,
+      "open_interest": 593.323,
+      "funding_rate": 0.001931524,
+      "next_funding_rate": 0.00191,
+      "last_price": 68566.500667,
+      "price_high": 70680.1,
       "price_low": 68035.0,
-      "index_price": 68541.145882
+      "index_price": 68556.211207
     },
     "ETH-PERP": {
-      "volume": 11523633.033658,
-      "open_interest": 9840.317,
-      "funding_rate": 0.001667311,
-      "next_funding_rate": 0.001016,
-      "last_price": 1972.546605,
-      "price_high": 2097.86,
+      "volume": 11339225.815757,
+      "open_interest": 9835.097,
+      "funding_rate": 0.001905652,
+      "next_funding_rate": 0.001873,
+      "last_price": 1969.561344,
+      "price_high": 2076.745116,
       "price_low": 1928.0,
-      "index_price": 1972.838903
+      "index_price": 1970.805381
     },
     "APT-PERP": {
       "volume": 7930.894725,
       "open_interest": 36943.1,
-      "funding_rate": 0.000614174,
-      "next_funding_rate": 0.000645,
-      "last_price": 0.918333,
+      "funding_rate": 0.000656282,
+      "next_funding_rate": 0.000656,
+      "last_price": 0.917978,
       "price_high": 0.977571,
       "price_low": 0.906,
-      "index_price": 0.918342
+      "index_price": 0.917985
     },
     "1MBONK-PERP": {
-      "volume": 3185271.037753,
-      "open_interest": 19285.2,
-      "funding_rate": 0.001874841,
-      "next_funding_rate": 0.001675,
-      "last_price": 6.624224,
-      "price_high": 7.112066,
+      "volume": 3156417.175756,
+      "open_interest": 21776.4,
+      "funding_rate": 0.001524391,
+      "next_funding_rate": 0.001503,
+      "last_price": 6.582725,
+      "price_high": 6.9747,
       "price_low": 6.414948,
-      "index_price": 6.6232
+      "index_price": 6.581
     },
     "POL-PERP": {
-      "volume": 1299.12694,
+      "volume": 1269.538233,
       "open_interest": 125030.0,
-      "funding_rate": -0.005712595,
-      "next_funding_rate": -0.004728,
-      "last_price": 0.106381,
+      "funding_rate": -0.004505063,
+      "next_funding_rate": -0.004421,
+      "last_price": 0.106265,
       "price_high": 0.1111,
       "price_low": 0.1048,
-      "index_price": 0.10649
+      "index_price": 0.106374
     },
     "ARB-PERP": {
       "volume": 233.75573,
       "open_interest": 128632.0,
-      "funding_rate": -0.004172339,
-      "next_funding_rate": -0.003692,
-      "last_price": 0.11367,
-      "price_high": 0.120088,
+      "funding_rate": -0.003407492,
+      "next_funding_rate": -0.003477,
+      "last_price": 0.11357,
+      "price_high": 0.118795,
       "price_low": 0.113195,
-      "index_price": 0.113785
+      "index_price": 0.113684
     },
     "DOGE-PERP": {
       "volume": 77054.303364,
       "open_interest": 4066704.0,
-      "funding_rate": 0.003667517,
-      "next_funding_rate": 0.003221,
-      "last_price": 0.102214,
-      "price_high": 0.116066,
+      "funding_rate": 0.003628286,
+      "next_funding_rate": 0.003467,
+      "last_price": 0.102209,
+      "price_high": 0.115109,
       "price_low": 0.10219,
-      "index_price": 0.102109
+      "index_price": 0.102105
     },
     "BNB-PERP": {
       "volume": 34350.813735,
       "open_interest": 363.6,
-      "funding_rate": -0.003022715,
-      "next_funding_rate": -0.003195,
-      "last_price": 612.940221,
+      "funding_rate": -0.003312365,
+      "next_funding_rate": -0.003298,
+      "last_price": 612.283813,
       "price_high": 641.37283,
       "price_low": 610.0,
-      "index_price": 613.57823
+      "index_price": 612.921138
     },
     "SUI-PERP": {
-      "volume": 281107.020904,
-      "open_interest": 834785.0,
-      "funding_rate": 0.000457837,
-      "next_funding_rate": 0.000518,
-      "last_price": 0.964411,
-      "price_high": 1.046683,
+      "volume": 275549.166522,
+      "open_interest": 834840.0,
+      "funding_rate": 0.000553367,
+      "next_funding_rate": 0.000557,
+      "last_price": 0.963115,
+      "price_high": 1.023984,
       "price_low": 0.9587,
-      "index_price": 0.964724
+      "index_price": 0.962819
     },
     "1MPEPE-PERP": {
       "volume": 15046.619971,
       "open_interest": 4218.0,
-      "funding_rate": -0.006252022,
-      "next_funding_rate": -0.005618,
-      "last_price": 4.496123,
+      "funding_rate": -0.005363522,
+      "next_funding_rate": -0.005265,
+      "last_price": 4.47605,
       "price_high": 4.8876,
       "price_low": 4.374817,
-      "index_price": 4.5022
+      "index_price": 4.4821
     },
     "OP-PERP": {
       "volume": 4719.134652,
       "open_interest": 48393.0,
-      "funding_rate": -0.00332498,
-      "next_funding_rate": -0.003122,
-      "last_price": 0.187766,
+      "funding_rate": -0.003216137,
+      "next_funding_rate": -0.003191,
+      "last_price": 0.187656,
       "price_high": 0.193807,
       "price_low": 0.185044,
-      "index_price": 0.187956
+      "index_price": 0.187846
     },
     "RENDER-PERP": {
-      "volume": 21995.768094,
-      "open_interest": 92269.0,
-      "funding_rate": -0.004457675,
-      "next_funding_rate": -0.004671,
-      "last_price": 1.433336,
-      "price_high": 1.5066,
+      "volume": 20390.055775,
+      "open_interest": 92320.0,
+      "funding_rate": -0.005151097,
+      "next_funding_rate": -0.005045,
+      "last_price": 1.427988,
+      "price_high": 1.486933,
       "price_low": 1.3936,
-      "index_price": 1.43571
+      "index_price": 1.429642
     },
     "XRP-PERP": {
       "volume": 2186138.769123,
       "open_interest": 610279.0,
-      "funding_rate": -0.003138327,
-      "next_funding_rate": -0.002793,
-      "last_price": 1.462582,
-      "price_high": 1.662896,
+      "funding_rate": -0.003331256,
+      "next_funding_rate": -0.003302,
+      "last_price": 1.462567,
+      "price_high": 1.619105,
       "price_low": 1.444948,
-      "index_price": 1.464073
+      "index_price": 1.464059
     },
     "HNT-PERP": {
-      "volume": 7631.207499,
-      "open_interest": 36999.0,
-      "funding_rate": -0.009088088,
-      "next_funding_rate": -0.007689,
-      "last_price": 1.291514,
+      "volume": 11936.760011,
+      "open_interest": 30382.0,
+      "funding_rate": -0.007156775,
+      "next_funding_rate": -0.006889,
+      "last_price": 1.270518,
       "price_high": 1.3243,
       "price_low": 1.1348,
-      "index_price": 1.293602
+      "index_price": 1.271158
     },
     "INJ-PERP": {
       "volume": 78080.338562,
       "open_interest": 23099.5,
-      "funding_rate": -0.003381046,
-      "next_funding_rate": -0.003385,
-      "last_price": 3.141557,
-      "price_high": 3.295529,
+      "funding_rate": -0.003391302,
+      "next_funding_rate": -0.003363,
+      "last_price": 3.12962,
+      "price_high": 3.235402,
       "price_low": 3.074952,
-      "index_price": 3.144722
+      "index_price": 3.132773
     },
     "LINK-PERP": {
       "volume": 8114.243778,
       "open_interest": 22480.5,
-      "funding_rate": -0.000964713,
-      "next_funding_rate": -0.000645,
-      "last_price": 8.777716,
-      "price_high": 9.189,
+      "funding_rate": -0.000489404,
+      "next_funding_rate": -0.000476,
+      "last_price": 8.76779,
+      "price_high": 9.186758,
       "price_low": 8.66,
-      "index_price": 8.780037
+      "index_price": 8.769424
+    },
+    "RLB-PERP": {
+      "volume": 64.817978,
+      "open_interest": 500.0,
+      "funding_rate": -0.000247909,
+      "next_funding_rate": 0.000887,
+      "last_price": 0.061019,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.06102
     },
     "PYTH-PERP": {
       "volume": 17785.321905,
       "open_interest": 3295358.0,
-      "funding_rate": -0.003877828,
-      "next_funding_rate": -0.004321,
-      "last_price": 0.055453,
-      "price_high": 0.056999,
+      "funding_rate": -0.004708604,
+      "next_funding_rate": -0.004627,
+      "last_price": 0.05556,
+      "price_high": 0.056865,
       "price_low": 0.054884,
-      "index_price": 0.05551
+      "index_price": 0.055617
     },
     "TIA-PERP": {
       "volume": 2246.734678,
       "open_interest": 12720.0,
-      "funding_rate": -0.003893623,
-      "next_funding_rate": -0.003815,
-      "last_price": 0.3402,
+      "funding_rate": -0.003785261,
+      "next_funding_rate": -0.003744,
+      "last_price": 0.340203,
       "price_high": 0.360346,
       "price_low": 0.333,
-      "index_price": 0.340559
+      "index_price": 0.340562
     },
     "JTO-PERP": {
       "volume": 99505.254113,
       "open_interest": 355696.0,
-      "funding_rate": 0.000404468,
-      "next_funding_rate": 0.000497,
-      "last_price": 0.266799,
+      "funding_rate": 0.000452097,
+      "next_funding_rate": 0.000436,
+      "last_price": 0.266395,
       "price_high": 0.286755,
       "price_low": 0.265504,
-      "index_price": 0.2668
+      "index_price": 0.266395
     },
     "SEI-PERP": {
       "volume": 884.210032,
       "open_interest": 296431.0,
-      "funding_rate": 0.003775319,
-      "next_funding_rate": 0.004167,
-      "last_price": 0.074782,
+      "funding_rate": 0.004228437,
+      "next_funding_rate": 0.004177,
+      "last_price": 0.074579,
       "price_high": 0.0786,
       "price_low": 0.074147,
-      "index_price": 0.074708
+      "index_price": 0.074506
     },
     "AVAX-PERP": {
       "volume": 5151.388047,
       "open_interest": 6240.5,
-      "funding_rate": 0.000388333,
-      "next_funding_rate": 0.000463,
-      "last_price": 9.261647,
-      "price_high": 9.664,
+      "funding_rate": 0.000480096,
+      "next_funding_rate": 0.000486,
+      "last_price": 9.268291,
+      "price_high": 9.582,
       "price_low": 9.175,
-      "index_price": 9.262195
+      "index_price": 9.268838
     },
     "WIF-PERP": {
-      "volume": 1135912.770939,
-      "open_interest": 618224.0,
-      "funding_rate": -0.000534564,
-      "next_funding_rate": -0.000356,
-      "last_price": 0.233914,
-      "price_high": 0.248881,
+      "volume": 1102779.555974,
+      "open_interest": 615373.0,
+      "funding_rate": -0.000285211,
+      "next_funding_rate": -0.000285,
+      "last_price": 0.232611,
+      "price_high": 0.2467,
       "price_low": 0.2266,
-      "index_price": 0.234099
+      "index_price": 0.232633
     },
     "JUP-PERP": {
-      "volume": 72994.374621,
-      "open_interest": 2799937.0,
-      "funding_rate": -0.001767686,
-      "next_funding_rate": -0.001481,
-      "last_price": 0.160105,
-      "price_high": 0.175,
+      "volume": 71331.638328,
+      "open_interest": 2799951.0,
+      "funding_rate": -0.00150819,
+      "next_funding_rate": -0.001429,
+      "last_price": 0.160184,
+      "price_high": 0.167687,
       "price_low": 0.159332,
-      "index_price": 0.160161
+      "index_price": 0.160061
+    },
+    "DYM-PERP": {
+      "volume": 97.934407,
+      "open_interest": 547.0,
+      "funding_rate": -0.001130882,
+      "next_funding_rate": -0.085316,
+      "last_price": 0.053616,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.059791
     },
     "TAO-PERP": {
       "volume": 107791.397682,
       "open_interest": 1820.18,
-      "funding_rate": -0.020668678,
-      "next_funding_rate": -0.024026,
-      "last_price": 190.220526,
+      "funding_rate": -0.040098306,
+      "next_funding_rate": -0.040877,
+      "last_price": 180.327391,
       "price_high": 213.687616,
       "price_low": 181.477736,
-      "index_price": 193.378154
+      "index_price": 185.219363
     },
     "W-PERP": {
       "volume": 98.190952,
       "open_interest": 739501.0,
-      "funding_rate": -0.000615127,
-      "next_funding_rate": 0.0,
-      "last_price": 0.020246,
-      "price_high": 0.021298,
-      "price_low": 0.021,
-      "index_price": 0.02025
+      "funding_rate": 0.000408826,
+      "next_funding_rate": 0.000205,
+      "last_price": 0.02023,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.020235
     },
     "KMNO-PERP": {
       "volume": 1205.350613,
       "open_interest": 2580814.0,
-      "funding_rate": -0.002930047,
-      "next_funding_rate": -0.002648,
-      "last_price": 0.029821,
+      "funding_rate": -0.002512983,
+      "next_funding_rate": -0.002371,
+      "last_price": 0.029786,
       "price_high": 0.031,
       "price_low": 0.0296,
-      "index_price": 0.029855
+      "index_price": 0.02982
     },
     "TNSR-PERP": {
       "volume": 15002.069632,
       "open_interest": 1335392.0,
-      "funding_rate": 0.013370933,
-      "next_funding_rate": 0.01373,
-      "last_price": 0.053538,
-      "price_high": 0.055705,
+      "funding_rate": 0.014491219,
+      "next_funding_rate": 0.014381,
+      "last_price": 0.0531,
+      "price_high": 0.0552,
       "price_low": 0.050356,
-      "index_price": 0.05322
+      "index_price": 0.052819
     },
     "DRIFT-PERP": {
       "volume": 40882.495342,
       "open_interest": 4614316.0,
-      "funding_rate": -0.000182301,
-      "next_funding_rate": -0.000365,
-      "last_price": 0.091253,
+      "funding_rate": -4.48e-05,
+      "next_funding_rate": -9.1e-05,
+      "last_price": 0.093683,
       "price_high": 0.099503,
       "price_low": 0.082,
-      "index_price": 0.091254
+      "index_price": 0.093684
     },
     "CLOUD-PERP": {
       "volume": 18.823812,
       "open_interest": 76072.0,
-      "funding_rate": -0.06404374,
-      "next_funding_rate": -0.057802,
-      "last_price": 0.038902,
+      "funding_rate": -0.0592704,
+      "next_funding_rate": -0.059766,
+      "last_price": 0.039018,
       "price_high": 0.042184,
       "price_low": 0.038091,
-      "index_price": 0.039739
+      "index_price": 0.039926
+    },
+    "IO-PERP": {
+      "volume": 1639.828223,
+      "open_interest": 20.0,
+      "funding_rate": 0.033784348,
+      "next_funding_rate": -0.049476,
+      "last_price": 0.142941,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.144478
+    },
+    "ZEX-PERP": {
+      "volume": 7.84,
+      "open_interest": 14.0,
+      "funding_rate": -0.008775444,
+      "next_funding_rate": 0.000789,
+      "last_price": 0.073829,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.073914
     },
     "POPCAT-PERP": {
       "volume": 13313.426517,
       "open_interest": 1123174.0,
-      "funding_rate": 0.003167597,
-      "next_funding_rate": 0.003247,
-      "last_price": 0.054353,
+      "funding_rate": 0.003082046,
+      "next_funding_rate": 0.00293,
+      "last_price": 0.054235,
       "price_high": 0.0581,
       "price_low": 0.053731,
-      "index_price": 0.054288
+      "index_price": 0.054175
+    },
+    "1KWEN-PERP": {
+      "volume": 1159.733264,
+      "open_interest": 460.0,
+      "funding_rate": -0.001614511,
+      "next_funding_rate": 0.000953,
+      "last_price": 0.026203,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.026228
+    },
+    "TRUMP-WIN-2024-BET": {
+      "volume": 1381506.479951,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 0.980427,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.979815
+    },
+    "KAMALA-POPULAR-VOTE-2024-BET": {
+      "volume": 202.763016,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 2e-06,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 2e-06
+    },
+    "FED-CUT-50-SEPT-2024-BET": {
+      "volume": 61921.214356,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000833,
+      "last_price": 0.990633,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.990015
+    },
+    "REPUBLICAN-POPULAR-AND-WIN-BET": {
+      "volume": 793.263281,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000831,
+      "last_price": 0.998245,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.997622
+    },
+    "BREAKPOINT-IGGYERIC-BET": {
+      "volume": 3.894168,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": -0.320512,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
+    },
+    "DEMOCRATS-WIN-MICHIGAN-BET": {
+      "volume": 2234.536867,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "TON-PERP": {
       "volume": 10330.223029,
       "open_interest": 9016.0,
-      "funding_rate": -0.003592879,
-      "next_funding_rate": -0.003508,
-      "last_price": 1.438078,
+      "funding_rate": -0.003508239,
+      "next_funding_rate": -0.003487,
+      "last_price": 1.4392,
       "price_high": 1.481519,
       "price_low": 1.446498,
-      "index_price": 1.43968
+      "index_price": 1.440664
+    },
+    "LANDO-F1-SGP-WIN-BET": {
+      "volume": 99853.432168,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 0.974759,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.974151
+    },
+    "MOTHER-PERP": {
+      "volume": 11723.884157,
+      "open_interest": 3646.0,
+      "funding_rate": 0.116474809,
+      "next_funding_rate": -0.148657,
+      "last_price": 0.001207,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.000945
+    },
+    "MOODENG-PERP": {
+      "volume": 2497.306321,
+      "open_interest": 3148.0,
+      "funding_rate": 0.017000782,
+      "next_funding_rate": -0.005796,
+      "last_price": 0.0877,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.086109
+    },
+    "WARWICK-FIGHT-WIN-BET": {
+      "volume": 2971.94903,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
+    },
+    "DBR-PERP": {
+      "volume": 32.253978,
+      "open_interest": 0.0,
+      "funding_rate": -0.001345943,
+      "next_funding_rate": 0.000702,
+      "last_price": 0.023722,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.023723
+    },
+    "WLF-5B-1W-BET": {
+      "volume": 2.45,
+      "open_interest": 790.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 1.102495,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.713525
+    },
+    "VRSTPN-WIN-F1-24-DRVRS-CHMP-BET": {
+      "volume": 8068.712266,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.000829,
+      "last_price": 1.000623,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.999999
+    },
+    "LNDO-WIN-F1-24-US-GP-BET": {
+      "volume": 16.516678,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
+    },
+    "1KMEW-PERP": {
+      "volume": 245409.217363,
+      "open_interest": 0.0,
+      "funding_rate": 0.003754899,
+      "next_funding_rate": -0.040113,
+      "last_price": 0.936556,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.93655
+    },
+    "MICHI-PERP": {
+      "volume": 0.0,
+      "open_interest": 272.0,
+      "funding_rate": 0.002807306,
+      "next_funding_rate": 0.000826,
+      "last_price": 0.025216,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.025217
+    },
+    "GOAT-PERP": {
+      "volume": 8149.772287,
+      "open_interest": 60.0,
+      "funding_rate": 0.009174447,
+      "next_funding_rate": -0.011507,
+      "last_price": 0.039858,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.04042
+    },
+    "FWOG-PERP": {
+      "volume": 7816.61287,
+      "open_interest": 13687.0,
+      "funding_rate": -0.006039425,
+      "next_funding_rate": -0.012609,
+      "last_price": 0.016252,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.015806
+    },
+    "PNUT-PERP": {
+      "volume": 319.544061,
+      "open_interest": 226.0,
+      "funding_rate": 0.012804868,
+      "next_funding_rate": -0.03081,
+      "last_price": 0.065715,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.070149
     },
     "RAY-PERP": {
       "volume": 2695.19576,
       "open_interest": 247699.0,
-      "funding_rate": 0.003797291,
-      "next_funding_rate": 0.003692,
-      "last_price": 0.62307,
+      "funding_rate": 0.003645499,
+      "next_funding_rate": 0.003627,
+      "last_price": 0.621554,
       "price_high": 0.667557,
       "price_low": 0.617,
-      "index_price": 0.622655
+      "index_price": 0.621139
+    },
+    "SUPERBOWL-LIX-LIONS-BET": {
+      "volume": 418.575512,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
+    },
+    "SUPERBOWL-LIX-CHIEFS-BET": {
+      "volume": 1637.317715,
+      "open_interest": 0.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "HYPE-PERP": {
-      "volume": 8989578.94469,
-      "open_interest": 45505.4,
-      "funding_rate": 0.000904179,
-      "next_funding_rate": 0.000893,
-      "last_price": 29.80935,
+      "volume": 8529017.270191,
+      "open_interest": 45511.5,
+      "funding_rate": 0.000885224,
+      "next_funding_rate": 0.000911,
+      "last_price": 29.725126,
       "price_high": 31.573762,
-      "price_low": 29.62,
-      "index_price": 29.808069
+      "price_low": 29.5752,
+      "index_price": 29.700937
     },
     "LTC-PERP": {
       "volume": 105098.218856,
       "open_interest": 1277.76,
-      "funding_rate": 0.001880762,
-      "next_funding_rate": 0.001943,
-      "last_price": 54.213753,
-      "price_high": 56.524,
+      "funding_rate": 0.001920592,
+      "next_funding_rate": 0.001926,
+      "last_price": 54.23184,
+      "price_high": 56.304352,
       "price_low": 53.785,
-      "index_price": 54.195074
+      "index_price": 54.185099
     },
     "ME-PERP": {
       "volume": 1693.963357,
       "open_interest": 114152.0,
-      "funding_rate": 0.000673222,
-      "next_funding_rate": 0.000796,
-      "last_price": 0.135415,
+      "funding_rate": 0.000706546,
+      "next_funding_rate": 0.000706,
+      "last_price": 0.134156,
       "price_high": 0.163,
       "price_low": 0.12,
-      "index_price": 0.135412
+      "index_price": 0.134141
     },
     "PENGU-PERP": {
-      "volume": 13305.364045,
-      "open_interest": 3293742.0,
-      "funding_rate": 0.000570553,
-      "next_funding_rate": -0.000579,
-      "last_price": 0.007206,
-      "price_high": 0.007707,
+      "volume": 12628.762809,
+      "open_interest": 3302686.0,
+      "funding_rate": 0.000568654,
+      "next_funding_rate": 0.000577,
+      "last_price": 0.007189,
+      "price_high": 0.007653,
       "price_low": 0.006923,
-      "index_price": 0.007207
+      "index_price": 0.00719
+    },
+    "AI16Z-PERP": {
+      "volume": 6793.415642,
+      "open_interest": 1091.0,
+      "funding_rate": 0.017565257,
+      "next_funding_rate": -0.100437,
+      "last_price": 0.015749,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.01625
     },
     "TRUMP-PERP": {
       "volume": 39287.212265,
       "open_interest": 9795.3,
-      "funding_rate": 0.002647747,
-      "next_funding_rate": 0.005068,
-      "last_price": 3.503943,
+      "funding_rate": 0.003954213,
+      "next_funding_rate": 0.003623,
+      "last_price": 3.516888,
       "price_high": 3.6432,
       "price_low": 3.358,
-      "index_price": 3.507518
+      "index_price": 3.520476
+    },
+    "MELANIA-PERP": {
+      "volume": 2811.061656,
+      "open_interest": 0.0,
+      "funding_rate": 0.002109164,
+      "next_funding_rate": -0.001513,
+      "last_price": 0.107262,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.107263
     },
     "BERA-PERP": {
       "volume": 71925.266304,
       "open_interest": 111429.0,
-      "funding_rate": -0.009646683,
-      "next_funding_rate": -0.00802,
-      "last_price": 0.639663,
+      "funding_rate": -0.007429199,
+      "next_funding_rate": -0.007368,
+      "last_price": 0.638975,
       "price_high": 0.673,
       "price_low": 0.5956,
-      "index_price": 0.64125
+      "index_price": 0.640692
+    },
+    "NBAFINALS25-OKC-BET": {
+      "volume": 1439.398655,
+      "open_interest": 20.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.00083,
+      "last_price": 0.968746,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.968495
+    },
+    "NBAFINALS25-BOS-BET": {
+      "volume": 1.971608,
+      "open_interest": 97.0,
+      "funding_rate": 0.0,
+      "next_funding_rate": 0.0,
+      "last_price": 0.0,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 1e-06
     },
     "KAITO-PERP": {
       "volume": 34.706848,
       "open_interest": 11707.0,
-      "funding_rate": -0.001505841,
-      "next_funding_rate": -0.001357,
-      "last_price": 0.309125,
+      "funding_rate": -0.001372583,
+      "next_funding_rate": -0.001318,
+      "last_price": 0.309626,
       "price_high": 0.319624,
       "price_low": 0.30962,
-      "index_price": 0.309273
+      "index_price": 0.309774
     },
     "IP-PERP": {
       "volume": 3443.209532,
       "open_interest": 19763.9,
-      "funding_rate": -0.002550089,
-      "next_funding_rate": -0.002402,
-      "last_price": 1.104827,
+      "funding_rate": -0.002296003,
+      "next_funding_rate": -0.00229,
+      "last_price": 1.117583,
       "price_high": 1.260586,
       "price_low": 1.121,
-      "index_price": 1.105875
+      "index_price": 1.118643
     },
     "FARTCOIN-PERP": {
       "volume": 165320.64565,
       "open_interest": 1096648.0,
-      "funding_rate": 0.001026174,
-      "next_funding_rate": 0.001047,
-      "last_price": 0.199216,
-      "price_high": 0.212083,
+      "funding_rate": 0.001089449,
+      "next_funding_rate": 0.001068,
+      "last_price": 0.199009,
+      "price_high": 0.211098,
       "price_low": 0.194016,
-      "index_price": 0.199106
+      "index_price": 0.19894
     },
     "ADA-PERP": {
       "volume": 2235.778301,
       "open_interest": 125321.0,
-      "funding_rate": -5.9328e-05,
+      "funding_rate": 4.4659e-05,
       "next_funding_rate": 4.4e-05,
-      "last_price": 0.280067,
+      "last_price": 0.280547,
       "price_high": 0.299986,
       "price_low": 0.281789,
-      "index_price": 0.280105
+      "index_price": 0.280585
     },
     "PAXG-PERP": {
-      "volume": 409369.163031,
-      "open_interest": 149.832,
-      "funding_rate": 0.000602034,
-      "next_funding_rate": 0.000612,
-      "last_price": 5003.376183,
+      "volume": 424281.580527,
+      "open_interest": 142.756,
+      "funding_rate": 0.000659012,
+      "next_funding_rate": 0.000669,
+      "last_price": 5015.839147,
       "price_high": 5039.095307,
       "price_low": 4988.423565,
-      "index_price": 5003.651385
+      "index_price": 5015.748857
+    },
+    "LAUNCHCOIN-PERP": {
+      "volume": 25287.201769,
+      "open_interest": 0.0,
+      "funding_rate": 0.33118948,
+      "next_funding_rate": -0.415979,
+      "last_price": 0.000588,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.000588
+    },
+    "PUMP-PERP": {
+      "volume": 522367.104292,
+      "open_interest": 0.0,
+      "funding_rate": -0.275531724,
+      "next_funding_rate": -0.015445,
+      "last_price": 0.002171,
+      "price_high": 0.0,
+      "price_low": 0.0,
+      "index_price": 0.002184
     },
     "ASTER-PERP": {
       "volume": 123344.504218,
       "open_interest": 156831.0,
-      "funding_rate": -0.004211955,
-      "next_funding_rate": -0.003704,
-      "last_price": 0.709056,
+      "funding_rate": -0.003264589,
+      "next_funding_rate": -0.003232,
+      "last_price": 0.714071,
       "price_high": 0.7388,
       "price_low": 0.7086,
-      "index_price": 0.709604
+      "index_price": 0.714626
     },
     "XPL-PERP": {
-      "volume": 14996.504929,
-      "open_interest": 130031.0,
-      "funding_rate": -0.001763686,
-      "next_funding_rate": 0.001217,
-      "last_price": 0.101023,
+      "volume": 16082.391363,
+      "open_interest": 114696.0,
+      "funding_rate": -0.001291581,
+      "next_funding_rate": -0.001499,
+      "last_price": 0.099435,
       "price_high": 0.103566,
       "price_low": 0.096225,
-      "index_price": 0.100899
+      "index_price": 0.099566
     },
     "2Z-PERP": {
       "volume": 4619.840129,
       "open_interest": 95729.0,
-      "funding_rate": -0.007734046,
-      "next_funding_rate": -0.007718,
-      "last_price": 0.076799,
+      "funding_rate": -0.00828277,
+      "next_funding_rate": -0.008264,
+      "last_price": 0.076841,
       "price_high": 0.081797,
       "price_low": 0.076069,
-      "index_price": 0.076963
+      "index_price": 0.077028
     },
     "ZEC-PERP": {
-      "volume": 189296.501687,
+      "volume": 181683.013916,
       "open_interest": 4266.22,
-      "funding_rate": 0.002161709,
-      "next_funding_rate": 0.002392,
-      "last_price": 282.898445,
-      "price_high": 313.64,
+      "funding_rate": 0.002651647,
+      "next_funding_rate": 0.002588,
+      "last_price": 283.678982,
+      "price_high": 307.9,
       "price_low": 283.52,
-      "index_price": 282.740398
+      "index_price": 283.668656
     },
     "MNT-PERP": {
-      "volume": 157372.770465,
-      "open_interest": 15562.0,
-      "funding_rate": 0.002174582,
-      "next_funding_rate": 0.002294,
-      "last_price": 0.631523,
+      "volume": 162524.995117,
+      "open_interest": 15448.0,
+      "funding_rate": 0.00218545,
+      "next_funding_rate": 0.002159,
+      "last_price": 0.631914,
       "price_high": 0.66331,
       "price_low": 0.622062,
-      "index_price": 0.631403
+      "index_price": 0.631933
     },
     "1KPUMP-PERP": {
       "volume": 10561.28233,
       "open_interest": 20601.0,
-      "funding_rate": 0.006514115,
-      "next_funding_rate": 0.004108,
-      "last_price": 2.197006,
+      "funding_rate": 0.002905286,
+      "next_funding_rate": 0.002777,
+      "last_price": 2.184326,
       "price_high": 2.3406,
       "price_low": 2.1934,
-      "index_price": 2.19702
+      "index_price": 2.18434
     },
     "MET-PERP": {
       "volume": 879.170982,
       "open_interest": 126644.0,
-      "funding_rate": 0.000304837,
-      "next_funding_rate": 0.000286,
-      "last_price": 0.219175,
+      "funding_rate": 0.00011432,
+      "next_funding_rate": 0.000133,
+      "last_price": 0.219016,
       "price_high": 0.2416,
       "price_low": 0.217,
-      "index_price": 0.219174
+      "index_price": 0.219015
     },
     "1KMON-PERP": {
-      "volume": 2271072.697733,
-      "open_interest": 2862.4,
-      "funding_rate": 0.004320293,
-      "next_funding_rate": 0.003011,
-      "last_price": 23.180219,
+      "volume": 2265318.885897,
+      "open_interest": 2382.9,
+      "funding_rate": 0.002210102,
+      "next_funding_rate": 0.002121,
+      "last_price": 23.23998,
       "price_high": 24.558562,
       "price_low": 22.118835,
-      "index_price": 23.183
+      "index_price": 23.23954
     },
     "LIT-PERP": {
-      "volume": 874584.464644,
-      "open_interest": 33215.0,
-      "funding_rate": -0.002231812,
-      "next_funding_rate": -0.000198,
-      "last_price": 1.659242,
+      "volume": 874594.829267,
+      "open_interest": 25950.0,
+      "funding_rate": 0.000936464,
+      "next_funding_rate": 0.000921,
+      "last_price": 1.643971,
       "price_high": 1.715892,
       "price_low": 1.56,
-      "index_price": 1.6559
+      "index_price": 1.643939
     }
   },
   "jupiter_markets": {
     "trades": {
-      "SOL": 611,
-      "OTHER": 73,
-      "BTC": 61,
-      "ETH": 51,
-      "USDC": 1
+      "SOL": 499,
+      "OTHER": 63,
+      "BTC": 41,
+      "ETH": 33,
+      "USDC": 2
     },
     "volumes": {
-      "SOL": 159883002.58971143,
-      "OTHER": 19102224.53199498,
-      "BTC": 15962132.828105396,
-      "ETH": 13345389.74153074,
-      "USDC": 261674.30865746547
+      "SOL": 155398250.72257054,
+      "OTHER": 19619418.42789969,
+      "BTC": 12768192.945141066,
+      "ETH": 10276838.22413793,
+      "USDC": 622838.6802507837
     }
   },
   "pacifica_markets": {
-    "SOL": {
-      "volume": 693022.9512196069,
-      "trades": 0,
-      "funding_rate": -1.589e-05,
-      "max_leverage": 20
-    },
     "ETH": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -3.12e-06,
+      "funding_rate": -3.22e-06,
       "max_leverage": 50
     },
     "BTC": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -3.4e-07,
+      "funding_rate": -2.33e-06,
       "max_leverage": 50
     },
-    "PUMP": {
-      "volume": 693022.9512196069,
+    "SOL": {
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -2.47e-06,
+      "funding_rate": -2.02e-05,
+      "max_leverage": 20
+    },
+    "PUMP": {
+      "volume": 695269.0566308033,
+      "trades": 0,
+      "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "XRP": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -1.673e-05,
+      "funding_rate": -1.885e-05,
       "max_leverage": 20
     },
     "HYPE": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.71e-06,
+      "funding_rate": 3.87e-06,
       "max_leverage": 20
     },
     "DOGE": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 15
     },
     "FARTCOIN": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "ENA": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": -2.842e-05,
       "max_leverage": 10
     },
     "BNB": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -2.302e-05,
+      "funding_rate": -1.948e-05,
       "max_leverage": 10
     },
     "SUI": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 2.78e-06,
+      "funding_rate": 3.67e-06,
       "max_leverage": 10
     },
     "kBONK": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": 1.178e-05,
       "max_leverage": 10
     },
     "PENGU": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 8.8e-06,
+      "funding_rate": 4.95e-06,
       "max_leverage": 5
     },
     "AAVE": {
-      "volume": 693022.9512196069,
-      "trades": 0,
-      "funding_rate": 1.369e-05,
-      "max_leverage": 10
-    },
-    "LINK": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
-    "kPEPE": {
-      "volume": 693022.9512196069,
+    "LINK": {
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -2.01e-05,
+      "funding_rate": 1.007e-05,
+      "max_leverage": 10
+    },
+    "kPEPE": {
+      "volume": 695269.0566308033,
+      "trades": 0,
+      "funding_rate": -1.913e-05,
       "max_leverage": 10
     },
     "LTC": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -3.6e-07,
+      "funding_rate": 4.97e-06,
       "max_leverage": 10
     },
     "LDO": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "UNI": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "CRV": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 9.02e-06,
+      "funding_rate": 5.24e-06,
       "max_leverage": 10
     },
     "WLFI": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -2.482e-05,
+      "funding_rate": -4.819e-05,
       "max_leverage": 5
     },
     "AVAX": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.482e-05,
+      "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "ASTER": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -8.74e-06,
+      "funding_rate": -3.086e-05,
       "max_leverage": 5
     },
     "XPL": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "2Z": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -3.916e-05,
+      "funding_rate": -8.763e-05,
       "max_leverage": 3
     },
     "PAXG": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
+      "trades": 0,
+      "funding_rate": 4.58e-06,
+      "max_leverage": 10
+    },
+    "ZEC": {
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
-    "ZEC": {
-      "volume": 693022.9512196069,
-      "trades": 0,
-      "funding_rate": 1.464e-05,
-      "max_leverage": 10
-    },
     "MON": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 3
     },
     "VIRTUAL": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -1.38e-06,
+      "funding_rate": -2.156e-05,
       "max_leverage": 5
     },
     "TAO": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -0.00169044,
+      "funding_rate": 5.67e-06,
       "max_leverage": 10
     },
     "ZK": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "STRK": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "NEAR": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "TRUMP": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -1.24e-06,
+      "funding_rate": -1.666e-05,
       "max_leverage": 10
     },
     "ICP": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -1.49e-06,
+      "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "BCH": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": 1.45e-05,
       "max_leverage": 10
     },
     "XMR": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "ADA": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "ARB": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": 1.228e-05,
       "max_leverage": 10
     },
     "LIT": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": -2.238e-05,
       "max_leverage": 5
     },
     "NVDA": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -2.129e-05,
+      "funding_rate": -1.344e-05,
       "max_leverage": 10
     },
     "XAG": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "WLD": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "JUP": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "WIF": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.252e-05,
+      "funding_rate": 1.5e-05,
       "max_leverage": 5
     },
     "PIPPIN": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 3.219e-05,
+      "funding_rate": 2.529e-05,
       "max_leverage": 3
     },
     "CL": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "USDJPY": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": -0.00020272,
+      "funding_rate": -7.538e-05,
       "max_leverage": 50
     },
     "TSLA": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": 5.08e-05,
       "max_leverage": 10
     },
     "MEGA": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 3
     },
     "BP": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 3
     },
     "ZRO": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
-      "funding_rate": 1.5e-05,
+      "funding_rate": 1.319e-05,
       "max_leverage": 5
     },
     "GOOGL": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "COPPER": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "XAU": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 10
     },
     "EURUSD": {
-      "volume": 693022.9512196069,
+      "volume": 695269.0566308033,
       "trades": 0,
       "funding_rate": 1.5e-05,
       "max_leverage": 50
     }
   },
-  "total_open_interest": 156753442.71539512,
+  "total_open_interest": 156316826.62441164,
   "global_derivatives": [
     {
       "name": "Hyperliquid Perps",
@@ -985,10 +1305,10 @@
       "chains": [
         "Off Chain"
       ],
-      "volume_24h": 2370759809,
+      "volume_24h": 2341942449,
       "volume_7d": 20477983421,
-      "change_1d": 42.28,
-      "change_7d": -7.84
+      "change_1d": 40.56,
+      "change_7d": -8.96
     },
     {
       "name": "Lighter Perps",
@@ -1015,10 +1335,10 @@
       "chains": [
         "Arbitrum"
       ],
-      "volume_24h": 889915287,
+      "volume_24h": 889415231,
       "volume_7d": 5390898188,
-      "change_1d": 16.82,
-      "change_7d": 45.95
+      "change_1d": 16.75,
+      "change_7d": 45.87
     },
     {
       "name": "Extended",
@@ -1036,40 +1356,40 @@
       "chains": [
         "GRVT"
       ],
-      "volume_24h": 668840621,
+      "volume_24h": 676529321,
       "volume_7d": 8506364095,
-      "change_1d": -14.04,
-      "change_7d": -43.75
+      "change_1d": -13.05,
+      "change_7d": -43.1
     },
     {
       "name": "StandX Perps",
       "chains": [
         "StandX"
       ],
-      "volume_24h": 566998925,
+      "volume_24h": 549919168,
       "volume_7d": 4096856061,
-      "change_1d": 12.84,
-      "change_7d": 4.46
-    },
-    {
-      "name": "Paradex Perps",
-      "chains": [
-        "Paradex"
-      ],
-      "volume_24h": 507195077,
-      "volume_7d": 3281123088,
-      "change_1d": -7.35,
-      "change_7d": 48.84
+      "change_1d": 9.44,
+      "change_7d": 1.31
     },
     {
       "name": "Pacifica",
       "chains": [
         "Solana"
       ],
-      "volume_24h": 494062219,
+      "volume_24h": 511360060,
       "volume_7d": 4846936600,
-      "change_1d": 55.26,
-      "change_7d": -43.92
+      "change_1d": 60.7,
+      "change_7d": -41.95
+    },
+    {
+      "name": "Paradex Perps",
+      "chains": [
+        "Paradex"
+      ],
+      "volume_24h": 506339648,
+      "volume_7d": 3281123088,
+      "change_1d": -7.51,
+      "change_7d": 48.59
     },
     {
       "name": "Nado Perps",
@@ -1082,59 +1402,54 @@
       "change_7d": 4.38
     },
     {
-      "name": "Antarctic",
+      "name": "MYX Finance",
       "chains": [
-        "Off Chain"
+        "Arbitrum",
+        "Linea",
+        "BSC"
       ],
-      "volume_24h": 286077304,
-      "volume_7d": 1596124490,
-      "change_1d": 12.16,
-      "change_7d": 74.01
+      "volume_24h": 321532954,
+      "volume_7d": 1987685845,
+      "change_1d": 15.8,
+      "change_7d": 14.61
     },
     {
       "name": "Reya Perps",
       "chains": [
         "ReyaChain"
       ],
-      "volume_24h": 284395814,
+      "volume_24h": 293478269,
       "volume_7d": 1360109149,
-      "change_1d": 15.13,
-      "change_7d": 99.99
+      "change_1d": 18.8,
+      "change_7d": 106.38
     },
     {
-      "name": "SYMMIO",
+      "name": "Antarctic",
       "chains": [
-        "Arbitrum",
-        "Base",
-        "BSC",
-        "Mantle",
-        "Berachain",
-        "Mode",
-        "Sonic",
-        "Coti"
+        "Off Chain"
       ],
-      "volume_24h": 277017102,
-      "volume_7d": 1989378986,
-      "change_1d": -1.64,
-      "change_7d": -3.12
+      "volume_24h": 278255750,
+      "volume_7d": 1596124490,
+      "change_1d": 9.1,
+      "change_7d": 69.25
     }
   ],
   "time_windows": {
     "24h": {
-      "pacifica_traders": 2388,
-      "flashtrade_traders": 393,
-      "jupiter_traders": 3028,
-      "adrena_traders": 0,
-      "drift_traders": 2217,
+      "pacifica_traders": 2371,
+      "jupiter_traders": 2988,
+      "flashtrade_traders": 398,
+      "adrena_traders": 47,
+      "drift_traders": 2184,
       "wallet_overlap": {
-        "drift_only": 4040,
-        "jupiter_only": 2684,
+        "drift_only": 3981,
+        "jupiter_only": 2652,
         "pacifica_only": 7664,
-        "drift_jupiter": 12,
+        "drift_jupiter": 11,
         "drift_pacifica": 3,
         "jupiter_pacifica": 9,
         "all_three": 0,
-        "multi_platform": 24
+        "multi_platform": 23
       },
       "liquidations": {
         "count": 0,
@@ -1142,21 +1457,21 @@
         "error": "No historical data"
       }
     },
-    "4h": {
-      "pacifica_traders": 597,
-      "jupiter_traders": 763,
-      "flashtrade_traders": 86,
-      "adrena_traders": 7,
-      "drift_traders": 600,
+    "1h": {
+      "pacifica_traders": 237,
+      "jupiter_traders": 205,
+      "flashtrade_traders": 33,
+      "adrena_traders": 2,
+      "drift_traders": 328,
       "wallet_overlap": {
-        "drift_only": 4040,
-        "jupiter_only": 2684,
+        "drift_only": 3981,
+        "jupiter_only": 2652,
         "pacifica_only": 7664,
-        "drift_jupiter": 12,
+        "drift_jupiter": 11,
         "drift_pacifica": 3,
         "jupiter_pacifica": 9,
         "all_three": 0,
-        "multi_platform": 24
+        "multi_platform": 23
       },
       "liquidations": {
         "count": 0,
@@ -1164,48 +1479,48 @@
         "error": "Query timeout"
       }
     },
-    "1h": {
-      "pacifica_traders": 238,
-      "flashtrade_traders": 35,
-      "jupiter_traders": 202,
-      "adrena_traders": 3,
+    "4h": {
+      "pacifica_traders": 592,
+      "flashtrade_traders": 82,
+      "jupiter_traders": 707,
+      "adrena_traders": 6,
       "wallet_overlap": {
-        "drift_only": 4040,
-        "jupiter_only": 2684,
+        "drift_only": 3981,
+        "jupiter_only": 2652,
         "pacifica_only": 7664,
-        "drift_jupiter": 12,
+        "drift_jupiter": 11,
         "drift_pacifica": 3,
         "jupiter_pacifica": 9,
         "all_three": 0,
-        "multi_platform": 24
+        "multi_platform": 23
       },
+      "drift_traders": 628,
       "liquidations": {
         "count": 0,
         "txns": 0,
         "error": "Query timeout"
-      },
-      "drift_traders": 330
+      }
     },
     "8h": {
-      "pacifica_traders": 955,
-      "flashtrade_traders": 134,
-      "jupiter_traders": 1279,
-      "adrena_traders": 16,
-      "drift_traders": 942,
+      "pacifica_traders": 948,
+      "flashtrade_traders": 129,
+      "adrena_traders": 13,
+      "jupiter_traders": 1243,
+      "drift_traders": 913,
       "liquidations": {
         "count": 0,
         "txns": 0,
         "error": "Query timeout"
       },
       "wallet_overlap": {
-        "drift_only": 4040,
-        "jupiter_only": 2684,
+        "drift_only": 3981,
+        "jupiter_only": 2652,
         "pacifica_only": 7664,
-        "drift_jupiter": 12,
+        "drift_jupiter": 11,
         "drift_pacifica": 3,
         "jupiter_pacifica": 9,
         "all_three": 0,
-        "multi_platform": 24
+        "multi_platform": 23
       }
     }
   },
@@ -1214,8 +1529,8 @@
       {
         "address": "4TYEjn9PSpxoBNBXufeuNDRbytzvyyZtEUgXYSk8kYLZ",
         "source": "pacifica",
-        "pnl_24h": 118283.059679,
-        "volume": 834072.520234,
+        "pnl_24h": 98191.060539,
+        "volume": 829401.652007,
         "recent_txns": [
           {
             "signature": "GKM1mSk822p5eZ2wBvFrNz16Wvj5gryaUr8c8S5NXquprNLzxsVEP9qD9t2XJf32hSpmKxzEf1HDxXYkye2rY6z",
@@ -1252,19 +1567,19 @@
         "is_active": false
       },
       {
-        "address": "JPLaNo52siAC6KDv66VP9y4eKKtNhwx6yKd8GFcjFGP",
+        "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
         "source": "pacifica",
-        "pnl_24h": 23822.002573,
-        "volume": 0.0,
+        "pnl_24h": 21818.512611,
+        "volume": 31046.461004,
         "recent_txns": [],
         "txn_count_1h": 0,
         "is_active": false
       },
       {
-        "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
+        "address": "JPLaNo52siAC6KDv66VP9y4eKKtNhwx6yKd8GFcjFGP",
         "source": "pacifica",
-        "pnl_24h": 23805.393926,
-        "volume": 31046.461004,
+        "pnl_24h": 19998.805938,
+        "volume": 0.0,
         "recent_txns": [],
         "txn_count_1h": 0,
         "is_active": false
@@ -1272,8 +1587,8 @@
       {
         "address": "BEE2vnGCXdt8x1PyaKBjghBEKJhzsnHEXLAkBkvbTFL4",
         "source": "pacifica",
-        "pnl_24h": 23306.209478,
-        "volume": 293954.955084,
+        "pnl_24h": 18144.022231,
+        "volume": 264619.133915,
         "recent_txns": [],
         "txn_count_1h": 0,
         "is_active": false
@@ -1281,7 +1596,7 @@
       {
         "address": "BtGmu8gixQcNzADq4JHy9qpHUfwXDNoAo6CvUwTMNA3D",
         "source": "pacifica",
-        "pnl_24h": 16022.933316,
+        "pnl_24h": 13259.194246,
         "volume": 4381.61358,
         "recent_txns": [],
         "txn_count_1h": 0,
@@ -1290,7 +1605,16 @@
       {
         "address": "24q6voXjHkM3hZmMJPikHTJ7KmEuYyr1tJGLrT8CNWe3",
         "source": "pacifica",
-        "pnl_24h": 15177.449731,
+        "pnl_24h": 12541.000949,
+        "volume": 0.0,
+        "recent_txns": [],
+        "txn_count_1h": 0,
+        "is_active": false
+      },
+      {
+        "address": "FN4seJZ9Wdi3NCbugCkPD5xYac5UrCQmzQt4o3Ko5VB2",
+        "source": "pacifica",
+        "pnl_24h": 11835.370413,
         "volume": 0.0,
         "recent_txns": [],
         "txn_count_1h": 0,
@@ -1299,7 +1623,7 @@
       {
         "address": "6nkGPkKjJJqJRZQj1rCFUyfftFRzyKPGpfSZDXr5YuGd",
         "source": "pacifica",
-        "pnl_24h": 13612.832737,
+        "pnl_24h": 11322.437803,
         "volume": 20001.391471,
         "recent_txns": [],
         "txn_count_1h": 0,
@@ -1308,17 +1632,8 @@
       {
         "address": "E1vcL1c7Q2AZ15zb5iFNNtEhVSzSzmMF55y3zEhYJcSG",
         "source": "pacifica",
-        "pnl_24h": 12869.578415,
+        "pnl_24h": 11021.168738,
         "volume": 20.6076,
-        "recent_txns": [],
-        "txn_count_1h": 0,
-        "is_active": false
-      },
-      {
-        "address": "Ph9yECGodDAjiiSU9bpbJ8dds3ndWP1ngKo8h1K2QYv",
-        "source": "pacifica",
-        "pnl_24h": 11440.916612,
-        "volume": 840.20649,
         "recent_txns": [],
         "txn_count_1h": 0,
         "is_active": false
@@ -1326,7 +1641,7 @@
       {
         "address": "GowcbjHQosYvDT4BWSfvS7B76VrfKayq5AZocFeyCjrQ",
         "source": "pacifica",
-        "pnl_24h": 11348.963486,
+        "pnl_24h": 9473.427182,
         "volume": 0.0,
         "recent_txns": [],
         "txn_count_1h": 0,
@@ -1335,1052 +1650,45 @@
     ],
     "total_whales": 10,
     "active_last_1h": 0,
-    "timestamp": "2026-02-16T07:49:35.690698Z"
+    "timestamp": "2026-02-16T08:37:34.182087Z"
   },
   "liquidations_rpc": {
     "drift": {
       "liquidations": [],
       "count": 0,
       "count_1h": 0,
-      "checked_transactions": 40,
-      "timestamp": "2026-02-16T07:53:10.086699Z"
+      "checked_transactions": 48,
+      "timestamp": "2026-02-16T08:41:59.852222Z"
     },
     "jupiter": {
       "liquidations": [],
       "count": 0,
       "count_1h": 0,
-      "checked_transactions": 38,
-      "timestamp": "2026-02-16T07:57:52.071647Z"
+      "checked_transactions": 46,
+      "timestamp": "2026-02-16T08:47:31.134754Z"
     },
     "total_count": 0,
     "total_count_1h": 0,
-    "timestamp": "2026-02-16T07:57:52.071882Z"
+    "timestamp": "2026-02-16T08:47:31.135144Z"
   },
-  "drift_traders_1h": 330,
-  "jupiter_traders_1h": 202,
+  "drift_traders_1h": 328,
+  "jupiter_traders_1h": 205,
   "liquidations_1h": {
     "count": 0,
     "txns": 0,
     "error": "Query timeout"
   },
   "wallet_overlap": {
-    "drift_only": 4040,
-    "jupiter_only": 2684,
+    "drift_only": 3981,
+    "jupiter_only": 2652,
     "pacifica_only": 7664,
-    "drift_jupiter": 12,
+    "drift_jupiter": 11,
     "drift_pacifica": 3,
     "jupiter_pacifica": 9,
     "all_three": 0,
-    "multi_platform": 24
+    "multi_platform": 23
   },
   "pnl_leaderboard": {
-    "pacifica": {
-      "top_winners": [
-        {
-          "address": "4TYEjn9PSpxoBNBXufeuNDRbytzvyyZtEUgXYSk8kYLZ",
-          "pnl_24h": 118283.059679,
-          "pnl_7d": 42982.686939,
-          "pnl_30d": 1331171.521242,
-          "pnl_all_time": 1951763.240995,
-          "volume_24h": 834072.520234,
-          "volume_7d": 7420212.470207,
-          "equity": 421064.073019
-        },
-        {
-          "address": "JPLaNo52siAC6KDv66VP9y4eKKtNhwx6yKd8GFcjFGP",
-          "pnl_24h": 23822.002573,
-          "pnl_7d": 18805.803131,
-          "pnl_30d": 108515.199599,
-          "pnl_all_time": 110856.080554,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 110429.481447
-        },
-        {
-          "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
-          "pnl_24h": 23805.393926,
-          "pnl_7d": 1494.966947,
-          "pnl_30d": 11238.004218,
-          "pnl_all_time": 6057.309221,
-          "volume_24h": 31046.461004,
-          "volume_7d": 164121.888474,
-          "equity": 77389.342861
-        },
-        {
-          "address": "BEE2vnGCXdt8x1PyaKBjghBEKJhzsnHEXLAkBkvbTFL4",
-          "pnl_24h": 23306.209478,
-          "pnl_7d": -12248.395542,
-          "pnl_30d": -40565.61412,
-          "pnl_all_time": -120432.283371,
-          "volume_24h": 293954.955084,
-          "volume_7d": 2235863.946249,
-          "equity": 224444.816629
-        },
-        {
-          "address": "BtGmu8gixQcNzADq4JHy9qpHUfwXDNoAo6CvUwTMNA3D",
-          "pnl_24h": 16022.933316,
-          "pnl_7d": 14671.71861,
-          "pnl_30d": 48980.699691,
-          "pnl_all_time": 48980.699691,
-          "volume_24h": 4381.61358,
-          "volume_7d": 372087.62346,
-          "equity": 148980.699691
-        },
-        {
-          "address": "24q6voXjHkM3hZmMJPikHTJ7KmEuYyr1tJGLrT8CNWe3",
-          "pnl_24h": 15177.449731,
-          "pnl_7d": 12742.791402,
-          "pnl_30d": 35721.45069,
-          "pnl_all_time": 35721.45069,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 85735.044136
-        },
-        {
-          "address": "6nkGPkKjJJqJRZQj1rCFUyfftFRzyKPGpfSZDXr5YuGd",
-          "pnl_24h": 13612.832737,
-          "pnl_7d": -16904.938594,
-          "pnl_30d": 76823.886754,
-          "pnl_all_time": 76823.886754,
-          "volume_24h": 20001.391471,
-          "volume_7d": 158675.049019,
-          "equity": 132012.086949
-        },
-        {
-          "address": "E1vcL1c7Q2AZ15zb5iFNNtEhVSzSzmMF55y3zEhYJcSG",
-          "pnl_24h": 12869.578415,
-          "pnl_7d": 9336.023295,
-          "pnl_30d": 40189.576866,
-          "pnl_all_time": 40189.576866,
-          "volume_24h": 20.6076,
-          "volume_7d": 144.3229,
-          "equity": 122023.60967
-        },
-        {
-          "address": "Ph9yECGodDAjiiSU9bpbJ8dds3ndWP1ngKo8h1K2QYv",
-          "pnl_24h": 11440.916612,
-          "pnl_7d": -10700.607951,
-          "pnl_30d": -7522.647909,
-          "pnl_all_time": -4591.057201,
-          "volume_24h": 840.20649,
-          "volume_7d": 35387.62516,
-          "equity": 79096.42599
-        },
-        {
-          "address": "GowcbjHQosYvDT4BWSfvS7B76VrfKayq5AZocFeyCjrQ",
-          "pnl_24h": 11348.963486,
-          "pnl_7d": 3550.115532,
-          "pnl_30d": 50604.689633,
-          "pnl_all_time": 50604.689633,
-          "volume_24h": 0.0,
-          "volume_7d": 22.6161,
-          "equity": 99448.868731
-        },
-        {
-          "address": "4u3L6r3nyL9XfZ93gMeXb4eddUGAXAMK8Cqkj1pvCmZB",
-          "pnl_24h": 10162.885862,
-          "pnl_7d": 7468.268946,
-          "pnl_30d": -4479.386564,
-          "pnl_all_time": -3857.739359,
-          "volume_24h": 9451.50971,
-          "volume_7d": 60953.56504,
-          "equity": 296192.260641
-        },
-        {
-          "address": "8ef7254GSfFERTRUK8PtVSoVPU96NSmjzEat1adpkHgs",
-          "pnl_24h": 9829.125876,
-          "pnl_7d": 4983.077634,
-          "pnl_30d": 104176.178492,
-          "pnl_all_time": 93249.781081,
-          "volume_24h": 266117.97567,
-          "volume_7d": 537467.29024,
-          "equity": 0.01
-        },
-        {
-          "address": "2oGPYzo7eLuKKYVZjUM2jQgbZqpA75sWLeuhBTSoSiqJ",
-          "pnl_24h": 9387.55099,
-          "pnl_7d": -8165.917573,
-          "pnl_30d": 24567.646329,
-          "pnl_all_time": 18516.15198,
-          "volume_24h": 72365.861922,
-          "volume_7d": 107467.336532,
-          "equity": 40052.284166
-        },
-        {
-          "address": "4X1i2FRVBH6gU3psoLW6AirJSCeRi8eKsBHTyrizL1gJ",
-          "pnl_24h": 9386.127724,
-          "pnl_7d": 11945.858419,
-          "pnl_30d": 91364.868744,
-          "pnl_all_time": 90589.177584,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 166673.127756
-        },
-        {
-          "address": "DrNBiFihydX12wJ2mTdQrsiXfPvAnU9WfrYsSH5UDCvL",
-          "pnl_24h": 8345.831791,
-          "pnl_7d": -5233.130757,
-          "pnl_30d": -18862.364474,
-          "pnl_all_time": -22198.108503,
-          "volume_24h": 27.3272,
-          "volume_7d": 3823059.6548,
-          "equity": 38791.53435
-        },
-        {
-          "address": "FN4seJZ9Wdi3NCbugCkPD5xYac5UrCQmzQt4o3Ko5VB2",
-          "pnl_24h": 7179.769398,
-          "pnl_7d": 128572.593667,
-          "pnl_30d": 148106.71949,
-          "pnl_all_time": 163866.349015,
-          "volume_24h": 0.0,
-          "volume_7d": 112697.67308,
-          "equity": 144251.216972
-        },
-        {
-          "address": "6ZjWoJKeD88JqREHhYAWSZVLQfVcMSbx6eVdajXt9Xbv",
-          "pnl_24h": 7045.376551,
-          "pnl_7d": -9253.495462,
-          "pnl_30d": 276383.780583,
-          "pnl_all_time": 208669.786415,
-          "volume_24h": 0.0,
-          "volume_7d": 819007.25116,
-          "equity": 61259.286157
-        },
-        {
-          "address": "CftUjvv5sEPrnUE8XBcXu4q4Mc88TqGtrfkwStCX6Ci3",
-          "pnl_24h": 6755.006195,
-          "pnl_7d": -7556.70851,
-          "pnl_30d": -15191.604957,
-          "pnl_all_time": -60034.153218,
-          "volume_24h": 39488.1117,
-          "volume_7d": 239238.27691,
-          "equity": 81143.105908
-        },
-        {
-          "address": "97Nq39YDZq77pfPY97RLA8ScBbPapQEwkDUjYNZiuMUd",
-          "pnl_24h": 6653.119437,
-          "pnl_7d": 47757.583001,
-          "pnl_30d": 27555.825329,
-          "pnl_all_time": 13365.74724,
-          "volume_24h": 13523.18223,
-          "volume_7d": 77115.56872,
-          "equity": 158504.91518
-        },
-        {
-          "address": "S9mRpbkJpgstvaVYireoKygjMkW2rs9kZg4baG4ieZn",
-          "pnl_24h": 6518.450499,
-          "pnl_7d": 4694.066808,
-          "pnl_30d": 42939.546955,
-          "pnl_all_time": 42939.546955,
-          "volume_24h": 17.094,
-          "volume_7d": 133.138,
-          "equity": 82961.534969
-        },
-        {
-          "address": "26t38jFHWn42aDxREXC8FuWsPMgRGDp623PUErhU6knW",
-          "pnl_24h": 6492.266457,
-          "pnl_7d": 5450.919328,
-          "pnl_30d": 1427.185124,
-          "pnl_all_time": 1427.185124,
-          "volume_24h": 0.0,
-          "volume_7d": 9.75688,
-          "equity": 21528.391717
-        },
-        {
-          "address": "PCF8xwewcLmibAPnJcvydHoJ4VKKoxkGdbcbJqRdUSx",
-          "pnl_24h": 6476.913419,
-          "pnl_7d": 8029.981082,
-          "pnl_30d": 43292.843895,
-          "pnl_all_time": 117337.600398,
-          "volume_24h": 3808477.202149,
-          "volume_7d": 36074267.475795,
-          "equity": 188337.600398
-        },
-        {
-          "address": "HCAKppBaWY5HcmBrk8ALBUnsm9ZzvkoxpinAq9Je6ci1",
-          "pnl_24h": 6296.353939,
-          "pnl_7d": 3332.526232,
-          "pnl_30d": 49553.451545,
-          "pnl_all_time": 85556.120076,
-          "volume_24h": 4848.430272,
-          "volume_7d": 26067.854652,
-          "equity": 42444.582824
-        },
-        {
-          "address": "49R9MFU7JopaCFXtpTwbaX8rkNW9wX6ddi7VtLUtMYJ1",
-          "pnl_24h": 5872.254265,
-          "pnl_7d": -26846.405916,
-          "pnl_30d": 18144.401769,
-          "pnl_all_time": -10637.268722,
-          "volume_24h": 1e-06,
-          "volume_7d": 32037.660585,
-          "equity": 250117.634979
-        },
-        {
-          "address": "8hCTAcoQSRUtZkzcA76DaPYGE9V8jtFcftE2WmMxF4Se",
-          "pnl_24h": 5842.024773,
-          "pnl_7d": 4904.88879,
-          "pnl_30d": 38634.480394,
-          "pnl_all_time": 44440.428696,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 53111.463778
-        },
-        {
-          "address": "92QGYEYWEjnwUZc3iEPn1jP6puaj9RaMitybBmichFXL",
-          "pnl_24h": 4795.610453,
-          "pnl_7d": 3472.542349,
-          "pnl_30d": 29618.168754,
-          "pnl_all_time": 29618.168754,
-          "volume_24h": 31.8538,
-          "volume_7d": 124.6058,
-          "equity": 125484.561694
-        },
-        {
-          "address": "9eSnj4TniTi1JkeeASTyzXWSCEzHM8DjNf7XhD1rQ6Qu",
-          "pnl_24h": 4592.316191,
-          "pnl_7d": 3836.862447,
-          "pnl_30d": 43111.0902,
-          "pnl_all_time": 56675.313459,
-          "volume_24h": 22.5424,
-          "volume_7d": 309091.85589,
-          "equity": 31905.546405
-        },
-        {
-          "address": "77d5VNEQcpiD3vfQDWZhxPy2nhSwaJtFCJJxLBy9kxn4",
-          "pnl_24h": 4374.874996,
-          "pnl_7d": 732.281606,
-          "pnl_30d": 36088.020898,
-          "pnl_all_time": 34267.661781,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 10749.760113
-        },
-        {
-          "address": "531euoNtZMvciBcKPBvYgFJoWnUvtu4PjasDhbTTXTGG",
-          "pnl_24h": 4227.225931,
-          "pnl_7d": 3113.757084,
-          "pnl_30d": 49376.917267,
-          "pnl_all_time": 109655.302017,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 63653.302017
-        },
-        {
-          "address": "AyLmbmCUuzaqtvH3MZG59WBrkCeXsY8mJXS7uQZMKqxc",
-          "pnl_24h": 3624.514494,
-          "pnl_7d": 2850.193069,
-          "pnl_30d": 38931.978959,
-          "pnl_all_time": 40506.089028,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 140499.026901
-        },
-        {
-          "address": "AQzj5vqR5LKQYNXTLxL1EKyY6tLaLNhNoDEBytpip9Tr",
-          "pnl_24h": 3543.489118,
-          "pnl_7d": 6144.619,
-          "pnl_30d": 2333.482638,
-          "pnl_all_time": 2795.473804,
-          "volume_24h": 0.0,
-          "volume_7d": 214683.738,
-          "equity": 12163.817216
-        },
-        {
-          "address": "DdKAcvndDca5i7Xfk7aUa65dMKoDFPCp7hnzGoCnnmRa",
-          "pnl_24h": 3435.796013,
-          "pnl_7d": -1979.905904,
-          "pnl_30d": 25380.379158,
-          "pnl_all_time": 25161.442378,
-          "volume_24h": 0.0,
-          "volume_7d": 1030122.5137,
-          "equity": 23826.282269
-        },
-        {
-          "address": "FMhCxyGkfcFEyr7mRQ9qpGGqzk3BwvgXxQcCXunfwpA",
-          "pnl_24h": 3343.322791,
-          "pnl_7d": 357.178787,
-          "pnl_30d": 35051.947147,
-          "pnl_all_time": 50118.558353,
-          "volume_24h": 0.0,
-          "volume_7d": 26858.06373,
-          "equity": 74147.186772
-        },
-        {
-          "address": "Eu12Nqn4v2atnTqNb8MwYnC4kxDpv7dVgnhxPcru1bGt",
-          "pnl_24h": 3287.83597,
-          "pnl_7d": 38541.468144,
-          "pnl_30d": -349852.576609,
-          "pnl_all_time": -313309.667759,
-          "volume_24h": 456359.075663,
-          "volume_7d": 5309768.113045,
-          "equity": 986682.603915
-        },
-        {
-          "address": "4HrH9n2yk3Y1Pf3EvhGEWmC1QYmkddfVZE2kYLE7G8q2",
-          "pnl_24h": 3269.335779,
-          "pnl_7d": -6852.017649,
-          "pnl_30d": -21603.216179,
-          "pnl_all_time": -30979.386437,
-          "volume_24h": 466094.50022,
-          "volume_7d": 4432645.19004,
-          "equity": 8068.332377
-        },
-        {
-          "address": "BEE8ePgFrNMirVz8tpC7XR2NBPAio1DKFrGvF1evZCi1",
-          "pnl_24h": 3249.739543,
-          "pnl_7d": -2152.497658,
-          "pnl_30d": 22803.38541,
-          "pnl_all_time": 17534.801734,
-          "volume_24h": 142766.999111,
-          "volume_7d": 1074311.472474,
-          "equity": 58534.801734
-        },
-        {
-          "address": "3jcFqKerxpqEg1PSPEKcpcPxT3PyhD1tMT1Cre44J4Ea",
-          "pnl_24h": 3233.511955,
-          "pnl_7d": 470.141506,
-          "pnl_30d": 470.141506,
-          "pnl_all_time": 470.141506,
-          "volume_24h": 0.0,
-          "volume_7d": 48766.49957,
-          "equity": 25469.898692
-        },
-        {
-          "address": "3XPbDDeNm1GYzeVt4gYz9rsLgXVpQcWYJb145W5fNe8y",
-          "pnl_24h": 3092.430191,
-          "pnl_7d": 5017.768533,
-          "pnl_30d": -3497.540298,
-          "pnl_all_time": -26365.561894,
-          "volume_24h": 0.0,
-          "volume_7d": 171883.23514,
-          "equity": 61204.233703
-        },
-        {
-          "address": "J2bdNnwrfDUEm3gjpduWVWJNKvhEnu3EDo9EN2FsDj9d",
-          "pnl_24h": 2987.857993,
-          "pnl_7d": 24319.172809,
-          "pnl_30d": 38095.501273,
-          "pnl_all_time": 54024.105069,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 70073.10573
-        },
-        {
-          "address": "ERhpzhe75aASxM6GSAvKigz22bMoHUZGm3FQu6zyQ3MP",
-          "pnl_24h": 2947.933485,
-          "pnl_7d": 2088.179004,
-          "pnl_30d": -5220.208974,
-          "pnl_all_time": -7090.633992,
-          "volume_24h": 96974.97333,
-          "volume_7d": 281999.7102,
-          "equity": 10429.073259
-        },
-        {
-          "address": "8MGH6QKNd7jWiRNW2Bec5dnP65GKMdxksrgPsf5neDmA",
-          "pnl_24h": 2943.501542,
-          "pnl_7d": -676.134243,
-          "pnl_30d": 14277.469805,
-          "pnl_all_time": 14185.829012,
-          "volume_24h": 0.0,
-          "volume_7d": 24013.2894,
-          "equity": 21565.303794
-        },
-        {
-          "address": "CcBkvidmanT6zHGQPRHXDHgLq7M6fazaAVajTEAGoCMf",
-          "pnl_24h": 2909.185077,
-          "pnl_7d": -1400.201345,
-          "pnl_30d": 21932.745532,
-          "pnl_all_time": 20297.520659,
-          "volume_24h": 0.0,
-          "volume_7d": 10168.0,
-          "equity": 22823.412415
-        },
-        {
-          "address": "4q5AywsD1BU7i3nAx3GuTGSgpZkzaf14AiS1k2xx9oLD",
-          "pnl_24h": 2742.69491,
-          "pnl_7d": 1928.295954,
-          "pnl_30d": -29165.380788,
-          "pnl_all_time": -37899.751065,
-          "volume_24h": 0.0,
-          "volume_7d": 117307.09537,
-          "equity": 10094.248935
-        },
-        {
-          "address": "FA7pLr6XNF7JdSQzSWRe5GD3dyuRruAXiPWMnjP5y2up",
-          "pnl_24h": 2659.202491,
-          "pnl_7d": -1929.347394,
-          "pnl_30d": -37608.548994,
-          "pnl_all_time": -43455.87517,
-          "volume_24h": 0.0,
-          "volume_7d": 1192938.62261,
-          "equity": 42113.171661
-        },
-        {
-          "address": "EfLVCLeC64YVm4Kt4NusfacvxQoDew4acpReBuCdk2wB",
-          "pnl_24h": 2585.348706,
-          "pnl_7d": 813.170022,
-          "pnl_30d": 12527.127424,
-          "pnl_all_time": -42521.466138,
-          "volume_24h": 521261.936409,
-          "volume_7d": 4148299.692731,
-          "equity": 218221.580014
-        },
-        {
-          "address": "BkUTkCt4JwQQwczibKkP5TEjTCHkSogR44ppvQReTt5B",
-          "pnl_24h": 2564.82625,
-          "pnl_7d": -791.127367,
-          "pnl_30d": -3992.503241,
-          "pnl_all_time": -12944.779706,
-          "volume_24h": 1007.3,
-          "volume_7d": 63195.54147,
-          "equity": 45299.654822
-        },
-        {
-          "address": "YjCD9Gek6MVY9t3MLEGYYdZLeaF6MZrpgZraayWsv9E",
-          "pnl_24h": 2497.891065,
-          "pnl_7d": 31082.442583,
-          "pnl_30d": -198014.16085,
-          "pnl_all_time": 1479472.388469,
-          "volume_24h": 647639.24065,
-          "volume_7d": 5017188.58398,
-          "equity": 844711.991298
-        },
-        {
-          "address": "ztqQ4TNC6Yju9zJaK9ZsPNMjxiUqjiT6rP76eeatgTy",
-          "pnl_24h": 2354.112685,
-          "pnl_7d": 239.434307,
-          "pnl_30d": 23114.673467,
-          "pnl_all_time": 25957.309306,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 65957.309306
-        },
-        {
-          "address": "EnyGXUNtJ2YwShtKzXqvRoE3jkcqzoekhP9BMm5f8EfY",
-          "pnl_24h": 2322.518919,
-          "pnl_7d": -2241.970942,
-          "pnl_30d": 6347.227533,
-          "pnl_all_time": -1853.13831,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 22146.86169
-        },
-        {
-          "address": "8XTAeCbtN73eh7G6k7aWoN88JauG29LqfvgJjy2ZWEk9",
-          "pnl_24h": 2265.262203,
-          "pnl_7d": 752.235887,
-          "pnl_30d": 45014.086794,
-          "pnl_all_time": 31392.255085,
-          "volume_24h": 2998.55,
-          "volume_7d": 96417.9526,
-          "equity": 20454.626838
-        }
-      ],
-      "top_losers": [
-        {
-          "address": "DbB3TxHkGEA5jLY7DCbxbQWRNVrteUbHBhYwAgwL5TJh",
-          "pnl_24h": -47178.937936,
-          "pnl_7d": -22186.183381,
-          "pnl_30d": 75925.656929,
-          "pnl_all_time": 31471.145722,
-          "volume_24h": 0.0,
-          "volume_7d": 326803.40885,
-          "equity": 174220.478774
-        },
-        {
-          "address": "4G6XZC176LK96i5pMwNEvdhgH6HstkNhRJqFmiGssdNp",
-          "pnl_24h": -43903.412536,
-          "pnl_7d": -51315.737671,
-          "pnl_30d": -159797.987399,
-          "pnl_all_time": -158141.19906,
-          "volume_24h": 50430.0615,
-          "volume_7d": 4155578.49832,
-          "equity": 53999.622601
-        },
-        {
-          "address": "BEE5U8G8KrYRagtnHcHqtDES9ygpg1k5JFiYLMwzF8MQ",
-          "pnl_24h": -29372.890415,
-          "pnl_7d": 19234.110088,
-          "pnl_30d": 18651.354397,
-          "pnl_all_time": 18651.354397,
-          "volume_24h": 393213.075851,
-          "volume_7d": 1869746.676919,
-          "equity": 180107.354397
-        },
-        {
-          "address": "GTU92nBC8LMyt9W4Qqc319BFR1vpkNNPAbt4QCnX7kZ6",
-          "pnl_24h": -23359.946799,
-          "pnl_7d": -17141.249731,
-          "pnl_30d": -111443.048686,
-          "pnl_all_time": 11763.840649,
-          "volume_24h": 5169108.002916,
-          "volume_7d": 50933968.133622,
-          "equity": 461682.226187
-        },
-        {
-          "address": "GDoEJ87ezVKgFXQ9N4RpPuUVrPKfhitLQpgkHczJUPVL",
-          "pnl_24h": -23226.890841,
-          "pnl_7d": -18720.292944,
-          "pnl_30d": 43761.631247,
-          "pnl_all_time": 38517.876257,
-          "volume_24h": 0.0,
-          "volume_7d": 640.775,
-          "equity": 138517.876257
-        },
-        {
-          "address": "Hr5WFpPR9xUwD5WVWYKoLYbNKUaTAx2mn3B147KDgMAc",
-          "pnl_24h": -22757.775546,
-          "pnl_7d": -19083.229003,
-          "pnl_30d": 48230.294941,
-          "pnl_all_time": 62905.419658,
-          "volume_24h": 0.0,
-          "volume_7d": 681.1196,
-          "equity": 162905.419658
-        },
-        {
-          "address": "8AsJfKorQc1Wz8DABe9FZH18cgLd43bYwFST5JBJYSit",
-          "pnl_24h": -16814.656746,
-          "pnl_7d": -11956.343073,
-          "pnl_30d": -46934.023214,
-          "pnl_all_time": -53280.218802,
-          "volume_24h": 0.0,
-          "volume_7d": 989886.36633,
-          "equity": 46566.883426
-        },
-        {
-          "address": "HQWz5Pje7tbqJVTy7ES41P4moxQWHXhCqMYGnsQirzq9",
-          "pnl_24h": -13701.21221,
-          "pnl_7d": -3603.344432,
-          "pnl_30d": 11647.751491,
-          "pnl_all_time": -21365.598481,
-          "volume_24h": 0.0,
-          "volume_7d": 14195.43005,
-          "equity": 112334.401519
-        },
-        {
-          "address": "2p7maFAnHHErnWbj9GznZcwHeZETqdBgovEF25RNuKA4",
-          "pnl_24h": -10936.475272,
-          "pnl_7d": -14792.53727,
-          "pnl_30d": -14792.53727,
-          "pnl_all_time": -14792.53727,
-          "volume_24h": 1361813.53185,
-          "volume_7d": 8075680.438679,
-          "equity": 0.010001
-        },
-        {
-          "address": "Gskf4VgodkUjKENhbJhfECqg37HYwqKGfDMZHrtWaVxW",
-          "pnl_24h": -9744.184446,
-          "pnl_7d": -2504.523764,
-          "pnl_30d": -4523.30616,
-          "pnl_all_time": -5636.775052,
-          "volume_24h": 566653.789179,
-          "volume_7d": 2432139.935271,
-          "equity": 7189.860632
-        },
-        {
-          "address": "2rEEo6bXeXLacwAnQwtw5YEz8CdnTGrQ2LQ2banK4mRw",
-          "pnl_24h": -9600.401518,
-          "pnl_7d": 15471.816885,
-          "pnl_30d": -51839.132322,
-          "pnl_all_time": -49775.260862,
-          "volume_24h": 2040675.370183,
-          "volume_7d": 12294605.959213,
-          "equity": 162920.199005
-        },
-        {
-          "address": "5REnMKiW3whCDiGMs1RqvfnQp1fib62r4quwJ3Qc7rQq",
-          "pnl_24h": -9467.586983,
-          "pnl_7d": -9467.586983,
-          "pnl_30d": -9467.586983,
-          "pnl_all_time": -9467.586983,
-          "volume_24h": 2261466.90892,
-          "volume_7d": 2261466.90892,
-          "equity": 0.01
-        },
-        {
-          "address": "CFDVmdesfJq2Tz3jq3ebGtxW6VUMk7UJgibY3vUbVnZn",
-          "pnl_24h": -8905.591727,
-          "pnl_7d": -11551.710136,
-          "pnl_30d": -11551.710136,
-          "pnl_all_time": -11551.710136,
-          "volume_24h": 785468.21887,
-          "volume_7d": 1292344.84329,
-          "equity": 0.010001
-        },
-        {
-          "address": "BEE9evCYoXTQpVHjnLQsXVGi9ewe8dyp1rSejeDvKK8Q",
-          "pnl_24h": -8324.474621,
-          "pnl_7d": 327.964038,
-          "pnl_30d": -66266.86374,
-          "pnl_all_time": -54057.201908,
-          "volume_24h": 221991.075132,
-          "volume_7d": 1265042.95972,
-          "equity": 45980.798092
-        },
-        {
-          "address": "8Xqw1VU9qwY3vrtqQoWaGziMKoGdpv2CN6VXzg8ReHvV",
-          "pnl_24h": -8001.482616,
-          "pnl_7d": 816.415778,
-          "pnl_30d": 32399.857938,
-          "pnl_all_time": 32854.272275,
-          "volume_24h": 136.435,
-          "volume_7d": 116551.92734,
-          "equity": 28461.676077
-        },
-        {
-          "address": "296PcXq7TUGrjzfBEjSFs3qrhNXiTxuteJKaoPDivo5e",
-          "pnl_24h": -7502.17001,
-          "pnl_7d": -5047.750434,
-          "pnl_30d": -63401.769783,
-          "pnl_all_time": -88702.331147,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 84195.168853
-        },
-        {
-          "address": "AqVGeyoFiMkgdXPZEDkXetXm2n1dNPEocfRpBwDUX4yn",
-          "pnl_24h": -7410.757829,
-          "pnl_7d": -11895.34252,
-          "pnl_30d": -59235.567176,
-          "pnl_all_time": -66211.74992,
-          "volume_24h": 159121.039714,
-          "volume_7d": 2069248.430455,
-          "equity": 50170.337918
-        },
-        {
-          "address": "F5BcMNcVyxeWqXyEivRc5NuUrFMZgNxnmwVvLpRKLdaf",
-          "pnl_24h": -6616.60849,
-          "pnl_7d": -323.794642,
-          "pnl_30d": -22526.551559,
-          "pnl_all_time": 27749.679224,
-          "volume_24h": 1725131.989279,
-          "volume_7d": 13126649.996452,
-          "equity": 91749.679224
-        },
-        {
-          "address": "P3BSKpoDFx7i9ioLchg7XZXGWATz1McaNy9t7oDo7LF",
-          "pnl_24h": -6425.569352,
-          "pnl_7d": -2650.667658,
-          "pnl_30d": -21699.972763,
-          "pnl_all_time": -128292.503666,
-          "volume_24h": 0.0,
-          "volume_7d": 109511.1674,
-          "equity": 41696.953416
-        },
-        {
-          "address": "AoVHrciuHrqSsSty2wK7ZgVYscmiLNrGm1NXPPgdWaPf",
-          "pnl_24h": -6342.792474,
-          "pnl_7d": -5438.938151,
-          "pnl_30d": -37478.612286,
-          "pnl_all_time": -40118.512254,
-          "volume_24h": 0.0,
-          "volume_7d": 12400.4109,
-          "equity": 22718.799419
-        },
-        {
-          "address": "7xGRx5WWsK91xv9YayPVzC3jXuULXUvcoMJkWacbQd6U",
-          "pnl_24h": -5936.858446,
-          "pnl_7d": -4258.311904,
-          "pnl_30d": -56826.237177,
-          "pnl_all_time": -55810.88288,
-          "volume_24h": 30.757,
-          "volume_7d": 240.6324,
-          "equity": 44182.162733
-        },
-        {
-          "address": "Fqrep8G6BT5qRJGSyGtFhjVwPb1eK1kpwLeEdzaiZ1ub",
-          "pnl_24h": -5401.414572,
-          "pnl_7d": -5746.305346,
-          "pnl_30d": -7852.679859,
-          "pnl_all_time": -7852.679859,
-          "volume_24h": 0.0,
-          "volume_7d": 350055.16918,
-          "equity": 6953.595616
-        },
-        {
-          "address": "9ixkJDcrveSQ9CqUhCt6iviqBpSGieNuWPWuEVDQtVja",
-          "pnl_24h": -5150.448434,
-          "pnl_7d": -7609.640736,
-          "pnl_30d": -8240.566808,
-          "pnl_all_time": -21685.328339,
-          "volume_24h": 113665.6714,
-          "volume_7d": 773914.54769,
-          "equity": 28114.671661
-        },
-        {
-          "address": "BcDgu34n4JtSraG429avhokt2EedbprDFWB3BuD6etLy",
-          "pnl_24h": -5113.894912,
-          "pnl_7d": 2077.856083,
-          "pnl_30d": 5273.234162,
-          "pnl_all_time": 35704.496386,
-          "volume_24h": 0.0,
-          "volume_7d": 102375.91611,
-          "equity": 55704.496386
-        },
-        {
-          "address": "ADrHFm9418oZcBAvaqdtnfkRCh8B2vThAe1eAdyhvxDM",
-          "pnl_24h": -5113.894912,
-          "pnl_7d": 2077.795426,
-          "pnl_30d": 7207.851987,
-          "pnl_all_time": 32657.481134,
-          "volume_24h": 0.0,
-          "volume_7d": 102375.91611,
-          "equity": 61647.45714
-        },
-        {
-          "address": "EbaoY81MhbrXiP52Nk35XTeYDLwaiKooLMWgfNMBJnpf",
-          "pnl_24h": -5113.894912,
-          "pnl_7d": 2077.856083,
-          "pnl_30d": 13300.950175,
-          "pnl_all_time": 4221.875614,
-          "volume_24h": 0.0,
-          "volume_7d": 102375.91611,
-          "equity": 86176.591839
-        },
-        {
-          "address": "HtC4WT6JhKz8eojNigfiqSWykG74kfQmyDeM9f753aPQ",
-          "pnl_24h": -5051.892479,
-          "pnl_7d": -54090.096486,
-          "pnl_30d": 187869.228179,
-          "pnl_all_time": 423621.857883,
-          "volume_24h": 4687805.643867,
-          "volume_7d": 37508115.676025,
-          "equity": 505625.857883
-        },
-        {
-          "address": "6xQmCzMwMpGhouMip57hy9NGrtGKwz2kv2ZtdhjhXh1K",
-          "pnl_24h": -4873.814939,
-          "pnl_7d": -1148.598167,
-          "pnl_30d": -42639.36157,
-          "pnl_all_time": -31767.316642,
-          "volume_24h": 323011.633494,
-          "volume_7d": 1234108.737139,
-          "equity": 19445.968199
-        },
-        {
-          "address": "6GcT3aY8VcyaC6yBKewKQqLJekdnfkTv8J44Q58zTwYD",
-          "pnl_24h": -4591.372885,
-          "pnl_7d": -2880.468814,
-          "pnl_30d": -34590.458316,
-          "pnl_all_time": -34127.311199,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 94871.688801
-        },
-        {
-          "address": "DCmDxhZ6Tz8k46th3aEQrMHPGmRXeKrrakBitMm4V9mz",
-          "pnl_24h": -4418.133055,
-          "pnl_7d": -2222.731796,
-          "pnl_30d": -18323.463792,
-          "pnl_all_time": 5557.158897,
-          "volume_24h": 2005488.226838,
-          "volume_7d": 13429227.183035,
-          "equity": 115556.658897
-        },
-        {
-          "address": "Dkp7y8LP6MWFXe3KtvQW2mzwaeZyiFHG1xeg8zG2asPr",
-          "pnl_24h": -4375.43243,
-          "pnl_7d": -2370.010379,
-          "pnl_30d": -25398.65796,
-          "pnl_all_time": -26805.832553,
-          "volume_24h": 0.0,
-          "volume_7d": 81.4516,
-          "equity": 77610.775194
-        },
-        {
-          "address": "H14NUSS9QWoQ9WFsLe9gVhp4kGhxBN64SZx4Pe6Hc1ct",
-          "pnl_24h": -4219.971398,
-          "pnl_7d": -7590.124105,
-          "pnl_30d": 34461.590154,
-          "pnl_all_time": 34461.590154,
-          "volume_24h": 51142.25535,
-          "volume_7d": 558474.26052,
-          "equity": 84574.661902
-        },
-        {
-          "address": "G6gyqHzb1yM3zfCD8K12qxMkv3Q99Dzn1qYLff41n1vf",
-          "pnl_24h": -4079.99137,
-          "pnl_7d": -2064.700341,
-          "pnl_30d": -20752.527628,
-          "pnl_all_time": -4562.497659,
-          "volume_24h": 27.3006,
-          "volume_7d": 135.9868,
-          "equity": 72315.653925
-        },
-        {
-          "address": "CamaoEE51ftJaC61WkUxSDfBMoWshGL33c3eQzewDsLM",
-          "pnl_24h": -3548.169405,
-          "pnl_7d": -1618.003114,
-          "pnl_30d": -2974.29213,
-          "pnl_all_time": -10607.292129,
-          "volume_24h": 303030.6913,
-          "volume_7d": 2029863.509,
-          "equity": 2398.898388
-        },
-        {
-          "address": "6ihYAA1rpjVfdfBwjC27zwc7Ygc5JLtbN8QGZKtSvWG3",
-          "pnl_24h": -3515.644152,
-          "pnl_7d": 1428.500828,
-          "pnl_30d": -10737.582981,
-          "pnl_all_time": -6559.275896,
-          "volume_24h": 0.0,
-          "volume_7d": 70381.15024,
-          "equity": 57782.398878
-        },
-        {
-          "address": "2Eh4crW2FRDQ7TGmWN2824qRVkBCoFWFL4LAd77zCESP",
-          "pnl_24h": -3380.34185,
-          "pnl_7d": 1688.561508,
-          "pnl_30d": -4895.865265,
-          "pnl_all_time": -1604.928364,
-          "volume_24h": 333702.47339,
-          "volume_7d": 2049698.09514,
-          "equity": 4878.618487
-        },
-        {
-          "address": "12Ex9pzJ1wwKEbg1o9ugnvjuuLTM1w9Y3KX7ALFZt1n5",
-          "pnl_24h": -3337.91029,
-          "pnl_7d": -3593.88832,
-          "pnl_30d": -67480.854888,
-          "pnl_all_time": -165063.594588,
-          "volume_24h": 196845.05753,
-          "volume_7d": 1074092.18822,
-          "equity": 4453.942748
-        },
-        {
-          "address": "49e3PW6ScGb3hi42qk56WZnNqjBx5XDY56Kbtf4uP55T",
-          "pnl_24h": -3265.868807,
-          "pnl_7d": -2469.520724,
-          "pnl_30d": 18274.137863,
-          "pnl_all_time": 15872.385856,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 115872.385856
-        },
-        {
-          "address": "7RGfPRVtWfB2DywdCEt6oz9Xk9Hyjjh8vUsTbcnizTJd",
-          "pnl_24h": -3119.547662,
-          "pnl_7d": 12788.336165,
-          "pnl_30d": -19791.896051,
-          "pnl_all_time": 49730.172634,
-          "volume_24h": 133849.10544,
-          "volume_7d": 2593327.05868,
-          "equity": 350570.912634
-        },
-        {
-          "address": "CWaEyMSHwEQFqg8uYFk6rrKfgiVqNFkT4YcHWgPaixw4",
-          "pnl_24h": -2962.257354,
-          "pnl_7d": -1455.142362,
-          "pnl_30d": 6123.103031,
-          "pnl_all_time": -9516.010248,
-          "volume_24h": 12492.00868,
-          "volume_7d": 158280.77299,
-          "equity": 14036.607943
-        },
-        {
-          "address": "BdQi2GU4Zx4Em1SuGuLeAigys9jgLxdiicmohWsP2J3x",
-          "pnl_24h": -2864.56891,
-          "pnl_7d": -48875.920268,
-          "pnl_30d": -50824.692275,
-          "pnl_all_time": -53053.655946,
-          "volume_24h": 48159.902902,
-          "volume_7d": 272506.347881,
-          "equity": 67437.279085
-        },
-        {
-          "address": "8f3HLSqDtKwZDenwaue7zbYuqui1Mh5pYEPoqEvHcdUn",
-          "pnl_24h": -2816.717835,
-          "pnl_7d": -2214.969665,
-          "pnl_30d": -11090.344904,
-          "pnl_all_time": -11327.140515,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 27381.443907
-        },
-        {
-          "address": "CatXnnbgS39mxkHEsHRxXsB4DGDf9hVtPwgkNfug61DK",
-          "pnl_24h": -2755.995299,
-          "pnl_7d": -4125.001464,
-          "pnl_30d": 6111.251464,
-          "pnl_all_time": 6111.251464,
-          "volume_24h": -16232.9823,
-          "volume_7d": 3938707.58587,
-          "equity": 11864.836949
-        },
-        {
-          "address": "C45As2diKNQHSARr5m16JLhA5iRPEhbGYvmxaF2ZihRM",
-          "pnl_24h": -2696.986157,
-          "pnl_7d": -6815.65401,
-          "pnl_30d": -14306.469231,
-          "pnl_all_time": 2886.168854,
-          "volume_24h": 0.0,
-          "volume_7d": 28492.108946,
-          "equity": 52846.365465
-        },
-        {
-          "address": "9rhvsoWEGHU8hVJnRAxihgj3CAwVGkzVgdz2wQ5DGnPh",
-          "pnl_24h": -2566.529465,
-          "pnl_7d": -2866.570927,
-          "pnl_30d": -6761.88639,
-          "pnl_all_time": -26555.521902,
-          "volume_24h": 773599.94465,
-          "volume_7d": 1721437.70655,
-          "equity": 1227.478098
-        },
-        {
-          "address": "Hh1eBG6FVRXr5g7iobRLyd4yctLhDC3EDDMN3pSDgyfc",
-          "pnl_24h": -2556.661691,
-          "pnl_7d": 1038.825265,
-          "pnl_30d": 7886.258912,
-          "pnl_all_time": -11072.586864,
-          "volume_24h": 0.0,
-          "volume_7d": 51182.31922,
-          "equity": 43895.536126
-        },
-        {
-          "address": "3tAHUYWA8j143WrnahGTAYiQgnb5BcypfMUMmJYQLwyX",
-          "pnl_24h": -2493.788971,
-          "pnl_7d": 2337.153662,
-          "pnl_30d": 19188.258269,
-          "pnl_all_time": 25318.082366,
-          "volume_24h": 248.16,
-          "volume_7d": 122733.17459,
-          "equity": 17764.310077
-        },
-        {
-          "address": "BrUbTySdkBjkd7L9yjCqbSpVEehb2SeAyXCdZLYoAVL",
-          "pnl_24h": -2403.263424,
-          "pnl_7d": -1577.616322,
-          "pnl_30d": -12228.474932,
-          "pnl_all_time": -19871.992964,
-          "volume_24h": 58938.092049,
-          "volume_7d": 236601.018077,
-          "equity": 15404.834379
-        },
-        {
-          "address": "C1aoHHNMvoThJVcoEddzYqSwzPS5yLGhmymLP3tXywvN",
-          "pnl_24h": -2360.382046,
-          "pnl_7d": -309.605196,
-          "pnl_30d": -219698.635328,
-          "pnl_all_time": -195655.194623,
-          "volume_24h": 2497.5,
-          "volume_7d": 22648.9,
-          "equity": 14357.405234
-        },
-        {
-          "address": "WPiaQ7Dnh4hcHJeaBFeYoB7m6QdK3HucgU1FCTSKWkH",
-          "pnl_24h": -2342.177724,
-          "pnl_7d": -1966.462264,
-          "pnl_30d": -27672.672998,
-          "pnl_all_time": -45829.411773,
-          "volume_24h": 0.0,
-          "volume_7d": 0.0,
-          "equity": 16874.076131
-        }
-      ],
-      "total_traders": 4315
-    },
     "jupiter": {
       "top_winners": [
         {
@@ -2791,6 +2099,1013 @@
       ],
       "top_losers": [],
       "total_traders": 144
+    },
+    "pacifica": {
+      "top_winners": [
+        {
+          "address": "4TYEjn9PSpxoBNBXufeuNDRbytzvyyZtEUgXYSk8kYLZ",
+          "pnl_24h": 98191.060539,
+          "pnl_7d": 27596.337431,
+          "pnl_30d": 1318069.038962,
+          "pnl_all_time": 1938755.19214,
+          "volume_24h": 829401.652007,
+          "volume_7d": 7377974.70336,
+          "equity": 408056.024164
+        },
+        {
+          "address": "5RX2DD425DHj3VAouTbJWHtmBmzi2oUmuErwmfwgxs8n",
+          "pnl_24h": 21818.512611,
+          "pnl_7d": -1074.458251,
+          "pnl_30d": 9155.011831,
+          "pnl_all_time": 4252.853912,
+          "volume_24h": 31046.461004,
+          "volume_7d": 164121.888474,
+          "equity": 75584.887552
+        },
+        {
+          "address": "JPLaNo52siAC6KDv66VP9y4eKKtNhwx6yKd8GFcjFGP",
+          "pnl_24h": 19998.805938,
+          "pnl_7d": 14966.354372,
+          "pnl_30d": 107367.917571,
+          "pnl_all_time": 109489.852155,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 109063.253048
+        },
+        {
+          "address": "BEE2vnGCXdt8x1PyaKBjghBEKJhzsnHEXLAkBkvbTFL4",
+          "pnl_24h": 18144.022231,
+          "pnl_7d": -16499.032541,
+          "pnl_30d": -42308.81312,
+          "pnl_all_time": -122175.482371,
+          "volume_24h": 264619.133915,
+          "volume_7d": 2235774.25562,
+          "equity": 222701.617629
+        },
+        {
+          "address": "BtGmu8gixQcNzADq4JHy9qpHUfwXDNoAo6CvUwTMNA3D",
+          "pnl_24h": 13259.194246,
+          "pnl_7d": 11544.612359,
+          "pnl_30d": 47355.273877,
+          "pnl_all_time": 47355.273877,
+          "volume_24h": 4381.61358,
+          "volume_7d": 361905.20418,
+          "equity": 147355.273877
+        },
+        {
+          "address": "24q6voXjHkM3hZmMJPikHTJ7KmEuYyr1tJGLrT8CNWe3",
+          "pnl_24h": 12541.000949,
+          "pnl_7d": 9429.275035,
+          "pnl_30d": 34128.519013,
+          "pnl_all_time": 34128.519013,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 84142.112459
+        },
+        {
+          "address": "FN4seJZ9Wdi3NCbugCkPD5xYac5UrCQmzQt4o3Ko5VB2",
+          "pnl_24h": 11835.370413,
+          "pnl_7d": 128421.919787,
+          "pnl_30d": 148249.402291,
+          "pnl_all_time": 164009.031816,
+          "volume_24h": 0.0,
+          "volume_7d": 112697.67308,
+          "equity": 144393.899773
+        },
+        {
+          "address": "6nkGPkKjJJqJRZQj1rCFUyfftFRzyKPGpfSZDXr5YuGd",
+          "pnl_24h": 11322.437803,
+          "pnl_7d": -20665.781416,
+          "pnl_30d": 75479.721421,
+          "pnl_all_time": 75479.721421,
+          "volume_24h": 20001.391471,
+          "volume_7d": 158675.049019,
+          "equity": 130667.921616
+        },
+        {
+          "address": "E1vcL1c7Q2AZ15zb5iFNNtEhVSzSzmMF55y3zEhYJcSG",
+          "pnl_24h": 11021.168738,
+          "pnl_7d": 8200.097478,
+          "pnl_30d": 40233.081774,
+          "pnl_all_time": 40233.081774,
+          "volume_24h": 20.6076,
+          "volume_7d": 144.3229,
+          "equity": 122067.114578
+        },
+        {
+          "address": "GowcbjHQosYvDT4BWSfvS7B76VrfKayq5AZocFeyCjrQ",
+          "pnl_24h": 9473.427182,
+          "pnl_7d": 1382.622681,
+          "pnl_30d": 49923.056292,
+          "pnl_all_time": 49923.056292,
+          "volume_24h": 0.0,
+          "volume_7d": 22.6161,
+          "equity": 98767.23539
+        },
+        {
+          "address": "8ef7254GSfFERTRUK8PtVSoVPU96NSmjzEat1adpkHgs",
+          "pnl_24h": 9216.144946,
+          "pnl_7d": 4983.116508,
+          "pnl_30d": 104176.178492,
+          "pnl_all_time": 93249.781081,
+          "volume_24h": 266117.97567,
+          "volume_7d": 537467.29024,
+          "equity": 0.01
+        },
+        {
+          "address": "2oGPYzo7eLuKKYVZjUM2jQgbZqpA75sWLeuhBTSoSiqJ",
+          "pnl_24h": 8867.179942,
+          "pnl_7d": -9051.2653,
+          "pnl_30d": 24706.132025,
+          "pnl_all_time": 18548.146237,
+          "volume_24h": 72365.861922,
+          "volume_7d": 107467.336532,
+          "equity": 40084.278423
+        },
+        {
+          "address": "4u3L6r3nyL9XfZ93gMeXb4eddUGAXAMK8Cqkj1pvCmZB",
+          "pnl_24h": 8627.102059,
+          "pnl_7d": 6259.27931,
+          "pnl_30d": -4502.26211,
+          "pnl_all_time": -4103.498498,
+          "volume_24h": 9451.50971,
+          "volume_7d": 60953.56504,
+          "equity": 295946.501502
+        },
+        {
+          "address": "Ph9yECGodDAjiiSU9bpbJ8dds3ndWP1ngKo8h1K2QYv",
+          "pnl_24h": 8358.773679,
+          "pnl_7d": -12652.363028,
+          "pnl_30d": -5777.232086,
+          "pnl_all_time": -4053.253511,
+          "volume_24h": 840.20649,
+          "volume_7d": 35387.62516,
+          "equity": 79634.22968
+        },
+        {
+          "address": "4X1i2FRVBH6gU3psoLW6AirJSCeRi8eKsBHTyrizL1gJ",
+          "pnl_24h": 7522.864396,
+          "pnl_7d": 9677.565956,
+          "pnl_30d": 90254.982941,
+          "pnl_all_time": 89387.602332,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 165471.552504
+        },
+        {
+          "address": "PCF8xwewcLmibAPnJcvydHoJ4VKKoxkGdbcbJqRdUSx",
+          "pnl_24h": 7509.918411,
+          "pnl_7d": 7558.500465,
+          "pnl_30d": 42919.883083,
+          "pnl_all_time": 117043.125116,
+          "volume_24h": 3796061.512904,
+          "volume_7d": 36028436.476722,
+          "equity": 188043.125116
+        },
+        {
+          "address": "DrNBiFihydX12wJ2mTdQrsiXfPvAnU9WfrYsSH5UDCvL",
+          "pnl_24h": 7260.460241,
+          "pnl_7d": -4931.396886,
+          "pnl_30d": -18329.607453,
+          "pnl_all_time": -21761.547959,
+          "volume_24h": 27.3272,
+          "volume_7d": 3823059.6548,
+          "equity": 39228.094894
+        },
+        {
+          "address": "CftUjvv5sEPrnUE8XBcXu4q4Mc88TqGtrfkwStCX6Ci3",
+          "pnl_24h": 6779.638676,
+          "pnl_7d": -7716.410904,
+          "pnl_30d": -15343.368062,
+          "pnl_all_time": -60185.916323,
+          "volume_24h": 39488.1117,
+          "volume_7d": 239238.27691,
+          "equity": 80991.342803
+        },
+        {
+          "address": "97Nq39YDZq77pfPY97RLA8ScBbPapQEwkDUjYNZiuMUd",
+          "pnl_24h": 6777.69211,
+          "pnl_7d": 46625.210567,
+          "pnl_30d": 29044.990851,
+          "pnl_all_time": 13698.443466,
+          "volume_24h": 18156.15143,
+          "volume_7d": 81748.53792,
+          "equity": 158837.611406
+        },
+        {
+          "address": "HCAKppBaWY5HcmBrk8ALBUnsm9ZzvkoxpinAq9Je6ci1",
+          "pnl_24h": 5635.38573,
+          "pnl_7d": 2276.791291,
+          "pnl_30d": 49233.674591,
+          "pnl_all_time": 85098.895496,
+          "volume_24h": 4848.430272,
+          "volume_7d": 26067.854652,
+          "equity": 41987.358244
+        },
+        {
+          "address": "S9mRpbkJpgstvaVYireoKygjMkW2rs9kZg4baG4ieZn",
+          "pnl_24h": 5591.349763,
+          "pnl_7d": 4158.428313,
+          "pnl_30d": 42994.541038,
+          "pnl_all_time": 42994.541038,
+          "volume_24h": 17.094,
+          "volume_7d": 133.138,
+          "equity": 83016.529052
+        },
+        {
+          "address": "26t38jFHWn42aDxREXC8FuWsPMgRGDp623PUErhU6knW",
+          "pnl_24h": 5364.505977,
+          "pnl_7d": 4033.501895,
+          "pnl_30d": 745.796809,
+          "pnl_all_time": 745.796809,
+          "volume_24h": 0.0,
+          "volume_7d": 9.75688,
+          "equity": 20847.003402
+        },
+        {
+          "address": "6ZjWoJKeD88JqREHhYAWSZVLQfVcMSbx6eVdajXt9Xbv",
+          "pnl_24h": 5263.962121,
+          "pnl_7d": -10954.092972,
+          "pnl_30d": 277493.517629,
+          "pnl_all_time": 208123.273489,
+          "volume_24h": 0.0,
+          "volume_7d": 819007.25116,
+          "equity": 60712.773231
+        },
+        {
+          "address": "Eu12Nqn4v2atnTqNb8MwYnC4kxDpv7dVgnhxPcru1bGt",
+          "pnl_24h": 5118.711063,
+          "pnl_7d": 48418.814516,
+          "pnl_30d": -346306.756708,
+          "pnl_all_time": -310342.475745,
+          "volume_24h": 473423.167666,
+          "volume_7d": 5314053.244541,
+          "equity": 989649.795929
+        },
+        {
+          "address": "8hCTAcoQSRUtZkzcA76DaPYGE9V8jtFcftE2WmMxF4Se",
+          "pnl_24h": 4827.216661,
+          "pnl_7d": 3629.467356,
+          "pnl_30d": 38158.411025,
+          "pnl_all_time": 43827.285745,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 52498.320827
+        },
+        {
+          "address": "92QGYEYWEjnwUZc3iEPn1jP6puaj9RaMitybBmichFXL",
+          "pnl_24h": 4108.683749,
+          "pnl_7d": 3062.315315,
+          "pnl_30d": 29645.553269,
+          "pnl_all_time": 29645.553269,
+          "volume_24h": 31.8538,
+          "volume_7d": 124.6058,
+          "equity": 125511.946209
+        },
+        {
+          "address": "9eSnj4TniTi1JkeeASTyzXWSCEzHM8DjNf7XhD1rQ6Qu",
+          "pnl_24h": 4051.171042,
+          "pnl_7d": 4068.244456,
+          "pnl_30d": 43368.841245,
+          "pnl_all_time": 57117.222705,
+          "volume_24h": 22.5424,
+          "volume_7d": 262785.06722,
+          "equity": 32347.455651
+        },
+        {
+          "address": "77d5VNEQcpiD3vfQDWZhxPy2nhSwaJtFCJJxLBy9kxn4",
+          "pnl_24h": 3852.837229,
+          "pnl_7d": -26.226062,
+          "pnl_30d": 36011.43277,
+          "pnl_all_time": 34014.768331,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 10496.866663
+        },
+        {
+          "address": "J2bdNnwrfDUEm3gjpduWVWJNKvhEnu3EDo9EN2FsDj9d",
+          "pnl_24h": 3379.689599,
+          "pnl_7d": 23829.592602,
+          "pnl_30d": 38127.45605,
+          "pnl_all_time": 53955.566047,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 70004.566708
+        },
+        {
+          "address": "4q5AywsD1BU7i3nAx3GuTGSgpZkzaf14AiS1k2xx9oLD",
+          "pnl_24h": 3299.036797,
+          "pnl_7d": 1777.600513,
+          "pnl_30d": -29754.080053,
+          "pnl_all_time": -37926.266305,
+          "volume_24h": 0.0,
+          "volume_7d": 117307.09537,
+          "equity": 10067.733695
+        },
+        {
+          "address": "49R9MFU7JopaCFXtpTwbaX8rkNW9wX6ddi7VtLUtMYJ1",
+          "pnl_24h": 3271.630955,
+          "pnl_7d": -28329.576331,
+          "pnl_30d": 17593.872314,
+          "pnl_all_time": -11522.621774,
+          "volume_24h": 1e-06,
+          "volume_7d": 32037.660585,
+          "equity": 249232.281927
+        },
+        {
+          "address": "531euoNtZMvciBcKPBvYgFJoWnUvtu4PjasDhbTTXTGG",
+          "pnl_24h": 3142.186677,
+          "pnl_7d": 2049.276069,
+          "pnl_30d": 49242.468824,
+          "pnl_all_time": 109311.203666,
+          "volume_24h": 92129.75577,
+          "volume_7d": 92129.75577,
+          "equity": 63309.203666
+        },
+        {
+          "address": "AyLmbmCUuzaqtvH3MZG59WBrkCeXsY8mJXS7uQZMKqxc",
+          "pnl_24h": 3045.74281,
+          "pnl_7d": 2278.676502,
+          "pnl_30d": 38831.564226,
+          "pnl_all_time": 40308.759143,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 140301.697016
+        },
+        {
+          "address": "FMhCxyGkfcFEyr7mRQ9qpGGqzk3BwvgXxQcCXunfwpA",
+          "pnl_24h": 3034.695226,
+          "pnl_7d": -161.785614,
+          "pnl_30d": 34976.744223,
+          "pnl_all_time": 50026.908101,
+          "volume_24h": 0.0,
+          "volume_7d": 26858.06373,
+          "equity": 74055.53652
+        },
+        {
+          "address": "AQzj5vqR5LKQYNXTLxL1EKyY6tLaLNhNoDEBytpip9Tr",
+          "pnl_24h": 2927.881481,
+          "pnl_7d": 5357.977692,
+          "pnl_30d": 1961.505623,
+          "pnl_all_time": 2423.496788,
+          "volume_24h": 199.71177,
+          "volume_7d": 214883.44977,
+          "equity": 11791.8402
+        },
+        {
+          "address": "3jcFqKerxpqEg1PSPEKcpcPxT3PyhD1tMT1Cre44J4Ea",
+          "pnl_24h": 2647.463707,
+          "pnl_7d": 347.854765,
+          "pnl_30d": 347.854765,
+          "pnl_all_time": 347.854765,
+          "volume_24h": 0.0,
+          "volume_7d": 48766.49957,
+          "equity": 25347.611951
+        },
+        {
+          "address": "DdKAcvndDca5i7Xfk7aUa65dMKoDFPCp7hnzGoCnnmRa",
+          "pnl_24h": 2639.671198,
+          "pnl_7d": -2972.882922,
+          "pnl_30d": 25004.414643,
+          "pnl_all_time": 24726.74241,
+          "volume_24h": 0.0,
+          "volume_7d": 1030122.5137,
+          "equity": 23391.582301
+        },
+        {
+          "address": "8MGH6QKNd7jWiRNW2Bec5dnP65GKMdxksrgPsf5neDmA",
+          "pnl_24h": 2625.627667,
+          "pnl_7d": -990.702326,
+          "pnl_30d": 14216.974986,
+          "pnl_all_time": 14033.806739,
+          "volume_24h": 0.0,
+          "volume_7d": 24013.2894,
+          "equity": 21413.281521
+        },
+        {
+          "address": "44KXjVQZ5WMx9LdUGQWrr9uuZXVsmXLD462dHuz7BMx6",
+          "pnl_24h": 2583.890749,
+          "pnl_7d": 1385.445661,
+          "pnl_30d": 8571.604519,
+          "pnl_all_time": 11298.669472,
+          "volume_24h": 19256.531982,
+          "volume_7d": 55874.391204,
+          "equity": 10351.332456
+        },
+        {
+          "address": "4HrH9n2yk3Y1Pf3EvhGEWmC1QYmkddfVZE2kYLE7G8q2",
+          "pnl_24h": 2538.539605,
+          "pnl_7d": -7033.414193,
+          "pnl_30d": -21603.216179,
+          "pnl_all_time": -30979.386437,
+          "volume_24h": 279886.82625,
+          "volume_7d": 4326879.34034,
+          "equity": 8068.332377
+        },
+        {
+          "address": "EfLVCLeC64YVm4Kt4NusfacvxQoDew4acpReBuCdk2wB",
+          "pnl_24h": 2457.453968,
+          "pnl_7d": 761.255867,
+          "pnl_30d": 12654.061367,
+          "pnl_all_time": -42330.560954,
+          "volume_24h": 513554.288287,
+          "volume_7d": 4140416.193208,
+          "equity": 218412.485198
+        },
+        {
+          "address": "BkUTkCt4JwQQwczibKkP5TEjTCHkSogR44ppvQReTt5B",
+          "pnl_24h": 2452.448482,
+          "pnl_7d": -666.003888,
+          "pnl_30d": -3994.978549,
+          "pnl_all_time": -12895.836726,
+          "volume_24h": 1007.3,
+          "volume_7d": 63195.54147,
+          "equity": 45348.597802
+        },
+        {
+          "address": "ERhpzhe75aASxM6GSAvKigz22bMoHUZGm3FQu6zyQ3MP",
+          "pnl_24h": 2299.96408,
+          "pnl_7d": 1170.050989,
+          "pnl_30d": -5667.382626,
+          "pnl_all_time": -7520.121742,
+          "volume_24h": 96974.97333,
+          "volume_7d": 281999.7102,
+          "equity": 9999.585509
+        },
+        {
+          "address": "FA7pLr6XNF7JdSQzSWRe5GD3dyuRruAXiPWMnjP5y2up",
+          "pnl_24h": 2266.679629,
+          "pnl_7d": -2210.475486,
+          "pnl_30d": -37548.736953,
+          "pnl_all_time": -43485.333382,
+          "volume_24h": 61.223,
+          "volume_7d": 1192999.84561,
+          "equity": 42083.713449
+        },
+        {
+          "address": "BEE8ePgFrNMirVz8tpC7XR2NBPAio1DKFrGvF1evZCi1",
+          "pnl_24h": 2246.852538,
+          "pnl_7d": -3268.584637,
+          "pnl_30d": 22968.639139,
+          "pnl_all_time": 16991.935729,
+          "volume_24h": 158820.052204,
+          "volume_7d": 1087304.929834,
+          "equity": 57991.935729
+        },
+        {
+          "address": "3XPbDDeNm1GYzeVt4gYz9rsLgXVpQcWYJb145W5fNe8y",
+          "pnl_24h": 2202.988402,
+          "pnl_7d": 3667.419671,
+          "pnl_30d": -3873.847786,
+          "pnl_all_time": -26921.789396,
+          "volume_24h": 0.0,
+          "volume_7d": 171883.23514,
+          "equity": 60648.006201
+        },
+        {
+          "address": "CcBkvidmanT6zHGQPRHXDHgLq7M6fazaAVajTEAGoCMf",
+          "pnl_24h": 2155.404141,
+          "pnl_7d": -2198.114977,
+          "pnl_30d": 21687.812407,
+          "pnl_all_time": 19964.077254,
+          "volume_24h": 0.0,
+          "volume_7d": 10168.0,
+          "equity": 22489.96901
+        },
+        {
+          "address": "YjCD9Gek6MVY9t3MLEGYYdZLeaF6MZrpgZraayWsv9E",
+          "pnl_24h": 2139.948832,
+          "pnl_7d": 30381.090501,
+          "pnl_30d": -197203.525162,
+          "pnl_all_time": 1479819.194751,
+          "volume_24h": 640812.60226,
+          "volume_7d": 5016216.22218,
+          "equity": 845058.79758
+        },
+        {
+          "address": "8XTAeCbtN73eh7G6k7aWoN88JauG29LqfvgJjy2ZWEk9",
+          "pnl_24h": 2027.228799,
+          "pnl_7d": 517.725908,
+          "pnl_30d": 45198.008953,
+          "pnl_all_time": 31283.462118,
+          "volume_24h": 2998.55,
+          "volume_7d": 96417.9526,
+          "equity": 20345.833871
+        },
+        {
+          "address": "ztqQ4TNC6Yju9zJaK9ZsPNMjxiUqjiT6rP76eeatgTy",
+          "pnl_24h": 1990.669862,
+          "pnl_7d": -147.519304,
+          "pnl_30d": 23177.150486,
+          "pnl_all_time": 25821.806242,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 65821.806242
+        }
+      ],
+      "top_losers": [
+        {
+          "address": "DbB3TxHkGEA5jLY7DCbxbQWRNVrteUbHBhYwAgwL5TJh",
+          "pnl_24h": -39330.294654,
+          "pnl_7d": -15464.681596,
+          "pnl_30d": 79746.741092,
+          "pnl_all_time": 35173.190742,
+          "volume_24h": 0.0,
+          "volume_7d": 316670.97656,
+          "equity": 177922.523794
+        },
+        {
+          "address": "4G6XZC176LK96i5pMwNEvdhgH6HstkNhRJqFmiGssdNp",
+          "pnl_24h": -34346.025898,
+          "pnl_7d": -41768.459311,
+          "pnl_30d": -153915.095547,
+          "pnl_all_time": -152258.307208,
+          "volume_24h": 50430.0615,
+          "volume_7d": 4155578.49832,
+          "equity": 59882.514453
+        },
+        {
+          "address": "BEE5U8G8KrYRagtnHcHqtDES9ygpg1k5JFiYLMwzF8MQ",
+          "pnl_24h": -24572.609643,
+          "pnl_7d": 22251.32948,
+          "pnl_30d": 21005.853641,
+          "pnl_all_time": 21005.853641,
+          "volume_24h": 368344.844374,
+          "volume_7d": 1865022.113312,
+          "equity": 182461.853641
+        },
+        {
+          "address": "GTU92nBC8LMyt9W4Qqc319BFR1vpkNNPAbt4QCnX7kZ6",
+          "pnl_24h": -20333.120901,
+          "pnl_7d": -12692.692773,
+          "pnl_30d": -109688.395602,
+          "pnl_all_time": 13934.827884,
+          "volume_24h": 5156529.287066,
+          "volume_7d": 50771777.134272,
+          "equity": 463853.213422
+        },
+        {
+          "address": "GDoEJ87ezVKgFXQ9N4RpPuUVrPKfhitLQpgkHczJUPVL",
+          "pnl_24h": -19123.130581,
+          "pnl_7d": -13666.032232,
+          "pnl_30d": 46210.341943,
+          "pnl_all_time": 40885.17402,
+          "volume_24h": 0.0,
+          "volume_7d": 640.775,
+          "equity": 140885.17402
+        },
+        {
+          "address": "Hr5WFpPR9xUwD5WVWYKoLYbNKUaTAx2mn3B147KDgMAc",
+          "pnl_24h": -18808.922071,
+          "pnl_7d": -14147.820381,
+          "pnl_30d": 50667.573548,
+          "pnl_all_time": 65292.733405,
+          "volume_24h": 0.0,
+          "volume_7d": 681.1196,
+          "equity": 165292.733405
+        },
+        {
+          "address": "8AsJfKorQc1Wz8DABe9FZH18cgLd43bYwFST5JBJYSit",
+          "pnl_24h": -14623.660173,
+          "pnl_7d": -12382.206537,
+          "pnl_30d": -47670.646625,
+          "pnl_all_time": -54140.888445,
+          "volume_24h": 0.0,
+          "volume_7d": 989886.36633,
+          "equity": 45706.213783
+        },
+        {
+          "address": "HQWz5Pje7tbqJVTy7ES41P4moxQWHXhCqMYGnsQirzq9",
+          "pnl_24h": -11921.122311,
+          "pnl_7d": -1109.837463,
+          "pnl_30d": 12989.703678,
+          "pnl_all_time": -20414.24241,
+          "volume_24h": 0.0,
+          "volume_7d": 14195.43005,
+          "equity": 113285.75759
+        },
+        {
+          "address": "Gskf4VgodkUjKENhbJhfECqg37HYwqKGfDMZHrtWaVxW",
+          "pnl_24h": -10364.249023,
+          "pnl_7d": -2302.559995,
+          "pnl_30d": -4282.552897,
+          "pnl_all_time": -5431.389198,
+          "volume_24h": 566653.789179,
+          "volume_7d": 2432139.935271,
+          "equity": 7395.246486
+        },
+        {
+          "address": "5REnMKiW3whCDiGMs1RqvfnQp1fib62r4quwJ3Qc7rQq",
+          "pnl_24h": -9467.586983,
+          "pnl_7d": -9467.586983,
+          "pnl_30d": -9467.586983,
+          "pnl_all_time": -9467.586983,
+          "volume_24h": 2261466.90892,
+          "volume_7d": 2261466.90892,
+          "equity": 0.01
+        },
+        {
+          "address": "2p7maFAnHHErnWbj9GznZcwHeZETqdBgovEF25RNuKA4",
+          "pnl_24h": -8070.287755,
+          "pnl_7d": -14792.53727,
+          "pnl_30d": -14792.53727,
+          "pnl_all_time": -14792.53727,
+          "volume_24h": 1361813.53185,
+          "volume_7d": 8075680.438679,
+          "equity": 0.010001
+        },
+        {
+          "address": "CFDVmdesfJq2Tz3jq3ebGtxW6VUMk7UJgibY3vUbVnZn",
+          "pnl_24h": -7390.477593,
+          "pnl_7d": -11551.710136,
+          "pnl_30d": -11551.710136,
+          "pnl_all_time": -11551.710136,
+          "volume_24h": 785468.21887,
+          "volume_7d": 1292344.84329,
+          "equity": 0.010001
+        },
+        {
+          "address": "2rEEo6bXeXLacwAnQwtw5YEz8CdnTGrQ2LQ2banK4mRw",
+          "pnl_24h": -7029.920118,
+          "pnl_7d": 18391.636924,
+          "pnl_30d": -49730.45111,
+          "pnl_all_time": -47814.168771,
+          "volume_24h": 2084763.743573,
+          "volume_7d": 12289749.891787,
+          "equity": 164881.291096
+        },
+        {
+          "address": "BEE9evCYoXTQpVHjnLQsXVGi9ewe8dyp1rSejeDvKK8Q",
+          "pnl_24h": -6714.185123,
+          "pnl_7d": 1415.618062,
+          "pnl_30d": -65980.893848,
+          "pnl_all_time": -53450.187626,
+          "volume_24h": 223287.722949,
+          "volume_7d": 1254503.118352,
+          "equity": 46587.812374
+        },
+        {
+          "address": "8Xqw1VU9qwY3vrtqQoWaGziMKoGdpv2CN6VXzg8ReHvV",
+          "pnl_24h": -6611.568437,
+          "pnl_7d": 2109.735366,
+          "pnl_30d": 33105.733075,
+          "pnl_all_time": 33694.052793,
+          "volume_24h": 136.435,
+          "volume_7d": 116551.92734,
+          "equity": 29301.456595
+        },
+        {
+          "address": "296PcXq7TUGrjzfBEjSFs3qrhNXiTxuteJKaoPDivo5e",
+          "pnl_24h": -6528.65608,
+          "pnl_7d": -4835.173914,
+          "pnl_30d": -63805.247304,
+          "pnl_all_time": -89102.20413,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 83795.29587
+        },
+        {
+          "address": "F5BcMNcVyxeWqXyEivRc5NuUrFMZgNxnmwVvLpRKLdaf",
+          "pnl_24h": -5738.185723,
+          "pnl_7d": 519.573611,
+          "pnl_30d": -22100.806685,
+          "pnl_all_time": 28213.895969,
+          "volume_24h": 1723404.095898,
+          "volume_7d": 13089661.712667,
+          "equity": 92213.895969
+        },
+        {
+          "address": "P3BSKpoDFx7i9ioLchg7XZXGWATz1McaNy9t7oDo7LF",
+          "pnl_24h": -5576.676119,
+          "pnl_7d": -2658.795586,
+          "pnl_30d": -21409.537875,
+          "pnl_all_time": -128580.672259,
+          "volume_24h": 0.0,
+          "volume_7d": 109511.1674,
+          "equity": 41408.784823
+        },
+        {
+          "address": "AoVHrciuHrqSsSty2wK7ZgVYscmiLNrGm1NXPPgdWaPf",
+          "pnl_24h": -5329.640963,
+          "pnl_7d": -4480.538452,
+          "pnl_30d": -36915.908081,
+          "pnl_all_time": -39549.178518,
+          "volume_24h": 0.0,
+          "volume_7d": 12400.4109,
+          "equity": 23288.133155
+        },
+        {
+          "address": "7xGRx5WWsK91xv9YayPVzC3jXuULXUvcoMJkWacbQd6U",
+          "pnl_24h": -5096.523807,
+          "pnl_7d": -3787.814992,
+          "pnl_30d": -56922.352481,
+          "pnl_all_time": -55875.277607,
+          "volume_24h": 30.757,
+          "volume_7d": 240.6324,
+          "equity": 44117.768006
+        },
+        {
+          "address": "6xQmCzMwMpGhouMip57hy9NGrtGKwz2kv2ZtdhjhXh1K",
+          "pnl_24h": -4422.683671,
+          "pnl_7d": -852.528092,
+          "pnl_30d": -43302.152946,
+          "pnl_all_time": -31767.316642,
+          "volume_24h": 323011.633494,
+          "volume_7d": 1234108.737139,
+          "equity": 19445.968199
+        },
+        {
+          "address": "9ixkJDcrveSQ9CqUhCt6iviqBpSGieNuWPWuEVDQtVja",
+          "pnl_24h": -4396.776456,
+          "pnl_7d": -6675.489268,
+          "pnl_30d": -7683.566377,
+          "pnl_all_time": -21128.327907,
+          "volume_24h": 113665.6714,
+          "volume_7d": 773914.54769,
+          "equity": 28671.672093
+        },
+        {
+          "address": "BcDgu34n4JtSraG429avhokt2EedbprDFWB3BuD6etLy",
+          "pnl_24h": -4225.568991,
+          "pnl_7d": 2793.817648,
+          "pnl_30d": 5882.807181,
+          "pnl_all_time": 36241.21931,
+          "volume_24h": 0.0,
+          "volume_7d": 102375.91611,
+          "equity": 56241.21931
+        },
+        {
+          "address": "ADrHFm9418oZcBAvaqdtnfkRCh8B2vThAe1eAdyhvxDM",
+          "pnl_24h": -4225.568991,
+          "pnl_7d": 2793.756991,
+          "pnl_30d": 7801.757953,
+          "pnl_all_time": 33194.204058,
+          "volume_24h": 0.0,
+          "volume_7d": 102375.91611,
+          "equity": 62184.180064
+        },
+        {
+          "address": "EbaoY81MhbrXiP52Nk35XTeYDLwaiKooLMWgfNMBJnpf",
+          "pnl_24h": -4225.568991,
+          "pnl_7d": 2793.817648,
+          "pnl_30d": 13953.545912,
+          "pnl_all_time": 4758.598539,
+          "volume_24h": 0.0,
+          "volume_7d": 102375.91611,
+          "equity": 86713.314764
+        },
+        {
+          "address": "AqVGeyoFiMkgdXPZEDkXetXm2n1dNPEocfRpBwDUX4yn",
+          "pnl_24h": -4090.948538,
+          "pnl_7d": -11589.461164,
+          "pnl_30d": -59318.626288,
+          "pnl_all_time": -66529.919017,
+          "volume_24h": 100689.160161,
+          "volume_7d": 2088980.387865,
+          "equity": 49852.168821
+        },
+        {
+          "address": "6GcT3aY8VcyaC6yBKewKQqLJekdnfkTv8J44Q58zTwYD",
+          "pnl_24h": -4050.598511,
+          "pnl_7d": -2988.247279,
+          "pnl_30d": -34987.247691,
+          "pnl_all_time": -34570.185703,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 94428.814297
+        },
+        {
+          "address": "HtC4WT6JhKz8eojNigfiqSWykG74kfQmyDeM9f753aPQ",
+          "pnl_24h": -4019.491585,
+          "pnl_7d": -53668.397155,
+          "pnl_30d": 188722.589829,
+          "pnl_all_time": 424104.455764,
+          "volume_24h": 4839927.660903,
+          "volume_7d": 37407546.875745,
+          "equity": 506108.455764
+        },
+        {
+          "address": "Fqrep8G6BT5qRJGSyGtFhjVwPb1eK1kpwLeEdzaiZ1ub",
+          "pnl_24h": -4005.80969,
+          "pnl_7d": -4350.639449,
+          "pnl_30d": -6956.644055,
+          "pnl_all_time": -6956.644055,
+          "volume_24h": 0.0,
+          "volume_7d": 350055.16918,
+          "equity": 7849.63142
+        },
+        {
+          "address": "Dkp7y8LP6MWFXe3KtvQW2mzwaeZyiFHG1xeg8zG2asPr",
+          "pnl_24h": -3958.920439,
+          "pnl_7d": -2899.986534,
+          "pnl_30d": -26045.957332,
+          "pnl_all_time": -27583.788654,
+          "volume_24h": 0.0,
+          "volume_7d": 81.4516,
+          "equity": 76832.819093
+        },
+        {
+          "address": "BdQi2GU4Zx4Em1SuGuLeAigys9jgLxdiicmohWsP2J3x",
+          "pnl_24h": -3782.359204,
+          "pnl_7d": -48559.106308,
+          "pnl_30d": -50736.738737,
+          "pnl_all_time": -52960.427684,
+          "volume_24h": 55550.929022,
+          "volume_7d": 280855.575375,
+          "equity": 67530.507347
+        },
+        {
+          "address": "G6gyqHzb1yM3zfCD8K12qxMkv3Q99Dzn1qYLff41n1vf",
+          "pnl_24h": -3729.896674,
+          "pnl_7d": -2724.438521,
+          "pnl_30d": -21460.411243,
+          "pnl_all_time": -5425.823302,
+          "volume_24h": 27.3006,
+          "volume_7d": 135.9868,
+          "equity": 71452.328282
+        },
+        {
+          "address": "DCmDxhZ6Tz8k46th3aEQrMHPGmRXeKrrakBitMm4V9mz",
+          "pnl_24h": -3602.49731,
+          "pnl_7d": -1391.630743,
+          "pnl_30d": -18016.102028,
+          "pnl_all_time": 5950.226339,
+          "volume_24h": 1991354.568606,
+          "volume_7d": 13383350.343242,
+          "equity": 115949.726339
+        },
+        {
+          "address": "H14NUSS9QWoQ9WFsLe9gVhp4kGhxBN64SZx4Pe6Hc1ct",
+          "pnl_24h": -3572.321442,
+          "pnl_7d": -6402.224089,
+          "pnl_30d": 34676.718738,
+          "pnl_all_time": 34676.718738,
+          "volume_24h": 51600.67558,
+          "volume_7d": 557565.59727,
+          "equity": 84789.790486
+        },
+        {
+          "address": "CamaoEE51ftJaC61WkUxSDfBMoWshGL33c3eQzewDsLM",
+          "pnl_24h": -3192.388741,
+          "pnl_7d": -1689.009303,
+          "pnl_30d": -2750.796826,
+          "pnl_all_time": -10420.685302,
+          "volume_24h": 303030.6913,
+          "volume_7d": 2029863.509,
+          "equity": 2585.505215
+        },
+        {
+          "address": "6ihYAA1rpjVfdfBwjC27zwc7Ygc5JLtbN8QGZKtSvWG3",
+          "pnl_24h": -2904.947632,
+          "pnl_7d": 1920.698687,
+          "pnl_30d": -10308.106322,
+          "pnl_all_time": -6190.295531,
+          "volume_24h": 0.0,
+          "volume_7d": 70381.15024,
+          "equity": 58151.379243
+        },
+        {
+          "address": "12Ex9pzJ1wwKEbg1o9ugnvjuuLTM1w9Y3KX7ALFZt1n5",
+          "pnl_24h": -2781.944618,
+          "pnl_7d": -2946.977894,
+          "pnl_30d": -66883.559376,
+          "pnl_all_time": -164727.68238,
+          "volume_24h": 196845.05753,
+          "volume_7d": 1074092.18822,
+          "equity": 4789.854956
+        },
+        {
+          "address": "7RGfPRVtWfB2DywdCEt6oz9Xk9Hyjjh8vUsTbcnizTJd",
+          "pnl_24h": -2740.265329,
+          "pnl_7d": 13520.337287,
+          "pnl_30d": -19858.193778,
+          "pnl_all_time": 50033.746504,
+          "volume_24h": 123273.25381,
+          "volume_7d": 2581466.06716,
+          "equity": 350874.486504
+        },
+        {
+          "address": "C45As2diKNQHSARr5m16JLhA5iRPEhbGYvmxaF2ZihRM",
+          "pnl_24h": -2723.744612,
+          "pnl_7d": -6571.062992,
+          "pnl_30d": -14120.580982,
+          "pnl_all_time": 3103.15378,
+          "volume_24h": 0.0,
+          "volume_7d": 28492.108946,
+          "equity": 53063.350391
+        },
+        {
+          "address": "2Eh4crW2FRDQ7TGmWN2824qRVkBCoFWFL4LAd77zCESP",
+          "pnl_24h": -2717.871803,
+          "pnl_7d": 1799.147849,
+          "pnl_30d": -4657.606829,
+          "pnl_all_time": -1271.008868,
+          "volume_24h": 333702.47339,
+          "volume_7d": 2049698.09514,
+          "equity": 5212.537983
+        },
+        {
+          "address": "CatXnnbgS39mxkHEsHRxXsB4DGDf9hVtPwgkNfug61DK",
+          "pnl_24h": -2608.698333,
+          "pnl_7d": -4038.011126,
+          "pnl_30d": 5843.395429,
+          "pnl_all_time": 5843.395429,
+          "volume_24h": 386508.4297,
+          "volume_7d": 4270554.83286,
+          "equity": 11596.980914
+        },
+        {
+          "address": "49e3PW6ScGb3hi42qk56WZnNqjBx5XDY56Kbtf4uP55T",
+          "pnl_24h": -2422.123492,
+          "pnl_7d": -1976.139129,
+          "pnl_30d": 18902.737313,
+          "pnl_all_time": 16324.011228,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 116324.011228
+        },
+        {
+          "address": "CWaEyMSHwEQFqg8uYFk6rrKfgiVqNFkT4YcHWgPaixw4",
+          "pnl_24h": -2378.590412,
+          "pnl_7d": -857.402445,
+          "pnl_30d": 6541.477102,
+          "pnl_all_time": -9209.800985,
+          "volume_24h": 12492.00868,
+          "volume_7d": 158280.77299,
+          "equity": 14342.817206
+        },
+        {
+          "address": "8f3HLSqDtKwZDenwaue7zbYuqui1Mh5pYEPoqEvHcdUn",
+          "pnl_24h": -2366.937175,
+          "pnl_7d": -1770.82717,
+          "pnl_30d": -11094.562827,
+          "pnl_all_time": -11173.789601,
+          "volume_24h": 0.0,
+          "volume_7d": 0.0,
+          "equity": 27534.794821
+        },
+        {
+          "address": "Hh1eBG6FVRXr5g7iobRLyd4yctLhDC3EDDMN3pSDgyfc",
+          "pnl_24h": -2112.54837,
+          "pnl_7d": 1396.765688,
+          "pnl_30d": 8185.682411,
+          "pnl_all_time": -10804.255394,
+          "volume_24h": 0.0,
+          "volume_7d": 51182.31922,
+          "equity": 44163.867596
+        },
+        {
+          "address": "BrUbTySdkBjkd7L9yjCqbSpVEehb2SeAyXCdZLYoAVL",
+          "pnl_24h": -2072.815516,
+          "pnl_7d": -1297.298982,
+          "pnl_30d": -12316.535744,
+          "pnl_all_time": -19766.187525,
+          "volume_24h": 57414.191649,
+          "volume_7d": 237566.675897,
+          "equity": 15510.639818
+        },
+        {
+          "address": "3tAHUYWA8j143WrnahGTAYiQgnb5BcypfMUMmJYQLwyX",
+          "pnl_24h": -2060.624203,
+          "pnl_7d": 2598.870061,
+          "pnl_30d": 19449.974668,
+          "pnl_all_time": 25579.798765,
+          "volume_24h": 248.16,
+          "volume_7d": 122733.17459,
+          "equity": 18026.026476
+        },
+        {
+          "address": "6uC2TdJxxqhWMPSjs7u9YE5rWMQs1yhxkvk8BmBTPrpV",
+          "pnl_24h": -1996.648125,
+          "pnl_7d": -1996.648125,
+          "pnl_30d": -1996.648125,
+          "pnl_all_time": -1996.648125,
+          "volume_24h": 266158.1031,
+          "volume_7d": 266158.1031,
+          "equity": 34944.585943
+        },
+        {
+          "address": "C1aoHHNMvoThJVcoEddzYqSwzPS5yLGhmymLP3tXywvN",
+          "pnl_24h": -1984.840627,
+          "pnl_7d": 113.391815,
+          "pnl_30d": -220388.553137,
+          "pnl_all_time": -195520.60409,
+          "volume_24h": 2497.5,
+          "volume_7d": 22648.9,
+          "equity": 14491.995767
+        },
+        {
+          "address": "6HKAUws4EeU541mpsFFgEPJZMCea1kXPbZbp1mGtTfvN",
+          "pnl_24h": -1969.760704,
+          "pnl_7d": 3263.02255,
+          "pnl_30d": 17505.807838,
+          "pnl_all_time": 14344.800139,
+          "volume_24h": 0.0,
+          "volume_7d": 207.27727,
+          "equity": 19545.091438
+        }
+      ],
+      "total_traders": 4316
     }
   }
 }
